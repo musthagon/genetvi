@@ -53,56 +53,6 @@ class LoginController extends Controller
     }
 
     /**
-     * CURL generíco usando GuzzleHTTP
-     *
-     */
-    public function send_curl($request_type, $endpoint, $params){
-
-        $client   = new \GuzzleHttp\Client();
-
-        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
-
-        //$statusCode = $response->getStatusCode();
-
-        $content    = json_decode($response->getBody(), true);
-
-        return $content;
-    }
-
-    public function cvucv_autenticacion(Request $request)
-    {
-        $endpoint = env("CVUCV_GET_USER_TOKEN", "https://campusvirtual.ucv.ve/moodle/login/token.php");
-        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE", "moodle_mobile_app");
-
-        $params = [
-            'service'  => $service,
-            'username' => $request->cvucv_username,
-            'password' => $request->password
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
-
-    public function cvucv_get_profile(Request $request, $token)
-    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", "https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_user_get_users_by_field',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'field'                 => 'username',
-            'values[0]'             => $request->cvucv_username,
-        ];
-
-        $response = $this->send_curl('GET', $endpoint, $params);
-        
-        return $response[0];
-    }
-    /**
      * Handle a login request to the application.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -111,22 +61,26 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $this->validateLogin($request);
-
-        //return back()->withErrors(['cvucvu_username' => 'error 1']);
         
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and
         // the IP address of the client making these requests into this application.
 
-        /*if ($this->hasTooManyLoginAttempts($request)) {
+        if ($this->hasTooManyLoginAttempts($request)) {
             $this->fireLockoutEvent($request);
 
             return $this->sendLockoutResponse($request);
-        }*/
+        }
 
         // Para consultar los usuarios al CAMPUS VIRTUAL UCV
         // Si existe algun error / o las credenciales no coinciden se retorna a la vista anterior (login)
         $response = $this->cvucv_autenticacion($request);
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+
+        $this->incrementLoginAttempts($request);
 
         //Si está registrado en el CVUCV, usaremos su token para puder usar los servicios $response['token']
         if (isset($response['error'])){
@@ -134,17 +88,6 @@ class LoginController extends Controller
         }elseif (!isset($response['token'])){
             return back()->withErrors(['cvucv_username' => 'Error inesperado. (cod=001) ']);
         }
-
-        /*
-        $obj_user = User::where('cvucv_username',$request->cvucv_username) -> first();
-        $obj_user->password = Hash::make($request_data['password']);;
-        $obj_user->save();*/
-
-        /*$obj_user = User::find($user_id);
-        $obj_user->password = Hash::make($request_data['password']);;
-        $obj_user->save();*/
-
-        //dd($obj_user->id);
 
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
@@ -154,17 +97,24 @@ class LoginController extends Controller
         // Puede siginificar dos cosas: Que la clave la cambio en el otro sistema, o simplemente no esta registrado en nuestro sistema
         
         //1. Consultamos si el username existe, y actualizariamos su clave
-        $query = User::where('cvucv_username',$request->cvucv_username) -> first();
-        dd($query);
+        $obj_user = User::where('cvucv_username',$request->cvucv_username) -> first();
 
-        //O si no, Lo registramos...
+        if($obj_user != null){
+            $obj_user->password = bcrypt($request->password);
+            $obj_user->save();
+
+            if ($this->attemptLogin($request)) {
+                return $this->sendLoginResponse($request);
+            }
+        }
+
+        //2. O si no, Lo registramos...
         $new_profile = $this->cvucv_get_profile($request, $response['token']);
 
         if (empty($new_profile)){
             return back()->withErrors(['cvucv_username' => 'Error inesperado. (cod=002) ']);
         }
 
-        //dd($new_profile);
         $params = [
             '_token'            => $request->token,
             'cvucv_username'    => $new_profile['username'],
@@ -177,21 +127,13 @@ class LoginController extends Controller
             'password'          => $request->password,
             'avatar'            => $new_profile['profileimageurl']
         ];
-        //dd($params);
 
-        //event(new Registered($user = $this->create($request->all())));
         event(new Registered($user = $this->create($params)));
 
         $this->guard()->login($user);
 
         return $this->authenticated($request, $this->guard()->user())
                 ?: redirect()->intended($this->redirectPath());
-
-        // If the login attempt was unsuccessful we will increment the number of attempts
-        // to login and redirect the user back to the login form. Of course, when this
-        // user surpasses their maximum number of attempts they will get locked out.
-
-        /*$this->incrementLoginAttempts($request);*/
 
         return $this->sendFailedLoginResponse($request);
     }
@@ -331,5 +273,56 @@ class LoginController extends Controller
             'cvucv_suspended'   => $data['cvucv_suspended'],
             'cvucv_token'       => $data['cvucv_token'],
         ]);
+    }
+
+    /**
+     * CURL generíco usando GuzzleHTTP
+     *
+     */
+    public function send_curl($request_type, $endpoint, $params){
+
+        $client   = new \GuzzleHttp\Client();
+
+        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
+
+        //$statusCode = $response->getStatusCode();
+
+        $content    = json_decode($response->getBody(), true);
+
+        return $content;
+    }
+
+    public function cvucv_autenticacion(Request $request)
+    {
+        $endpoint = env("CVUCV_GET_USER_TOKEN", "https://campusvirtual.ucv.ve/moodle/login/token.php");
+        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE", "moodle_mobile_app");
+
+        $params = [
+            'service'  => $service,
+            'username' => $request->cvucv_username,
+            'password' => $request->password
+        ];
+
+        $response = $this->send_curl('POST', $endpoint, $params);
+        
+        return $response;
+    }
+
+    public function cvucv_get_profile(Request $request, $token)
+    {
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", "https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+
+        $params = [
+            'wsfunction'            => 'core_user_get_users_by_field',
+            'wstoken'               => $wstoken,
+            'moodlewsrestformat'    => 'json',
+            'field'                 => 'username',
+            'values[0]'             => $request->cvucv_username,
+        ];
+
+        $response = $this->send_curl('GET', $endpoint, $params);
+        
+        return $response[0];
     }
 }
