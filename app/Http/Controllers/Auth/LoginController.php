@@ -294,8 +294,8 @@ class LoginController extends Controller
 
     public function cvucv_autenticacion(Request $request)
     {
-        $endpoint = env("CVUCV_GET_USER_TOKEN", "https://campusvirtual.ucv.ve/moodle/login/token.php");
-        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE", "moodle_mobile_app");
+        $endpoint = env("CVUCV_GET_USER_TOKEN");
+        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE");
 
         $params = [
             'service'  => $service,
@@ -310,7 +310,7 @@ class LoginController extends Controller
 
     public function cvucv_get_profile(Request $request, $token)
     {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", "https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
         $params = [
