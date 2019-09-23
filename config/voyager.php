@@ -28,11 +28,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you can specify voyager controller settings
-    |
+    | php artisan voyager:controllers
     */
 
     'controllers' => [
-        'namespace' => 'TCG\\Voyager\\Http\\Controllers',
+        //'namespace' => 'TCG\\Voyager\\Http\\Controllers',
+        'namespace' => 'App\\Http\\Controllers\\Voyager',
     ],
 
     /*
