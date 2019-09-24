@@ -16,9 +16,9 @@ class CreateEvaluaciones extends Migration
         Schema::create('evaluaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('valores')->nullable();
-            $table->integer('instrumento_id');
-            $table->integer('usuario_id');
-            $table->bigInteger('curso_id');
+            $table->integer('instrumento_id')->unsigned();
+            $table->integer('usuario_id')->unsigned();
+            $table->bigInteger('curso_id')->unsigned();
             $table->timestamps();
         });
     }

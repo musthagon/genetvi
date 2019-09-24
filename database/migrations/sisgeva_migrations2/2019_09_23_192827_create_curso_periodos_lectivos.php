@@ -13,10 +13,10 @@ class CreateCursoPeriodosLectivos extends Migration
      */
     public function up()
     {
-        Schema::create('curso_periodos_lectivo', function (Blueprint $table) {
+        Schema::create('curso_periodos_lectivos', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('curso_id');
-            $table->integer('periodo_lectivo_id');
+            $table->bigInteger('curso_id')->unsigned();
+            $table->integer('periodos_lectivo_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateCursoPeriodosLectivos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('curso_periodos_lectivo');
+        Schema::dropIfExists('curso_periodos_lectivos');
     }
 }

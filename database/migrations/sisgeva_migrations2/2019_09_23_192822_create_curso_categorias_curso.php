@@ -13,10 +13,10 @@ class CreateCursoCategoriasCurso extends Migration
      */
     public function up()
     {
-        Schema::create('curso_categorias_curso', function (Blueprint $table) {
+        Schema::create('curso_categorias_cursos', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('curso_id');
-            $table->integer('categoria_curso_id');
+            $table->bigInteger('curso_id')->unsigned();
+            $table->integer('categorias_curso_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateCursoCategoriasCurso extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('curso_categorias_curso');
+        Schema::dropIfExists('curso_categorias_cursos');
     }
 }

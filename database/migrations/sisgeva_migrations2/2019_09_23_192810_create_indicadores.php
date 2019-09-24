@@ -18,7 +18,7 @@ class CreateIndicadores extends Migration
             $table->string('nombre');
             $table->string('tipo')->nullable();
             $table->longText('opciones')->nullable();
-            $table->integer('categoria_instrumento_id');
+            $table->integer('categorias_instrumento_id')->unsigned();
             $table->timestamps();
         });
     }

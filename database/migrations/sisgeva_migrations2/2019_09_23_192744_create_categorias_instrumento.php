@@ -13,11 +13,11 @@ class CreateCategoriasInstrumento extends Migration
      */
     public function up()
     {
-        Schema::create('categorias_instrumento', function (Blueprint $table) {
+        Schema::create('categorias_instrumentos', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre');
-            $table->integer('padre_id')->nullable();
-            $table->integer('instrumento_id')->nullable();
+            $table->integer('padre_id')->unsigned();
+            $table->integer('instrumento_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateCategoriasInstrumento extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categorias_instrumento');
+        Schema::dropIfExists('categorias_instrumentos');
     }
 }
