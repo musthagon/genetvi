@@ -15,15 +15,16 @@ class CreateCursos extends Migration
     {
         Schema::create('cursos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('cvucv_id');
-            $table->string('cvucv_shortname');
-            $table->bigInteger('cvucv_category_id');
-            $table->string('cvucv_fullname');
-            $table->string('cvucv_displayname');
-            $table->string('cvucv_summary');
+            $table->bigInteger('cvucv_id')->nullable();
+            $table->string('cvucv_shortname')->nullable();
+            $table->bigInteger('cvucv_category_id')->nullable();
+            $table->string('cvucv_fullname')->nullable();
+            $table->string('cvucv_displayname')->nullable();
+            $table->string('cvucv_summary')->nullable();
             $table->boolean('cvucv_visible')->default(true);
-            $table->string('cvucv_link');
+            $table->string('cvucv_link')->nullable();
             $table->longText('cvucv_participantes')->nullable();
+            $table->integer('categoria_id')->unsigned();
             $table->timestamps();
         });
     }

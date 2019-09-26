@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InstrumentoController;
 use Illuminate\Support\Str;
 use TCG\Voyager\Events\Routing;
 use TCG\Voyager\Events\RoutingAdmin;
@@ -40,5 +41,7 @@ Route::group(['prefix' => 'admin'], function () {
  
     // Your overwrites here
     //Route::post('login', ['uses' => 'Voyager\MyAuthController@postLogin', 'as' => 'postlogin']);
+
+    Route::get('instrumentos/{id}/constructor', 'InstrumentoController@constructor')->name('instrumentos.constructor');
  });
 
