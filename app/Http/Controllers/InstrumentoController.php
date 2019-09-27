@@ -23,19 +23,223 @@ class InstrumentoController extends VoyagerBaseController
     public function constructor(Request $request, $id)
     {
         $instrumento = Instrumento::findOrFail($id);
-
-        // GET THE SLUG, ex. 'posts', 'pages', etc.
-        //$slug = $this->getSlug($request);
-        //$dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
-
+        
         $slug1 = "categorias-instrumentos";
         $slug2 = "indicadores";
 
         $dataType1 = Voyager::model('DataType')->where('slug', '=', $slug1)->first();
         $dataType2 = Voyager::model('DataType')->where('slug', '=', $slug2)->first();
         
+        // Check permission
+        $this->authorize('browse', app($dataType1->model_name));
+        $this->authorize('browse', app($dataType2->model_name));
 
-        return Voyager::view($this->view, compact('1'));
+
+        
+        $getter1 = $dataType1->server_side ? 'paginate' : 'get';
+        $getter2 = $dataType2->server_side ? 'paginate' : 'get';
+
+        /*$search = (object) ['value' => $request->get('s'), 'key' => $request->get('key'), 'filter' => $request->get('filter')];
+
+        $searchNames = [];
+        if ($dataType->server_side) {
+            $searchable = array_keys(SchemaManager::describeTable(app($dataType->model_name)->getTable())->toArray());
+            $dataRow = Voyager::model('DataRow')->whereDataTypeId($dataType->id)->get();
+            foreach ($searchable as $key => $value) {
+                $displayName = $dataRow->where('field', $value)->first()->getTranslatedAttribute('display_name');
+                $searchNames[$value] = $displayName ?: ucwords(str_replace('_', ' ', $value));
+            }
+        }*/
+
+        $orderBy1 = $request->get('order_by', $dataType1->order_column);
+        $sortOrder1 = $request->get('sort_order', null);
+        $usesSoftDeletes1 = false;
+        $showSoftDeleted1 = false;
+        $orderColumn1 = [];
+        if ($orderBy1) {
+            $index1 = $dataType1->browseRows->where('field', $orderBy1)->keys()->first() + 1;
+            $orderColumn1 = [[$index1, 'desc']];
+            if (!$sortOrder1 && isset($dataType1->order_direction)) {
+                $sortOrder1 = $dataType1->order_direction;
+                $orderColumn1 = [[$index1, $dataType1->order_direction]];
+            } else {
+                $orderColumn1 = [[$index1, 'desc']];
+            }
+        }
+
+        $orderBy2 = $request->get('order_by', $dataType2->order_column);
+        $sortOrder2 = $request->get('sort_order', null);
+        $usesSoftDeletes2 = false;
+        $showSoftDeleted2 = false;
+        $orderColumn2 = [];
+        if ($orderBy2) {
+            $index2 = $dataType2->browseRows->where('field', $orderBy2)->keys()->first() + 1;
+            $orderColumn2 = [[$index2, 'desc']];
+            if (!$sortOrder2 && isset($dataType2->order_direction)) {
+                $sortOrder2 = $dataType2->order_direction;
+                $orderColumn2 = [[$index2, $dataType2->order_direction]];
+            } else {
+                $orderColumn2 = [[$index2, 'desc']];
+            }
+        }
+
+
+        // Next Get or Paginate the actual content from the MODEL that corresponds to the slug DataType
+        if (strlen($dataType1->model_name) != 0) {
+            $model1 = app($dataType1->model_name);
+
+            if ($dataType1->scope && $dataType1->scope != '' && method_exists($model1, 'scope'.ucfirst($dataType1->scope))) {
+                $query1 = $model1->{$dataType1->scope}();
+            } else {
+                $query1 = $model1::select('*');
+            }
+
+            // Use withTrashed() if model uses SoftDeletes and if toggle is selected
+            if ($model1 && in_array(SoftDeletes::class, class_uses($model1)) && app('VoyagerAuth')->user()->can('delete', app($dataType1->model_name))) {
+                $usesSoftDeletes1 = true;
+
+                if ($request->get('showSoftDeleted')) {
+                    $showSoftDeleted1 = true;
+                    $query1 = $query1->withTrashed();
+                }
+            }
+
+            // If a column has a relationship associated with it, we do not want to show that field
+            $this->removeRelationshipField($dataType1, 'browse');
+
+            /*if ($search->value != '' && $search->key && $search->filter) {
+                $search_filter = ($search->filter == 'equals') ? '=' : 'LIKE';
+                $search_value = ($search->filter == 'equals') ? $search->value : '%'.$search->value.'%';
+                $query->where($search->key, $search_filter, $search_value);
+            }*/
+
+            if ($orderBy1 && in_array($orderBy1, $dataType1->fields())) {
+                $querySortOrder1 = (!empty($sortOrder1)) ? $sortOrder1 : 'desc';
+                $dataTypeContent1 = call_user_func([
+                    $query1->orderBy($orderBy1, $querySortOrder1),
+                    $getter1,
+                ]);
+            } elseif ($model1->timestamps) {
+                $dataTypeContent1 = call_user_func([$query1->latest($model1::CREATED_AT), $getter1]);
+            } else {
+                $dataTypeContent1 = call_user_func([$query1->orderBy($model1->getKeyName(), 'DESC'), $getter1]);
+            }
+
+            // Replace relationships' keys for labels and create READ links if a slug is provided.
+            $dataTypeContent1 = $this->resolveRelations($dataTypeContent1, $dataType1);
+        } else {
+            // If Model doesn't exist, get data from table name
+            $dataTypeContent1 = call_user_func([DB::table($dataType1->name), $getter1]);
+            $model1 = false;
+        }
+
+        // Next Get or Paginate the actual content from the MODEL that corresponds to the slug DataType
+        if (strlen($dataType2->model_name) != 0) {
+            $model2 = app($dataType2->model_name);
+
+            if ($dataType2->scope && $dataType2->scope != '' && method_exists($model2, 'scope'.ucfirst($dataType2->scope))) {
+                $query2 = $model2->{$dataType2->scope}();
+            } else {
+                $query2 = $model2::select('*');
+            }
+
+            // Use withTrashed() if model uses SoftDeletes and if toggle is selected
+            if ($model2 && in_array(SoftDeletes::class, class_uses($model2)) && app('VoyagerAuth')->user()->can('delete', app($dataType1->model_name))) {
+                $usesSoftDeletes2 = true;
+
+                if ($request->get('showSoftDeleted')) {
+                    $showSoftDeleted2 = true;
+                    $query2 = $query2->withTrashed();
+                }
+            }
+
+            // If a column has a relationship associated with it, we do not want to show that field
+            $this->removeRelationshipField($dataType2, 'browse');
+
+            /*if ($search->value != '' && $search->key && $search->filter) {
+                $search_filter = ($search->filter == 'equals') ? '=' : 'LIKE';
+                $search_value = ($search->filter == 'equals') ? $search->value : '%'.$search->value.'%';
+                $query->where($search->key, $search_filter, $search_value);
+            }*/
+
+            if ($orderBy2 && in_array($orderBy2, $dataType2->fields())) {
+                $querySortOrder2 = (!empty($sortOrder2)) ? $sortOrder2 : 'desc';
+                $dataTypeContent2 = call_user_func([
+                    $query2->orderBy($orderBy2, $querySortOrder2),
+                    $getter2,
+                ]);
+            } elseif ($model2->timestamps) {
+                $dataTypeContent2 = call_user_func([$query2->latest($model2::CREATED_AT), $getter2]);
+            } else {
+                $dataTypeContent2 = call_user_func([$query2->orderBy($model2->getKeyName(), 'DESC'), $getter2]);
+            }
+
+            // Replace relationships' keys for labels and create READ links if a slug is provided.
+            $dataTypeContent2 = $this->resolveRelations($dataTypeContent2, $dataType2);
+        } else {
+            // If Model doesn't exist, get data from table name
+            $dataTypeContent2 = call_user_func([DB::table($dataType2->name), $getter2]);
+            $model2 = false;
+        }
+
+
+        // Check if BREAD is Translatable
+        if (($isModelTranslatable = is_bread_translatable($model1))) {
+            $dataTypeContent1->load('translations');
+        }
+
+        if (($isModelTranslatable = is_bread_translatable($model2))) {
+            $dataTypeContent2->load('translations');
+        }
+
+        // Check if server side pagination is enabled
+        $isServerSide1 = isset($dataType1->server_side) && $dataType1->server_side;
+        $isServerSide2 = isset($dataType2->server_side) && $dataType2->server_side;
+
+
+        // Check if a default search key is set
+        $defaultSearchKey1 = $dataType1->default_search_key ?? null;
+        $defaultSearchKey2 = $dataType2->default_search_key ?? null;
+
+        // Actions
+        $actions1 = [];
+        if (!empty($dataTypeContent1->first())) {
+            foreach (Voyager::actions() as $action) {
+                $action1 = new $action($dataType1, $dataTypeContent1->first());
+
+                if ($action1->shouldActionDisplayOnDataType()) {
+                    $actions1[] = $action1;
+                }
+            }
+        }
+        $actions2 = [];
+        if (!empty($dataTypeContent2->first())) {
+            foreach (Voyager::actions() as $action) {
+                $action2 = new $action($dataType2, $dataTypeContent2->first());
+
+                if ($action2->shouldActionDisplayOnDataType()) {
+                    $actions2[] = $action2;
+                }
+            }
+        }
+
+        //return Voyager::view($this->view, compact('1'));
+
+        return Voyager::view($this->view, compact(
+            'actions1',
+            'dataType1',
+            'dataTypeContent1',
+            'isModelTranslatable1',
+            'search1',
+            'orderBy1',
+            'orderColumn1',
+            'sortOrder1',
+            'searchNames1',
+            'isServerSide1',
+            'defaultSearchKey1',
+            'usesSoftDeletes1',
+            'showSoftDeleted1'
+        ));
     }
 
 

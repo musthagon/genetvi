@@ -1,0 +1,141 @@
+.likert-table tbody,
+.likert-table tfoot,
+.likert-table thead {
+  border: none;
+  background: none;
+}
+
+
+td .likert-table {
+  margin: 0;
+}
+
+.likert-legend,
+.likert-label {
+  font-size: .875rem;
+}
+
+.text-header,
+.likert-header {
+  color: white;
+}
+
+.form-container {
+  border: 1px solid #2184be;
+}
+
+.likert-row > .responses {
+  padding: 0;
+}
+
+.likert-header,
+.text-header {
+  background: #2184be;
+}
+.likert-header table,
+.likert-header tbody,
+.text-header table,
+.text-header tbody {
+  margin-bottom: 0;
+  padding: 1em;
+}
+.likert-header table th,
+.likert-header tbody th,
+.text-header table th,
+.text-header tbody th {
+  border-right: 1px solid darkgrey;
+  padding: .25em;
+}
+.likert-header table th:last-of-type,
+.likert-header tbody th:last-of-type,
+.text-header table th:last-of-type,
+.text-header tbody th:last-of-type {
+  border-right: none;
+}
+
+.text-row > .question {
+  vertical-align: top;
+}
+
+.question {
+  width: 45%;
+}
+
+.responses {
+  vertical-align: top;
+  padding: 1em;
+}
+
+.responses table {
+  margin: 0;
+}
+
+.response {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background: none;
+}
+
+.likert-row td,
+.text-row td {
+  padding: .5em;
+}
+
+.styled-radio input[type=radio] {
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+.styled-radio input[type=radio]:before {
+  opacity: 1;
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: -.5em;
+  margin: auto;
+  height: 1.5em;
+  width: 1.5em;
+  border: 2px solid #2184be;
+  background: white;
+  border-radius: 50%;
+}
+
+.styled-radio input[type=radio]:checked:before {
+  background: #2184be;
+}
+
+@media (min-width: 768px) {
+  .response label {
+    display: none !important;
+  }
+
+  .styled-radio input[type=radio]:before {
+    top: .5em;
+  }
+}
+@media (max-width: 768px) {
+
+
+  .responses > table > tbody > tr{
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .likert-header .responses,
+  .text-header .responses {
+    display: none;
+  }
+  .question {
+    width: 100%;
+    float: left;
+  }
+  .responses {
+    width: 100%;
+    float: left;
+    padding: 0;
+  }
+}
+
