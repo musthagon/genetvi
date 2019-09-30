@@ -14,9 +14,10 @@ class CreatePeriodosLectivos extends Migration
     public function up()
     {
         Schema::create('periodos_lectivos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('cod');
-            $table->string('value');
+            $table->bigIncrements('id');
+            $table->longText('nombre');
+            $table->longText('descripcion')->nullable();
+            $table->longText('opciones')->nullable();
             $table->timestamps();
         });
     }

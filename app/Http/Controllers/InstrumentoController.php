@@ -34,8 +34,6 @@ class InstrumentoController extends VoyagerBaseController
         $this->authorize('browse', app($dataType1->model_name));
         $this->authorize('browse', app($dataType2->model_name));
 
-
-        
         $getter1 = $dataType1->server_side ? 'paginate' : 'get';
         $getter2 = $dataType2->server_side ? 'paginate' : 'get';
 

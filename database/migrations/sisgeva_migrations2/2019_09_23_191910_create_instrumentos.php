@@ -14,9 +14,12 @@ class CreateInstrumentos extends Migration
     public function up()
     {
         Schema::create('instrumentos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('nombre');
+            $table->bigIncrements('id');
+            $table->longText('nombre');
+            $table->longText('descripcion');
+            $table->boolean('habilitar')->default(true);
             $table->longText('opciones')->nullable();
+            $table->bigInteger('rol_id')->unsigned();
             $table->timestamps();
         });
     }

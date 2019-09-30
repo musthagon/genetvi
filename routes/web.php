@@ -26,7 +26,7 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 // User Routes
 Route::get('/home', 'HomeController@index')->name('home');
-
+Route::post('evaluar', 'HomeController@evaluacion')->name('evaluar');
 /*
 |--------------------------------------------------------------------------
 | Voyager Routes
@@ -43,5 +43,10 @@ Route::group(['prefix' => 'admin'], function () {
     //Route::post('login', ['uses' => 'Voyager\MyAuthController@postLogin', 'as' => 'postlogin']);
 
     Route::get('instrumentos/{id}/constructor', 'InstrumentoController@constructor')->name('instrumentos.constructor');
+
+    Route::get('gestion', 'HomeController@gestion')->name('gestion.evaluaciones');
+    Route::get('gestion/{id}', 'HomeController@gestion')->name('gestion.evaluaciones2');
+
+    Route::get('gestion/{id}/sincronizar_categorias', 'HomeController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
  });
 

@@ -14,16 +14,16 @@ class CreateCategoriasCursos extends Migration
     public function up()
     {
         Schema::create('categorias_cursos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->bigInteger('cvucv_id')->nullable();
-            $table->bigInteger('cvucv_parent_id')->nullable();
-            $table->string('cvucv_name')->nullable();
-            $table->integer('cvucv_coursecount')->nullable();
-            $table->boolean('cvucv_visible')->default(true);
-            $table->string('cvucv_path')->nullable();
-            $table->string('cvucv_link')->nullable();
-            $table->integer('padre_id')->unsigned()->nullable();
+            $table->bigInteger('id')->unsigned();
+            $table->bigInteger('cvucv_category_parent_id')->unsigned()->nullable();
+            $table->longText('cvucv_name')->nullable();
+            $table->longText('cvucv_path')->nullable();
+            $table->longText('cvucv_link')->nullable();
+            $table->integer('cvucv_coursecount')->nullable();   
+            $table->boolean('cvucv_visible')->default(true);           
             $table->timestamps();
+
+            $table->primary('id');
         });
     }
 

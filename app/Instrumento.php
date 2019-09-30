@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instrumento extends Model
 {
+    protected $fillable = [
+        'nombre'
+    ];
     /**
      * The table associated with the model.
      *
@@ -13,21 +16,12 @@ class Instrumento extends Model
      */
     protected $table = 'instrumentos';
 
-    /*public function categorias(){
-        return $this->hasMany('App\CategoriaDeInstrumento','instrumento_id','id');
+    public function categorias(){
+        return $this->belongsToMany('App\Categoria','categorias_instrumentos','instrumento_id','categoria_id')->using('App\CategoriaInstrumento');
     }
 
     public function evaluaciones(){
         return $this->hasMany('App\Evaluacion','instrumento_id','id');
-    }*/
-
-    public function campos(){
-        return $this->hasMany('App\Campo','instrumento_id','id');
-    }
-
-    public function campos_padre(){
-        return $this->hasMany('App\Campo','instrumento_id','id')
-            ->whereNull('padre_id');;
     }
 
 }

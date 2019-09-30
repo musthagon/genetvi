@@ -14,12 +14,11 @@ class CreateIndicadores extends Migration
     public function up()
     {
         Schema::create('indicadores', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('nombre');
-            $table->string('tipo')->nullable();
+            $table->bigIncrements('id');
+            $table->longText('nombre');
+            $table->longText('descripcion')->nullable();
             $table->longText('opciones')->nullable();
             $table->integer('orden')->nullable();
-            $table->integer('categorias_instrumento_id')->unsigned();
             $table->timestamps();
         });
     }

@@ -4,19 +4,23 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CategoriaDeInstrumento extends Model
+class Categoria extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'categorias_instrumentos';
+    protected $table = 'categorias';
 
-    public function indicadores(){
+    /*public function indicadores(){
         return $this->hasMany('App\Indicador','categorias_instrumento_id','id');
-    }
+    }*/
     
+    public function indicadores(){
+        return $this->belongsToMany('App\Indicador','categorias_indicadores','categoria_id','indicador_id')->using('App\CategoriaIndicador');
+    }
+
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');
     }

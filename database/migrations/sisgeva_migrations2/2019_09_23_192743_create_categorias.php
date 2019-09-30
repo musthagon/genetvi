@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCursoPeriodosLectivos extends Migration
+class CreateCategorias extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateCursoPeriodosLectivos extends Migration
      */
     public function up()
     {
-        Schema::create('curso_periodos_lectivos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->bigInteger('curso_id')->unsigned();
-            $table->integer('periodos_lectivo_id')->unsigned();
+        Schema::create('categorias', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->longText('nombre');
+            $table->longText('descripcion')->nullable();
+            $table->longText('opciones')->nullable();
+            $table->integer('orden')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ class CreateCursoPeriodosLectivos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('curso_periodos_lectivos');
+        Schema::dropIfExists('categorias');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCategoriasInstrumento extends Migration
+class CreateCategoriasInstrumentos extends Migration
 {
     /**
      * Run the migrations.
@@ -14,12 +14,9 @@ class CreateCategoriasInstrumento extends Migration
     public function up()
     {
         Schema::create('categorias_instrumentos', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('nombre');
-            $table->longText('opciones')->nullable();
-            $table->integer('orden')->nullable();
-            $table->integer('padre_id')->unsigned()->nullable();
-            $table->integer('instrumento_id')->unsigned();
+            $table->bigIncrements('id');
+            $table->bigInteger('categoria_id')->unsigned();
+            $table->bigInteger('instrumento_id')->unsigned();
             $table->timestamps();
         });
     }

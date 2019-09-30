@@ -1,101 +1,68 @@
 @extends('layouts.users')
 
 @section('css')
+  <link rel='stylesheet' href='/css/foundation.min.css'>
   <link rel="stylesheet" href="/css/jquery.steps.css">
-  <link rel='stylesheet' href='https://cdn.jsdelivr.net/foundation/6.2.0/foundation.min.css'>
   <link rel="stylesheet" href="/css/linkert-table.css">
-  
+  <link rel="stylesheet" href="/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 @stop
 
 @section('content')
 
 <!-- Main content -->
 <section class="content">
+  <div class="row">
+    <div class="col-xs-12">
 
-  <!-- Default box -->
-  <div class="box">
-    <div class="box-header with-border">
+      <!-- Default box -->
+      @if(!empty($instrumento))
+      <div class="box">
+        <div class="box-header with-border">
 
-      <h3 class="box-title">Formulario - Test</h3>
+          <h3 class="box-title">{{$instrumento->nombre}}</h3>
 
-      <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                title="Collapse">
-          <i class="fa fa-minus"></i></button>
-      </div>
-    </div>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                    title="Collapse">
+              <i class="fa fa-minus"></i></button>
+          </div>
+        </div>
 
-    <div class="box-body">
-
-      <!-- Instru -->
-      <form id="wizard" action="#">
-
-        <!-- Cat -->
-        <h2>Account</h2>
-        <section>
+        <div class="box-body">
           
-          <table class='likert-form likert-table form-container'>
-            <thead>
-              <tr class='likert-header'>
-                <th class='question'>Table Header</th>
-                <th class='responses'>
-                  <table class='likert-table'>
-                    <tr>
-                      <!-- Ops -->
-                      <th class='response'>Siempre</th>
-                      <th class='response'>A veces</th>
-                      <th class='response'>Nunca</th>
-                    </tr>
-                  </table>
-                </th>
-              </tr>
-              <tbody class='likert'>
-                <!-- Inds -->
-                <fieldset>
-                  <tr class='likert-row'>
-                    <td class='question'>
-                      <legend class='likert-legend'>Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1Choose Your Favorite 1</legend>
-                    </td>
-                    <td class='responses'>
-                      <table class='likert-table'>
-                        <tr>
-                          <td class='response styled-radio'>
-                            
-                            <input id='1-1' name='1' type='radio' value='1' >
-                            <label class='likert-label' for='1-1'>Label 1</label>
-                          </td>
-                          <td class='response styled-radio'>
-                            <input id='1-2' name='1' type='radio' value='2'>
-                            <label class='likert-label' for='1-2'>Label 2</label>
-                          </td>
-                          <td class='response styled-radio'>
-                            <input id='1-3' name='1' type='radio' value='3'>
-                            <label class='likert-label' for='1-3'>Label 3</label>
-                          </td>
-                          
-                        </tr>
-                      </table>
-                      
-                    </td>
-                  </tr>
-                </fieldset>
-                
-              </tbody>
-            </thead>
-          </table>
+          @include('user.instrumentos.estructura-instrumento')
 
-          <div class="validation-error"><label for="1" class="error" style="display:none;">* Existen campos obligatorios.</label></div>
+        </div>
 
-        </section>
-
-        
-      </form>
+        <!-- /.box-footer-->
+      </div>
+      <!-- /.box -->
+      @endif
 
     </div>
 
-    <!-- /.box-footer-->
+
+
+    <div class="col-xs-12">
+    <div class="box">
+            <div class="box-header">
+              <h3 class="box-title">Hover Data Table</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+
+            @include('user.cursos.tabla-de-cursos')
+
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+    </div>
+
+
+
   </div>
-  <!-- /.box -->
+
 
 
 </section>
@@ -105,17 +72,36 @@
 
   <script type="text/javascript"  src="/js/jquery.steps.js"></script>
   <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-
+  <!-- DataTables -->
+  <script src="/adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+  <script src="/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+  <!-- SlimScroll -->
+  <script src="/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+  <!-- FastClick -->
+  <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
   <script>
     $(function (){
+      $('#cursos-data-table').DataTable({
+        'paging'      : false,
+        'lengthChange': false,
+        'searching'   : false,
+        'ordering'    : true,
+        'info'        : false,
+        'autoWidth'   : false
+      })
 
-
-
-        var form = $("#wizard");
-        form.validate({
+      @if(!empty($instrumento))
+      var form = $("#wizard");
+      form.validate({
             errorPlacement: function errorPlacement(error, element) { element.before(error); },
             rules: {
-              '1' : {required :true}
+              
+              @foreach($instrumento->categorias as $categoria)
+              @foreach($categoria->indicadores as $indicador)
+                '{{$indicador->nombre}}' : {required :true},
+              @endforeach
+              @endforeach
+              
             }
         });
         form.steps({
@@ -134,9 +120,11 @@
             },
             onFinished: function (event, currentIndex)
             {
-                alert("Submitted!");
+                //alert("Submitted!");
+                form.submit();
             }
         });
+        @endif
     });
   </script>
 

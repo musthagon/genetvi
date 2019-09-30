@@ -15,10 +15,11 @@ class CreateEvaluaciones extends Migration
     {
         Schema::create('evaluaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->longText('valores')->nullable();
-            $table->integer('instrumento_id')->unsigned();
-            $table->integer('usuario_id')->unsigned();
+            $table->longText('respuestas')->nullable();
+            $table->bigInteger('instrumento_id')->unsigned();
             $table->bigInteger('curso_id')->unsigned();
+            $table->integer('usuario_id')->unsigned();
+            $table->bigInteger('periodo_lectivo_id')->unsigned();
             $table->timestamps();
         });
     }
