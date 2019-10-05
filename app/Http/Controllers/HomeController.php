@@ -285,7 +285,10 @@ class HomeController extends Controller
                 array_push($cursos_array, $curso);
             }
             return $cursos_array;
+        }else{
+            return null;
         }
+
         return $cursos;
     }
     /**
