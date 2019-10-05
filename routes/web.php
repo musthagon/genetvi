@@ -23,10 +23,12 @@ Route::get('/', 'Auth\LoginController@showLoginForm')->name('login');
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
 // User Routes
 Route::get('/home', 'HomeController@index')->name('home');
-Route::post('evaluar', 'HomeController@evaluacion')->name('evaluar');
+Route::get('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion')->name('evaluacion');
+Route::post('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}/procesar', 'HomeController@evaluacion_procesar')->name('evaluacion_procesar');
 /*
 |--------------------------------------------------------------------------
 | Voyager Routes
@@ -44,9 +46,16 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::get('instrumentos/{id}/constructor', 'InstrumentoController@constructor')->name('instrumentos.constructor');
 
-    Route::get('gestion', 'HomeController@gestion')->name('gestion.evaluaciones');
-    Route::get('gestion/{id}', 'HomeController@gestion')->name('gestion.evaluaciones2');
+    Route::get('gestion', 'AdminController@gestion')->name('gestion.evaluaciones');
+    Route::get('gestion/{id}', 'AdminController@gestion')->name('gestion.evaluaciones2');
+    Route::get('gestion/{id}/sincronizar', 'AdminController@gestion_sincronizar')->name('gestion.sincronizar');
+    Route::get('gestion/{id}/sincronizar_categorias', 'AdminController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
 
-    Route::get('gestion/{id}/sincronizar_categorias', 'HomeController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
+    Route::get('gestion/{id}/gestionar_evaluacion', 'AdminController@gestionar_evaluacion_categoria')->name('gestion.evaluacion_categoria');
+    Route::post('gestion/{id}/gestionar_evaluacion/store', 'AdminController@gestionar_evaluacion_categoria_store')->name('gestion.evaluacion_categoria_store');
+    Route::put('gestion/{id}/gestionar_evaluacion/edit', 'AdminController@gestionar_evaluacion_categoria_edit')->name('gestion.evaluacion_categoria_edit');
+
+    //Cursos dashboards
+    Route::get('gestion/curso/{id}', 'AdminController@visualizar_curso')->name('curso.visualizar');
  });
 

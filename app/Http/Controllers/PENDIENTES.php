@@ -1,3 +1,9 @@
+@foreach($instrumento->categorias as $categoria)
+                @foreach($categoria->indicadores as $indicador)
+                  '{{$indicador->id}}' : {required :true},
+                @endforeach
+                @endforeach
+
 /*
             $curso = Curso::firstOrCreate(
                 ['id'                   => $data['id'] ],

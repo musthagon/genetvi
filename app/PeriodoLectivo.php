@@ -13,7 +13,6 @@ class PeriodoLectivo extends Model
      */
     protected $table = 'periodos_lectivos';
 
-    public function cursos(){
-        return $this->belongsToMany('App\Curso','curso_periodos_lectivos','periodos_lectivo_id','curso_id')->using('App\CursoPeriodoLectivo');
-    }
+    protected $fillable = ['id', 'nombre', 'descripcion', 'opciones'];
+
 }

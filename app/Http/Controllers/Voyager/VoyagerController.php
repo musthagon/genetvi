@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Voyager;
 
-use TCG\Voyager\Http\Controllers\VoyagerController as BaseVoyagerController;
+use TCG\Voyager\Http\Controllers\VoyagerController as Voyager;
 
-class VoyagerController extends BaseVoyagerController
+class VoyagerController extends Voyager
 {
-    //
+    
 }

@@ -5,6 +5,12 @@
   <link rel="stylesheet" href="/css/jquery.steps.css">
   <link rel="stylesheet" href="/css/linkert-table.css">
   <link rel="stylesheet" href="/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+  <style>
+    @media (max-width: 767px){
+      .box {overflow: auto;}
+    }
+    
+  </style>
 @stop
 
 @section('content')
@@ -12,57 +18,62 @@
 <!-- Main content -->
 <section class="content">
   <div class="row">
-    <div class="col-xs-12">
 
-      <!-- Default box -->
-      @if(!empty($instrumento))
+    @if(!empty($cursos))
+    <div class="col-xs-12">
       <div class="box">
-        <div class="box-header with-border">
-
-          <h3 class="box-title">{{$instrumento->nombre}}</h3>
-
-          <div class="box-tools pull-right">
-            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                    title="Collapse">
-              <i class="fa fa-minus"></i></button>
-          </div>
+        <div class="box-header">
+          <h3 class="box-title">Mis Cursos</h3>
         </div>
-
+        <!-- /.box-header -->
         <div class="box-body">
-          
-          @include('user.instrumentos.estructura-instrumento')
 
-        </div>
+          <table id="cursos-data-table" class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($cursos as $curso)
+                <tr>
+                  <td><a href="{{env('CVUCV_GET_SITE_URL').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                  <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
+                  
+                  <td>
+                    <a href="#" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                      <i class="voyager-list"></i> Ver
+                    </a>
+                    @if( !empty($curso->categoria)) 
+                    @if( !empty($curso->categoria->categoria_raiz)) 
+                    @if( !empty($curso->categoria->categoria_raiz->instrumentos_habilitados))
+                    @if(!empty ($curso->instrumentos_disponibles_usuario(Auth::user()->id)))
+                      @foreach($curso->instrumentos_disponibles_usuario(Auth::user()->id) as $instrumento)
+                      <a href="{{ route('evaluacion', ['curso' => $curso, 'instrumento' => $instrumento]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                        <i class="voyager-list"></i> Evaluar {{$instrumento->nombre}}
+                      </a>
+                      @endforeach
+                      @endif
+                    @endif
+                    @endif
+                    @endif
+                    
+                    
+                  </td>
+                </tr>
+              @endforeach
+                  
+          </table>
 
-        <!-- /.box-footer-->
-      </div>
-      <!-- /.box -->
-      @endif
-
+        </div><!-- /.box-body -->
+      </div><!-- /.box -->
     </div>
-
-
-
-    <div class="col-xs-12">
-    <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Hover Data Table</h3>
-            </div>
-            <!-- /.box-header -->
-            <div class="box-body">
-
-            @include('user.cursos.tabla-de-cursos')
-
-            </div>
-            <!-- /.box-body -->
-          </div>
-          <!-- /.box -->
-    </div>
-
-
+    @endif
 
   </div>
-
+  
 
 
 </section>
@@ -81,6 +92,8 @@
   <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
   <script>
     $(function (){
+      
+
       $('#cursos-data-table').DataTable({
         'paging'      : false,
         'lengthChange': false,
@@ -90,41 +103,6 @@
         'autoWidth'   : false
       })
 
-      @if(!empty($instrumento))
-      var form = $("#wizard");
-      form.validate({
-            errorPlacement: function errorPlacement(error, element) { element.before(error); },
-            rules: {
-              
-              @foreach($instrumento->categorias as $categoria)
-              @foreach($categoria->indicadores as $indicador)
-                '{{$indicador->nombre}}' : {required :true},
-              @endforeach
-              @endforeach
-              
-            }
-        });
-        form.steps({
-            headerTag: "h2",
-            bodyTag: "section",
-            transitionEffect: "slideLeft",
-            onStepChanging: function (event, currentIndex, newIndex)
-            {
-                form.validate().settings.ignore = ":disabled,:hidden";
-                return form.valid();
-            },
-            onFinishing: function (event, currentIndex)
-            {
-                form.validate().settings.ignore = ":disabled";
-                return form.valid();
-            },
-            onFinished: function (event, currentIndex)
-            {
-                //alert("Submitted!");
-                form.submit();
-            }
-        });
-        @endif
     });
   </script>
 

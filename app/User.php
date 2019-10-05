@@ -30,4 +30,8 @@ class User extends \TCG\Voyager\Models\User
     public function evaluaciones(){
         return $this->hasMany('App\Evaluacion','usuario_id','id');
     }
+    
+    public function rol(){
+        return $this->belongsTo('App\Role','role_id','id');
+    }
 }

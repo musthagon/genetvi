@@ -12,10 +12,6 @@ class Categoria extends Model
      * @var string
      */
     protected $table = 'categorias';
-
-    /*public function indicadores(){
-        return $this->hasMany('App\Indicador','categorias_instrumento_id','id');
-    }*/
     
     public function indicadores(){
         return $this->belongsToMany('App\Indicador','categorias_indicadores','categoria_id','indicador_id')->using('App\CategoriaIndicador');
@@ -23,5 +19,13 @@ class Categoria extends Model
 
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');
+    }
+
+    public function esValida(){
+        return !$this->indicadores->isEmpty();
+    }
+
+    public function percentilValue(){
+        return $this->indicadores->count();
     }
 }
