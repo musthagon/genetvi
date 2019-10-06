@@ -72,7 +72,7 @@ class HomeController extends Controller
                     if($actual->id == $instrumento->id){
                         
                         //6. Verificamos que el instrumento va dirigido al presente rol
-                        if($instrumento->rol_id != $user->rol->id){
+                        if($instrumento->rol_id != $user->roles->id){
                             return redirect()->route('home')->with(['message' => "Error, no puede evaluar este curso", 'alert-type' => 'error']);
                         }
 
@@ -130,7 +130,7 @@ class HomeController extends Controller
                     if($actual->id == $instrumento->id){
                         
                         //6. Verificamos que el instrumento va dirigido al presente rol
-                        if($instrumento->rol_id != $user->rol->id){
+                        if($instrumento->rol_id != $user->roles->id){
                             return redirect()->route('home')->with(['message' => "Error, no puede evaluar este curso", 'alert-type' => 'error']);
                         }
                         
@@ -311,8 +311,7 @@ class HomeController extends Controller
      * Obtiene los cursos de una categoria o
      * Obtiene los cursos por un campo
      */
-    public function cvucv_get_category_courses($field,$value)
-    {
+    public function cvucv_get_category_courses($field,$value){
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
@@ -332,8 +331,7 @@ class HomeController extends Controller
      * Obtiene los cursos en los que está matriculado un usuario
      *
      */
-    public function cvucv_get_users_courses($user_id)
-    {
+    public function cvucv_get_users_courses($user_id){
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
@@ -352,8 +350,7 @@ class HomeController extends Controller
      * Obtiene los participantes de un curso
      *
      */
-    public function cvucv_get_participantes_curso($course_id)
-    {
+    public function cvucv_get_participantes_curso($course_id){
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
@@ -372,8 +369,7 @@ class HomeController extends Controller
      * Obtiene las categorias de los cursos
      *
      */
-    public function cvucv_get_courses_categories($key = 'id', $value, $subcategories = 0)
-    {
+    public function cvucv_get_courses_categories($key = 'id', $value, $subcategories = 0){
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 

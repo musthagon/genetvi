@@ -64,7 +64,7 @@ class Curso extends Model
                             //3. Verificamos que el instrumento sea valido
                             if($instrumento->esValido()){
                                 //6. Verificamos que el instrumento va dirigido al usuario con ese rol
-                                if($instrumento->rol_id == $user->rol->id){
+                                if($instrumento->rol_id == $user->roles->id){
                                     //7. Verificamos la cantidad de intentos de evaluacion del instrumento
                                     if (!Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $this->id, $user->id, $categoria_raiz->periodo_lectivo) >= 1){
                                         $instrumentos_disponibles->push($instrumento);

@@ -31,7 +31,7 @@ class User extends \TCG\Voyager\Models\User
         return $this->hasMany('App\Evaluacion','usuario_id','id');
     }
     
-    public function rol(){
+    public function roles(){
         return $this->belongsTo('App\Role','role_id','id');
     }
 }

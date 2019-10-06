@@ -12,8 +12,8 @@ use App\Evaluacion;
 use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
-use App\Policies\SisgevaPolicy;
 
 class AdminController extends Controller
 {
@@ -43,27 +43,63 @@ class AdminController extends Controller
      */
     public function gestion($id = 0){ 
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $user = Auth::user();
 
         if($id == 0){
             //Consultamos la api
             $categorias_padre = $this->cvucv_get_courses_categories('parent',0);
 
+            $categorias = collect();
             foreach($categorias_padre as $data){
-                $categorias[] = CategoriaDeCurso::create($data['id'],$data['parent'],$data['name'],$data['description'],$data['coursecount'],$data['visible'],$data['depth'],$data['path']);
+                if (Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$data['name']]  )) {                  
+                    $categorias[] = CategoriaDeCurso::create($data['id'],$data['parent'],$data['name'],$data['description'],$data['coursecount'],$data['visible'],$data['depth'],$data['path']);
+                }
             }  
-
+           
             //O si no, la BD
-            if(empty ($categorias_padre)){
-                $categorias = CategoriaDeCurso::where('cvucv_category_parent_id', $id)->get();
-            }else{
+            if(empty($categorias_padre) || $categorias->isEmpty()){
+                $categoriasDB = CategoriaDeCurso::where('cvucv_category_parent_id', $id)->get();
+                foreach($categoriasDB as $categoria){
+                    if (Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoria->cvucv_name]  )) {    
+                        $categorias[] = $categoria;
+                    }
+                }
+            }
+
+            if(!empty($categorias)){
                 $categorias = collect($categorias);
             }
 
         }else{
-            $categorias = CategoriaDeCurso::where('cvucv_category_parent_id', $id)->get();
+            //Tienen acceso?
+            $categoria = CategoriaDeCurso::where('id', $id)->first();
+            if(!empty($categoria) ){
+                if($categoria->cvucv_category_parent_id == 0){
+                    $categoriaSuperPadre = $categoria;
+                }else{
+                    $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
+                }
+                
+                if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+                    return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+                }
+            }
 
+            $categorias = collect();
+            $categoriasDB = CategoriaDeCurso::where('cvucv_category_parent_id', $id)->get();
+            
+            if(!$categoriasDB->isEmpty()){
+                foreach($categoriasDB as $categoria){
+                        $categorias[] = $categoria;
+
+                }
+                if(!empty($categorias)){
+                    $categorias = collect($categorias);
+                }
+            }
+            
             $cursos = Curso::where('cvucv_category_id', $id)->get();
-
+            
             if(!$cursos->isEmpty()){
                 return view('vendor.voyager.gestion.index',compact('categorias','cursos','wstoken'));
             }else{
@@ -83,6 +119,20 @@ class AdminController extends Controller
         return view('vendor.voyager.gestion.index_courses',compact('cursos','wstoken'));
     }
     public function gestion_sincronizar($id, Request $request){
+        //Tienen acceso?
+        $categoria = CategoriaDeCurso::where('id', $id)->first();
+        if(!empty($categoria) ){
+            if($categoria->cvucv_category_parent_id == 0){
+                $categoriaSuperPadre = $categoria;
+            }else{
+                $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
+            }
+            
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoriaSuperPadre->cvucv_name]  )) {    
+                return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+            }
+        }
+        
         if(isset($request->sync_courses)){
             //dd($request->sync_courses);
             return $this->gestion_sincronizar_cursos_categorias($id,$request);
@@ -186,7 +236,22 @@ class AdminController extends Controller
      * 
      */
     public function gestionar_evaluacion_categoria($id){
-        $categoria = CategoriaDeCurso::find($id);
+        /*$categoria = CategoriaDeCurso::find($id);*/
+
+        //Tienen acceso?
+        $categoria = CategoriaDeCurso::where('id', $id)->first();
+        if(!empty($categoria) ){
+            if($categoria->cvucv_category_parent_id == 0){
+                $categoriaSuperPadre = $categoria;
+            }else{
+                $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
+            }
+            
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['habilitar_evaluacion_',$categoriaSuperPadre->cvucv_name]  )) {    
+                return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+            }
+        }
+
 
         if(empty($categoria)){
             return redirect()->back()->with(['message' => "La categoría no existe. Intente, sincronizarla", 'alert-type' => 'error']);
@@ -285,11 +350,25 @@ class AdminController extends Controller
     * Y lo relacionado a ese curso
     *
     */
-    public function visualizar_curso($id){
+    public function visualizar_curso($id){        
         $curso = Curso::find($id);
 
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+
+        //Tiene permitido acceder?**********************
+        $categoria = CategoriaDeCurso::where('id', $curso->cvucv_category_id)->first();
+        if(!empty($categoria) ){
+            if($categoria->cvucv_category_parent_id == 0){
+                $categoriaSuperPadre = $categoria;
+            }else{
+                $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
+            }
+            
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+                return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+            }
         }
 
         //periodos lectivos con los cuales han evaluado este curso
@@ -380,11 +459,15 @@ class AdminController extends Controller
 
                     //Chart1. Cantidad personas que han evaluado el eva
                     $cantidadEvaluacionesCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)->count();
+                    ->where('instrumento_id',$instrumento->id)
+                    ->where('curso_id',$curso->id)->count();
                     
+
                     //Chart2. Ponderacion de la evaluacion del eva
                     $ponderacionCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)->avg('percentil_eva');
+                    ->where('instrumento_id',$instrumento->id)
+                    ->where('curso_id',$curso->id)
+                    ->avg('percentil_eva');
 
                 }
             }
@@ -470,9 +553,9 @@ class AdminController extends Controller
         return view('vendor.voyager.gestion.cursos_dashboards',
         compact(
             'curso',
-            'IndicadoresCharts',
             'periodos_collection',
             'instrumentos_collection',
+            'IndicadoresCharts',
             'cantidadEvaluacionesCursoCharts',
             'promedioPonderacionCurso'
         ));
