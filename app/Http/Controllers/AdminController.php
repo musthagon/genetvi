@@ -435,7 +435,7 @@ class AdminController extends Controller
                             ]);
                             $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->options([
                                 'title'=>[
-                                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br> del Instrumento: '.$instrumento->id
+                                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br> del Instrumento: '.$instrumento->nombre
                                 ],
                                 'subtitle'=>[
                                     'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'

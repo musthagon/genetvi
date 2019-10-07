@@ -1,18 +1,13 @@
-@extends('voyager::master')
-
-@section('page_title', __($curso->cvucv_fullname))
-
-@section('page_header')
-    <div class="container-fluid">
-        <h1 class="page-title">
-            <i class="icon voyager-settings"></i> {{$curso->cvucv_fullname}}
-        </h1>  
-    </div>
-@stop
+@extends('layouts.users')
 
 @section('content')
 
-    <main class="cd-main-content">
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+
+    
+  <main class="cd-main-content">
 		<div class="cd-tab-filter-wrapper">
 			<div class="cd-tab-filter">
 				<ul class="cd-filters">
@@ -48,6 +43,7 @@
                         {!! $promedioPonderacionCurso->container() !!}
                     </div>
                     @endif
+                    
                 @foreach($periodos_collection as $periodo_index=>$periodo)
                 @if(!empty($periodo))
                 @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
@@ -109,61 +105,61 @@
 				</div> <!-- cd-filter-block -->
 
 				
-
-				
-
-				
 			</form>
 
 			<a href="#0" class="cd-close">Cerrar</a>
 		</div> <!-- cd-filter -->
 
 		<a href="#0" class="cd-filter-trigger">Filtros</a>
-    </main> <!-- cd-main-content -->
-    
+  </main> <!-- cd-main-content -->
+
+
+
+  </div>
+  
+</section>
+
 @stop
 
-
 @section('css')
-    <link rel="stylesheet" href="/content-filter/css/reset.css"> <!-- CSS reset -->
+  <link rel="stylesheet" href="/content-filter/css/reset.css"> <!-- CSS reset -->
 	<link rel="stylesheet" href="/content-filter/css/style.css"> <!-- Resource style -->
-    <style>
+  <style>
 
-    </style>
+  </style>
 @stop
 
 @section('javascript')
-    <!-- ChartJS -->
-    <script src="/js/chart.js@2.8.0.js"></script>
-    <!-- HighCharts -->
-    <script src="/Highcharts-7.2.0/highcharts.js"></script>
-    <script src="/Highcharts-7.2.0/modules/exporting.js"></script>
-    <script src="/Highcharts-7.2.0/modules/export-data.js"></script>
-    <!-- Content Filter-->
-    <script src="/content-filter/js/modernizr.js"></script> <!-- Modernizr -->
-    <script src="/content-filter/js/jquery.mixitup.min.js"></script>
-    <script src="/content-filter/js/main.js"></script> <!-- Resource jQuery -->
 
-    @if(!empty($cantidadEvaluacionesCursoCharts))
-    {!! $cantidadEvaluacionesCursoCharts->script() !!}
-    @endif
-    @if(!empty($promedioPonderacionCurso))
-    {!! $promedioPonderacionCurso->script() !!}
-    @endif
+  <!-- HighCharts -->
+  <script src="/Highcharts-7.2.0/highcharts.js"></script>
+  <script src="/Highcharts-7.2.0/modules/exporting.js"></script>
+  <script src="/Highcharts-7.2.0/modules/export-data.js"></script>
+  <!-- Content Filter-->
+  <script src="/content-filter/js/modernizr.js"></script> <!-- Modernizr -->
+  <script src="/content-filter/js/jquery.mixitup.min.js"></script>
+  <script src="/content-filter/js/main.js"></script> <!-- Resource jQuery -->
 
-    @foreach($periodos_collection as $periodo_index=>$periodo)
-    @if(!empty($periodo))
-    @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
-    @if(!empty($instrumento))
-    @foreach($instrumento->categorias as $categoria_index=>$categoria)
-    @foreach($categoria->indicadores as $indicador_index=>$indicador)
-        {!! $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
-    @endforeach
-    @endforeach
-    @endif
-    @endforeach
-    @endif
-    @endforeach
+  @if(!empty($cantidadEvaluacionesCursoCharts))
+  {!! $cantidadEvaluacionesCursoCharts->script() !!}
+  @endif
+  @if(!empty($promedioPonderacionCurso))
+  {!! $promedioPonderacionCurso->script() !!}
+  @endif
+
+  @foreach($periodos_collection as $periodo_index=>$periodo)
+  @if(!empty($periodo))
+  @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
+  @if(!empty($instrumento))
+  @foreach($instrumento->categorias as $categoria_index=>$categoria)
+  @foreach($categoria->indicadores as $indicador_index=>$indicador)
+      {!! $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
+  @endforeach
+  @endforeach
+  @endif
+  @endforeach
+  @endif
+  @endforeach
     
  
 
@@ -172,4 +168,6 @@
             
         });
     </script>
+
+
 @stop

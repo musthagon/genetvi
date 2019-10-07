@@ -18,6 +18,10 @@ class Instrumento extends Model
         return $this->belongsToMany('App\Categoria','categorias_instrumentos','instrumento_id','categoria_id')->using('App\CategoriaInstrumento');
     }
 
+    public function roles_dirigido(){
+        return $this->belongsToMany('App\CursoParticipanteRol','instrumentos_cursos_participantes_roles','instrumento_id','curso_participante_rol_id')->using('App\InstrumentoCursoParticipanteRol');
+    }
+
     public function evaluaciones(){
         return $this->hasMany('App\Evaluacion','instrumento_id','id');
     }
@@ -44,4 +48,13 @@ class Instrumento extends Model
         return 0;
     }
 
+    public function instrumentoDirigidoaRol($rolUsuario){
+        $roles = $this->roles_dirigido;
+        foreach($roles as $rol){
+            if($rol->id == $rolUsuario){
+                return true;
+            }
+        }
+        return false;
+    }
 }

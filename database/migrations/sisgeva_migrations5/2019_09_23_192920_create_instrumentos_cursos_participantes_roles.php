@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateInstrumentos extends Migration
+class CreateInstrumentosCursosParticipantesRoles extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateInstrumentos extends Migration
      */
     public function up()
     {
-        Schema::create('instrumentos', function (Blueprint $table) {
+        Schema::create('instrumentos_cursos_participantes_roles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->longText('nombre');
-            $table->longText('descripcion');
-            $table->boolean('habilitar')->default(true);
-            $table->longText('opciones')->nullable();
+            $table->bigInteger('curso_participante_rol_id')->unsigned();
+            $table->bigInteger('instrumento_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateInstrumentos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('instrumentos');
+        Schema::dropIfExists('instrumentos_cursos_participantes_roles');
     }
 }

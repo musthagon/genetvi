@@ -29,6 +29,9 @@ Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion')->name('evaluacion');
 Route::post('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}/procesar', 'HomeController@evaluacion_procesar')->name('evaluacion_procesar');
+
+//Cursos dashboards
+Route::get('/home/curso/{id}', 'HomeController@visualizar_curso')->name('curso');
 /*
 |--------------------------------------------------------------------------
 | Voyager Routes

@@ -45,7 +45,7 @@ class Curso extends Model
         return $this->belongsTo('App\CategoriaDeCurso','cvucv_category_id','id');
     }
 
-    public function instrumentos_disponibles_usuario($user_id){
+    public function instrumentos_disponibles_usuario($user_id, $curso_id){
 
         $instrumentos_disponibles = collect();
         $user          = User::find($user_id);
@@ -64,7 +64,15 @@ class Curso extends Model
                             //3. Verificamos que el instrumento sea valido
                             if($instrumento->esValido()){
                                 //6. Verificamos que el instrumento va dirigido al usuario con ese rol
-                                if($instrumento->rol_id == $user->roles->id){
+                                $rolUsuarioCurso = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
+                                ->where('cvucv_curso_id',$curso_id)
+                                ->first()->cvucv_rol_id;
+
+                                $instrumento_dirigido_usuario = $instrumento->instrumentoDirigidoaRol($rolUsuarioCurso);
+
+                                if($instrumento_dirigido_usuario){
+
+
                                     //7. Verificamos la cantidad de intentos de evaluacion del instrumento
                                     if (!Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $this->id, $user->id, $categoria_raiz->periodo_lectivo) >= 1){
                                         $instrumentos_disponibles->push($instrumento);

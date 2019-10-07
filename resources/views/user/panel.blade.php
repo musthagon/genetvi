@@ -19,7 +19,7 @@
 <section class="content">
   <div class="row">
 
-    @if(!empty($cursos))
+    @if(!($cursosEstudiante->isEmpty()))
     <div class="col-xs-12">
       <div class="box">
         <div class="box-header">
@@ -37,20 +37,76 @@
               </tr>
             </thead>
             <tbody>
-              @foreach($cursos as $curso)
+              @foreach($cursosEstudiante as $curso)
                 <tr>
                   <td><a href="{{env('CVUCV_GET_SITE_URL').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
                   <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
                   
                   <td>
-                    <a href="#" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
-                      <i class="voyager-list"></i> Ver
+
+                    @if( !empty($curso->categoria)) 
+                      @if( !empty($curso->categoria->categoria_raiz)) 
+                        @if( !($curso->categoria->categoria_raiz->instrumentos_habilitados)->isEmpty())
+                          @if( !($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id))->isEmpty() )
+                            @foreach($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id) as $instrumento)
+                            <a href="{{ route('evaluacion', ['curso' => $curso, 'instrumento' => $instrumento]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                              <i class="voyager-list"></i> Evaluar {{$instrumento->nombre}}
+                            </a>
+                            @endforeach
+                          @else
+                            No hay acciones
+                          @endif
+
+                        @else
+                          No hay acciones
+                        @endif           
+                      @endif
+                    @endif
+                    
+                    
+                  </td>
+                </tr>
+              @endforeach
+                  
+          </table>
+
+        </div><!-- /.box-body -->
+      </div><!-- /.box -->
+    </div>
+    @endif
+
+    @if(!($cursosDocente->isEmpty()))
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Mis Cursos como Docente</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+
+          <table id="cursos-data-table2" class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($cursosDocente as $curso)
+                <tr>
+                  <td><a href="{{env('CVUCV_GET_SITE_URL').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                  <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
+                  
+                  <td>
+                    <a href="{{ route('curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                      <i class="voyager-list"></i> Ver 
                     </a>
                     @if( !empty($curso->categoria)) 
                     @if( !empty($curso->categoria->categoria_raiz)) 
                     @if( !empty($curso->categoria->categoria_raiz->instrumentos_habilitados))
-                    @if(!empty ($curso->instrumentos_disponibles_usuario(Auth::user()->id)))
-                      @foreach($curso->instrumentos_disponibles_usuario(Auth::user()->id) as $instrumento)
+                    @if(!empty ($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id)))
+                      @foreach($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id) as $instrumento)
                       <a href="{{ route('evaluacion', ['curso' => $curso, 'instrumento' => $instrumento]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
                         <i class="voyager-list"></i> Evaluar {{$instrumento->nombre}}
                       </a>
@@ -94,7 +150,7 @@
     $(function (){
       
 
-      $('#cursos-data-table').DataTable({
+      $('#cursos-data-table, #cursos-data-table2').DataTable({
         'paging'      : false,
         'lengthChange': false,
         'searching'   : false,
