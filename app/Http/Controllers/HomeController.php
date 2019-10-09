@@ -266,6 +266,7 @@ class HomeController extends Controller
     *
     */
     public function visualizar_curso($id){        
+        
         $curso = Curso::find($id);
         
         if(empty($curso)){

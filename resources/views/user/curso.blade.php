@@ -88,9 +88,15 @@
                                 @foreach($participantes as $participante)
                                     <tr>
                                     <td>
-                                        <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$participante['id']}}&course={{$curso->id}}">
+                                        <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$participante['id']}}&course={{$curso->id}}" target="_blank">
                                         <div class="pull-left image">
-                                            <img src="{{$participante['profileimageurlsmall']}}" class="img-circle" alt="User Image">
+
+                                            @if( strpos( $participante['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')) ) !== false )
+                                                <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($participante['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')))}}/user/icon/f2?token={{env('CVUCV_ADMIN_TOKEN',setting('site.CVUCV_ADMIN_TOKEN'))}}" class="img-circle" alt="User Image"> 
+                                            @else
+                                                <img src="{{$participante['profileimageurlsmall']}}" class="img-circle" alt="User Image">
+                                            @endif
+
                                         </div>{{$participante['fullname']}}
                                         </a>
                                     </td>
