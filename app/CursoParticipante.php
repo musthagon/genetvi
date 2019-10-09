@@ -25,4 +25,8 @@ class CursoParticipante extends Model
         ->first();
     }
 
+    public function usuario(){
+        return $this->belongsTo('App\User','user_id','id');
+    }
+
 }

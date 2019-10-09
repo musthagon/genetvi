@@ -165,7 +165,7 @@ class AdminController extends Controller
                 $nueva_categoria->cvucv_path                 = $categoria['path'];
                 $nueva_categoria->cvucv_depth                = $categoria['depth'];
                 $nueva_categoria->cvucv_visible              = $categoria['visible'];
-                $nueva_categoria->cvucv_link                 = env("CVUCV_GET_SITE_URL")."/moodle/course/index.php?categoryid=".$categoria['id'];
+                $nueva_categoria->cvucv_link                 = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/moodle/course/index.php?categoryid=".$categoria['id'];
 
                 $nueva_categoria->save();
 
@@ -197,7 +197,7 @@ class AdminController extends Controller
                 $curso->cvucv_displayname   = $data['displayname'];
                 $curso->cvucv_summary       = $data['summary'];
                 $curso->cvucv_visible       = $data['visible'];
-                $curso->cvucv_link          = env("CVUCV_GET_SITE_URL")."/course/view.php?id=".$data['id'];
+                $curso->cvucv_link          = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/course/view.php?id=".$data['id'];
 
                 $curso->save();
                 
@@ -583,7 +583,7 @@ class AdminController extends Controller
      * Obtiene los cursos por un campo
      */
     public function cvucv_get_category_courses($field,$value)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
         $params = [
@@ -603,7 +603,7 @@ class AdminController extends Controller
      *
      */
     public function cvucv_get_users_courses($user_id)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
         $params = [
@@ -622,7 +622,7 @@ class AdminController extends Controller
      *
      */
     public function cvucv_get_participantes_curso($course_id)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
         $params = [
@@ -641,7 +641,7 @@ class AdminController extends Controller
      *
      */
     public function cvucv_get_courses_categories($key = 'id', $value, $subcategories = 0){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
         $params = [

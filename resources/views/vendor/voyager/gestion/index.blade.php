@@ -41,7 +41,7 @@
                                         @foreach($cursos as $curso)
                                         <tr>
                                             <td>{{$curso->id}}</td>
-                                            <td><a href="{{env('CVUCV_GET_SITE_URL').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                                            <td><a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
                                             @php
                                                 // The Regular Expression filter
                                                 $reg_exUrl = "/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/";
@@ -107,7 +107,7 @@
                                         @foreach($categorias as $categoria)
                                         <tr>
                                             <td>{{$categoria->id}}</td>
-                                            <td><a href="{{env('CVUCV_GET_SITE_URL').'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank"> {{$categoria->cvucv_name}} </a></td>
+                                            <td><a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve').'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank"> {{$categoria->cvucv_name}} </a></td>
                                             @php
                                                 // The Regular Expression filter
                                                 $reg_exUrl = "/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/";

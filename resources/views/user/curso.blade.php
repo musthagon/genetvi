@@ -25,6 +25,7 @@
                     @endif
                     @endforeach
                     <li class="filter" data-filter=".general"><a href="#0" data-type="general">Otros</a></li>
+                    <li class="filter" data-filter=".participantes"><a href="#0" data-type="participantes">Participantes</a></li>
 					
 				</ul> <!-- cd-filters -->
 			</div> <!-- cd-tab-filter -->
@@ -44,28 +45,65 @@
                     </div>
                     @endif
                     
-                @foreach($periodos_collection as $periodo_index=>$periodo)
-                @if(!empty($periodo))
-                @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
-                @if(!empty($instrumento))
-                @foreach($instrumento->categorias as $categoria_index=>$categoria)
-                @foreach($categoria->indicadores as $indicador_index=>$indicador)
-                    @php
-                        $periodo_string = str_replace(' ', '_', $periodo->nombre);
-                        $instrumento_string = str_replace(' ', '_', $instrumento->nombre);
-                        $categoria_string = str_replace(' ', '_', $categoria->nombre);
-                        $indicador_string = str_replace(' ', '_', $indicador->nombre);
-                    @endphp
+                    @foreach($periodos_collection as $periodo_index=>$periodo)
+                    @if(!empty($periodo))
+                    @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
+                    @if(!empty($instrumento))
+                    @foreach($instrumento->categorias as $categoria_index=>$categoria)
+                    @foreach($categoria->indicadores as $indicador_index=>$indicador)
+                        @php
+                            $periodo_string = str_replace(' ', '_', $periodo->nombre);
+                            $instrumento_string = str_replace(' ', '_', $instrumento->nombre);
+                            $categoria_string = str_replace(' ', '_', $categoria->nombre);
+                            $indicador_string = str_replace(' ', '_', $indicador->nombre);
+                        @endphp
 
                     <div class="chartTarget col-md-6 mix {{$periodo_string}} {{$instrumento_string}} {{$categoria_string}} {{$indicador_string}}">
                         {!! $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
                     </div>
-                @endforeach
-                @endforeach
-                @endif
-                @endforeach
-                @endif
-                @endforeach
+                    @endforeach
+                    @endforeach
+                    @endif
+                    @endforeach
+                    @endif
+                    @endforeach
+
+                    @if(!empty($participantes))
+                        <div class="chartTarget col-xs-12 mix participantes">
+                        <div class="box">
+                            <div class="box-header">
+                            <h3 class="box-title">Participantes del curso</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+
+                            <table id="cursos-data-table" class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($participantes as $participante)
+                                    <tr>
+                                    <td>{{$participante['fullname']}}</td>
+                                    <td>1</td>
+                                    
+                                    <td>                                        
+                                        2
+                                    </td>
+                                    </tr>
+                                @endforeach
+                                    
+                            </table>
+
+                            </div><!-- /.box-body -->
+                        </div><!-- /.box -->
+                        </div>
+                    @endif
+
                 </div>
             </section>
 			
@@ -123,13 +161,15 @@
 
 @section('css')
   <link rel="stylesheet" href="/content-filter/css/reset.css"> <!-- CSS reset -->
-	<link rel="stylesheet" href="/content-filter/css/style.css"> <!-- Resource style -->
-  <style>
+  <link rel="stylesheet" href="/content-filter/css/style.css"> <!-- Resource style -->
 
-  </style>
+  <link rel="stylesheet" href="/css/linkert-table.css">
+  <link rel="stylesheet" href="/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 @stop
 
 @section('javascript')
+  
+
 
   <!-- HighCharts -->
   <script src="/Highcharts-7.2.0/highcharts.js"></script>
@@ -162,12 +202,27 @@
   @endforeach
     
  
+<!-- DataTables -->
+  <script src="/adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>   
+  <script src="/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+  <!-- SlimScroll -->
+  <script src="/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+  <!-- FastClick -->
+  <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
+  <script>
+    $(function (){
+      
+      $('#participantes-data-table, #cursos-data-table2').DataTable({
+        'paging'      : false,
+        'lengthChange': false,
+        'searching'   : false,
+        'ordering'    : true,
+        'info'        : false,
+        'autoWidth'   : false
+      })
 
-    <script>
-        $(document).ready(function () {
-            
-        });
-    </script>
+    });
+  </script>
 
 
 @stop

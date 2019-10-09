@@ -87,4 +87,8 @@ class Curso extends Model
 
         return $instrumentos_disponibles;
     }
+
+    public function participantes(){
+        return $this->hasMany('App\CursoParticipante','cvucv_curso_id','id');
+    }
 }

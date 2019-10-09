@@ -39,7 +39,7 @@
             <tbody>
               @foreach($cursosEstudiante as $curso)
                 <tr>
-                  <td><a href="{{env('CVUCV_GET_SITE_URL').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                  <td><a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
                   <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
                   
                   <td>
@@ -95,7 +95,7 @@
             <tbody>
               @foreach($cursosDocente as $curso)
                 <tr>
-                  <td><a href="{{env('CVUCV_GET_SITE_URL').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                  <td><a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
                   <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
                   
                   <td>

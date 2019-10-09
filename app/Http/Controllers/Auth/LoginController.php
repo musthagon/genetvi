@@ -293,8 +293,8 @@ class LoginController extends Controller
 
     public function cvucv_autenticacion(Request $request)
     {
-        $endpoint = env("CVUCV_GET_USER_TOKEN");
-        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE");
+        $endpoint = env("CVUCV_GET_USER_TOKEN","https://campusvirtual.ucv.ve/moodle/login/token.php");
+        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE","moodle_mobile_app");
 
         $params = [
             'service'  => $service,
