@@ -77,23 +77,24 @@
                             <!-- /.box-header -->
                             <div class="box-body">
 
-                            <table id="cursos-data-table" class="table table-bordered table-hover">
+                            <table id="participantes-data-table" class="table table-bordered table-hover">
                                 <thead>
                                 <tr>
                                     <th>Nombre</th>
-                                    <th>Descripción</th>
-                                    <th>Acciones</th>
+                                    <th>Correo</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($participantes as $participante)
                                     <tr>
-                                    <td>{{$participante['fullname']}}</td>
-                                    <td>1</td>
-                                    
-                                    <td>                                        
-                                        2
+                                    <td>
+                                        <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$participante['id']}}&course={{$curso->id}}">
+                                        <div class="pull-left image">
+                                            <img src="{{$participante['profileimageurlsmall']}}" class="img-circle" alt="User Image">
+                                        </div>{{$participante['fullname']}}
+                                        </a>
                                     </td>
+                                    <td>{{$participante['email']}}</td>                              
                                     </tr>
                                 @endforeach
                                     
@@ -212,7 +213,7 @@
   <script>
     $(function (){
       
-      $('#participantes-data-table, #cursos-data-table2').DataTable({
+      $('#participantes-data-table').DataTable({
         'paging'      : false,
         'lengthChange': false,
         'searching'   : false,
