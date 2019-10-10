@@ -9,7 +9,10 @@
     @media (max-width: 767px){
       .box {overflow: auto;}
     }
-    
+    .obligatorio{
+      color: red;
+      font-weight: bold;
+    }
   </style>
 @stop
 
@@ -20,6 +23,7 @@
   <div class="row">
     <div class="col-xs-12">
 
+    
       <!-- Default box -->
       @if(!empty($instrumento))
       <div class="box">
@@ -28,9 +32,12 @@
         </div>
 
         <div class="box-body">
-          <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-            {{$instrumento->descripcion}}
-          </p>
+          
+
+          <blockquote >
+            <p>{{$instrumento->descripcion}}</p>
+            <small>SEDUCV</small>
+          </blockquote>
           <!-- Instru -->
           <form id="wizard" 
             action="{{ route('evaluacion_procesar', ['curso' => $curso, 'instrumento' => $instrumento]) }}" 
@@ -39,7 +46,7 @@
             <!-- CSRF TOKEN -->
             {{ csrf_field() }}
 
-            @foreach($instrumento->categorias as $categoria)
+            @foreach($instrumento->categorias as $categoriaIndex => $categoria)
             <!-- Cat -->
             <h2>{{$categoria->nombre}}</h2>
             <section>
@@ -62,26 +69,26 @@
                     </th>
                   </tr>
                   <tbody class='likert'>
-                    @foreach($categoria->indicadores as $indicador)
+                    @foreach($categoria->indicadores as $indicadorIndex => $indicador)
                     <!-- Inds -->
                     <fieldset>
                       <tr class='likert-row'>
                         <td class='question'>
-                          <legend class='likert-legend'>{{$indicador->nombre}}</legend>
+                          <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} <span class="obligatorio">*</span></legend>
                         </td>
                         <td class='responses'>
                           <table class='likert-table'>
                             <tr>
                               <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="2" @if(old($indicador->id) == 2) checked @endif>
+                                <input  name='{{$indicador->id}}' type='radio' value="2" >
                                 <label class='likert-label'>Siempre</label>
                               </td>
                               <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="1" @if(old($indicador->id) == 1) checked @endif>
+                                <input  name='{{$indicador->id}}' type='radio' value="1" >
                                 <label class='likert-label'>A veces</label>
                               </td>
                               <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="0" @if(old($indicador->id) == 0) checked @endif>
+                                <input  name='{{$indicador->id}}' type='radio' value="0" >
                                 <label class='likert-label'>Nunca</label>
                               </td>          
                             </tr>
@@ -97,7 +104,7 @@
             </section>
             @endforeach
 
-            <div class="validation-error"><label class="validation-error" style="">* Existen campos obligatorios.</label></div>
+            <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
           </form>
 
         </div>
@@ -149,6 +156,11 @@
               transitionEffect: "slide",
               onStepChanging: function (event, currentIndex, newIndex)
               {
+                  // Allways allow step back to the previous step even if the current step is not valid!
+                  if (currentIndex > newIndex){
+                      return true;
+                  }
+                
                   form.validate().settings.ignore = ":disabled,:hidden";
                   return form.valid();
               },
@@ -159,7 +171,6 @@
               },
               onFinished: function (event, currentIndex)
               {
-                  //alert("Submitted!");
                   form.submit();
               }
           });

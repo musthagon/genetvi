@@ -19,6 +19,10 @@
 .wizard ul,
 .tabcontrol ul
 {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-items: center;
     list-style: none !important;
     padding: 0;
     margin: 0;
@@ -80,6 +84,7 @@
 .wizard > .actions > ul > li
 {
     float: left;
+    flex: 1 1 400px;
 }
 
 .wizard.vertical > .steps > ul > li

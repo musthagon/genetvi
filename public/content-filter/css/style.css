@@ -327,7 +327,7 @@ xfilter
 .cd-filter {
   position: absolute;
   top: 0;
-  left: 0;
+  left: -31px;
   width: 280px;
   height: 100%;
   background: #ffffff;
@@ -349,6 +349,7 @@ xfilter
   -webkit-transition: -webkit-transform 0.3s, box-shadow 0.3s;
   -moz-transition: -moz-transform 0.3s, box-shadow 0.3s;
   transition: transform 0.3s, box-shadow 0.3s;
+  overflow: auto;
 }
 .cd-filter::before {
   /* top colored bar */

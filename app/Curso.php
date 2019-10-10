@@ -91,4 +91,8 @@ class Curso extends Model
     public function participantes(){
         return $this->hasMany('App\CursoParticipante','cvucv_curso_id','id');
     }
+
+    public function responsablesCurso(){
+        return $this->belongsToMany('App\User','cursos_participantes','cvucv_curso_id','user_id')->using('App\CursoParticipante');
+    }
 }

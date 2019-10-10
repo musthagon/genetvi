@@ -19,7 +19,7 @@
                     @foreach($periodos_collection as $periodo_index=>$periodo)
                     @if(!empty($periodo))
                         @php
-                            $periodo_string = str_replace(' ', '_', $periodo->nombre);
+                            $periodo_string     = "Periodo_".$periodo->id;
                         @endphp
                         <li class="filter" data-filter=".{{$periodo_string}}"><a href="#0" data-type="{{$periodo_string}}">{{$periodo->nombre}}</a></li>
                     @endif
@@ -44,18 +44,76 @@
                         {!! $promedioPonderacionCurso->container() !!}
                     </div>
                     @endif
+
                     
                     @foreach($periodos_collection as $periodo_index=>$periodo)
                     @if(!empty($periodo))
                     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
                     @if(!empty($instrumento))
+
+                        @php
+                            
+                            $periodo_string     = "Periodo_".$periodo->id;
+                            $instrumento_string = "Instrumento_".$instrumento->id;
+
+                        @endphp
+
+                        @if(!empty($listadoParticipantesRevisores[$periodo_index][$instrumento_index]))
+                            <div class="chartTarget col-xs-12 mix {{$periodo_string}} {{$instrumento_string}} revisores">
+                            <div class="box">
+                                <div class="box-header">
+                                <h3 class="box-title">Revisores del curso <br>Del Instrumento {{$instrumento->nombre}}<br>En el periodo lectivo {{$periodo->nombre}}</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+
+                                <table id="revisores-data-table" class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    
+
+                                    @foreach($listadoParticipantesRevisores[$periodo_index][$instrumento_index] as $revisorIndex=>$revisor)
+                                        <tr>
+                                        <td>
+                                            
+                                            <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$revisor->cvucv_id}}&course={{$curso->id}}" target="_blank">
+                                                <div class="pull-left image">
+
+                                                    @if( strpos( $revisor->avatar, env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')) ) !== false )
+                                                        <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($revisor->avatar, env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')))}}/user/icon/f1?token={{env('CVUCV_ADMIN_TOKEN',setting('site.CVUCV_ADMIN_TOKEN'))}}" class="img-circle" alt="User Image"> 
+                                                    @else
+                                                        <img src="{{$revisor->avatar}}" class="img-circle" alt="User Image">
+                                                    @endif
+
+                                                </div>{{$revisor->name}}
+                                            </a>
+                                        </td>
+                                        <td>{{$revisor->email}}</td>                              
+                                        </tr>
+                                    @endforeach
+                                      
+                                </table>
+
+                                </div><!-- /.box-body -->
+                            </div><!-- /.box -->
+                            </div>
+                        @endif
+
+
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
                         @php
-                            $periodo_string = str_replace(' ', '_', $periodo->nombre);
-                            $instrumento_string = str_replace(' ', '_', $instrumento->nombre);
-                            $categoria_string = str_replace(' ', '_', $categoria->nombre);
-                            $indicador_string = str_replace(' ', '_', $indicador->nombre);
+                            
+
+
+                            $categoria_string   = "Categoria_".$categoria->id;
+                            $indicador_string   = "Indicador_".$indicador->id;
+
                         @endphp
 
                     <div class="chartTarget col-md-6 mix {{$periodo_string}} {{$instrumento_string}} {{$categoria_string}} {{$indicador_string}}">
@@ -89,15 +147,15 @@
                                     <tr>
                                     <td>
                                         <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$participante['id']}}&course={{$curso->id}}" target="_blank">
-                                        <div class="pull-left image">
+                                            <div class="pull-left image">
 
-                                            @if( strpos( $participante['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')) ) !== false )
-                                                <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($participante['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')))}}/user/icon/f2?token={{env('CVUCV_ADMIN_TOKEN',setting('site.CVUCV_ADMIN_TOKEN'))}}" class="img-circle" alt="User Image"> 
-                                            @else
-                                                <img src="{{$participante['profileimageurlsmall']}}" class="img-circle" alt="User Image">
-                                            @endif
+                                                @if( strpos( $participante['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')) ) !== false )
+                                                    <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($participante['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')))}}/user/icon/f1?token={{env('CVUCV_ADMIN_TOKEN',setting('site.CVUCV_ADMIN_TOKEN'))}}" class="img-circle" alt="User Image"> 
+                                                @else
+                                                    <img src="{{$participante['profileimageurl']}}" class="img-circle" alt="User Image">
+                                                @endif
 
-                                        </div>{{$participante['fullname']}}
+                                            </div>{{$participante['fullname']}}
                                         </a>
                                     </td>
                                     <td>{{$participante['email']}}</td>                              
@@ -138,7 +196,11 @@
                                 <option value="">Todos</option>
                                 @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
                                 @php
-                                    $instrumento_string = str_replace(' ', '_', $instrumento->nombre);
+                                    
+                                    
+                                    $instrumento_string = "Instrumento_".$instrumento->id;
+                                    /*$categoria_string   = "Categoria_".$categoria->id;
+                                    $indicador_string   = "Indicador_".$indicador->id;*/
                                 @endphp
                                 @if(!empty($instrumento))
                                 <option value=".{{$instrumento_string}} ">{{$instrumento->nombre}}</option>
@@ -147,8 +209,67 @@
 							</select>
 						</div> <!-- cd-select -->
 					</div> <!-- cd-filter-content -->
+                </div> <!-- cd-filter-block -->
+                
+                <div class="cd-filter-block">
+					<h4>Categorías de los Instrumentos</h4>
+
+					<ul class="cd-filter-content cd-filters list">
+						
+
+                        @foreach($categorias_collection as $categoria_index=>$categoria)
+                    
+                            @php
+                                $categoria_string   = "Categoria_".$categoria->id;
+                            @endphp
+
+                            <li>
+                                <input class="filter" data-filter=".{{$categoria_string}}" type="checkbox" id="{{$categoria_string}}">
+                                <label class="checkbox-label" for="{{$categoria_string}}">{{$categoria->nombre}}</label>
+                            </li>
+
+                        @endforeach
+
+					</ul> <!-- cd-filter-content -->
 				</div> <!-- cd-filter-block -->
 
+                <div class="cd-filter-block">
+					<h4>Indicadores de los Instrumentos</h4>
+
+					<ul class="cd-filter-content cd-filters list">
+						              
+
+                        @foreach($indicadores_collection as $indicador_index=>$indicador)
+                            
+                            @php
+                                $indicador_string   = "Indicador_".$indicador->id;
+                            @endphp
+                            
+                            <li>
+                                <input class="filter" data-filter=".{{$indicador_string}}" type="checkbox" id="{{$indicador_string}}">
+                                <label class="checkbox-label" for="{{$indicador_string}}">{{$indicador->nombre}}</label>
+                            </li>
+
+                        @endforeach
+
+					</ul> <!-- cd-filter-content -->
+                </div> <!-- cd-filter-block -->
+                
+                <div class="cd-filter-block">
+					<h4>Revisores</h4>
+
+					<ul class="cd-filter-content cd-filters list">
+						<li>
+							<input class="filter" data-filter="" type="radio" name="radioButton" id="radio1" checked>
+							<label class="radio-label" for="radio1">Todos</label>
+						</li>
+
+						<li>
+							<input class="filter" data-filter=".revisores" type="radio" name="radioButton" id="revisores">
+							<label class="radio-label" for="revisores">Revisores</label>
+						</li>
+					</ul> <!-- cd-filter-content -->
+				</div> <!-- cd-filter-block -->
 				
 			</form>
 
@@ -219,7 +340,7 @@
   <script>
     $(function (){
       
-      $('#participantes-data-table').DataTable({
+      $('#participantes-data-table', '#revisores-data-table').DataTable({
         'paging'      : false,
         'lengthChange': false,
         'searching'   : false,
