@@ -108,6 +108,7 @@
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
                         @php
+
                             $categoria_string   = "Categoria_".$categoria->id;
                             $indicador_string   = "Indicador_".$indicador->id;
 
@@ -194,10 +195,8 @@
                                 @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
                                 @php
                                     
-                                    
                                     $instrumento_string = "Instrumento_".$instrumento->id;
-                                    /*$categoria_string   = "Categoria_".$categoria->id;
-                                    $indicador_string   = "Indicador_".$indicador->id;*/
+
                                 @endphp
                                 @if(!empty($instrumento))
                                 <option value=".{{$instrumento_string}} ">{{$instrumento->nombre}}</option>
