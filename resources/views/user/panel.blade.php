@@ -27,6 +27,28 @@
 <section class="content">
   <div class="row">
 
+  @if( $cursosEstudiante->isEmpty() && $cursosDocente->isEmpty())
+      <div class="col-md-12">
+        <div class="box box-default">
+          <div class="box-header with-border">
+            <i class="fa fa-bullhorn"></i>
+
+            <h3 class="box-title">Notificaciones</h3>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+            <div class="callout callout-info">
+              <h4>No tienes cursos disponibles</h4>
+              <p>Si estas registrado en un curso en el Campus Virutal UCV y no se muestra aquí, comunícate con el docente de tu curso</p>
+            </div>
+            
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+      </div>
+    @endif
+
     @if(!($cursosEstudiante->isEmpty()))
     <div class="col-xs-12">
       <div class="box">
@@ -154,27 +176,7 @@
     </div>
     @endif
 
-    @if( $cursosEstudiante->isEmpty() && $cursosDocente->isEmpty())
-      <div class="col-md-12">
-        <div class="box box-default">
-          <div class="box-header with-border">
-            <i class="fa fa-bullhorn"></i>
-
-            <h3 class="box-title">Notificaciones</h3>
-          </div>
-          <!-- /.box-header -->
-          <div class="box-body">
-            <div class="callout callout-info">
-              <h4>No tienes cursos disponibles</h4>
-              <p>Si estas registrado en un curso en el Campus Virutal UCV y no se muestra aquí, comunícate con el docente de tu curso</p>
-            </div>
-            
-          </div>
-          <!-- /.box-body -->
-        </div>
-        <!-- /.box -->
-      </div>
-    @endif
+    
   </div>
   
 

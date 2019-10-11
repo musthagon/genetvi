@@ -16,8 +16,6 @@ class CreateIndicadores extends Migration
         Schema::create('indicadores', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('nombre');
-            $table->longText('descripcion')->nullable();
-            $table->longText('opciones')->nullable();
             $table->integer('orden')->nullable();
             $table->timestamps();
         });

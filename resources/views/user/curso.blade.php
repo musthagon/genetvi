@@ -108,9 +108,6 @@
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
                         @php
-                            
-
-
                             $categoria_string   = "Categoria_".$categoria->id;
                             $indicador_string   = "Indicador_".$indicador->id;
 
@@ -210,6 +207,22 @@
 						</div> <!-- cd-select -->
 					</div> <!-- cd-filter-content -->
                 </div> <!-- cd-filter-block -->
+
+                <div class="cd-filter-block">
+					<h4>Revisores</h4>
+
+					<ul class="cd-filter-content cd-filters list">
+						<li>
+							<input class="filter" data-filter="" type="radio" name="radioButton" id="radio1" checked>
+							<label class="radio-label" for="radio1">Todos</label>
+						</li>
+
+						<li>
+							<input class="filter" data-filter=".revisores" type="radio" name="radioButton" id="revisores">
+							<label class="radio-label" for="revisores">Revisores</label>
+						</li>
+					</ul> <!-- cd-filter-content -->
+				</div> <!-- cd-filter-block -->
                 
                 <div class="cd-filter-block">
 					<h4>Categorías de los Instrumentos</h4>
@@ -255,21 +268,7 @@
 					</ul> <!-- cd-filter-content -->
                 </div> <!-- cd-filter-block -->
                 
-                <div class="cd-filter-block">
-					<h4>Revisores</h4>
-
-					<ul class="cd-filter-content cd-filters list">
-						<li>
-							<input class="filter" data-filter="" type="radio" name="radioButton" id="radio1" checked>
-							<label class="radio-label" for="radio1">Todos</label>
-						</li>
-
-						<li>
-							<input class="filter" data-filter=".revisores" type="radio" name="radioButton" id="revisores">
-							<label class="radio-label" for="revisores">Revisores</label>
-						</li>
-					</ul> <!-- cd-filter-content -->
-				</div> <!-- cd-filter-block -->
+                
 				
 			</form>
 

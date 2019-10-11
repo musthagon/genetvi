@@ -37,6 +37,8 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){   
+        
+        
         $user = Auth::user();
 
         //Verificar sincronización de datos del usuario
@@ -66,6 +68,8 @@ class HomeController extends Controller
             }
         }
           
+        
+
         return view('user.panel', compact('cursosEstudiante','cursosDocente'));
     }
 

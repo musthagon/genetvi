@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instrumento extends Model
 {
-    protected $fillable = ['nombre','descripcion','habilitar','opciones','rol_id'];
+    protected $fillable = ['id','nombre','nombre_corto','descripcion','habilitar'];
     /**
      * The table associated with the model.
      *
