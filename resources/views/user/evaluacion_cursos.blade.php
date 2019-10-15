@@ -75,12 +75,13 @@
                       <tr class='likert-row'>
                         <td class='question'>
                           <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} <span class="obligatorio">*</span></legend>
+                          <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido</label>  
                         </td>
                         <td class='responses'>
                           <table class='likert-table'>
                             <tr>
                               <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="2" >
+                                <input  name='{{$indicador->id}}' type='radio' value="2" required>
                                 <label class='likert-label'>Siempre</label>
                               </td>
                               <td class='response styled-radio'>

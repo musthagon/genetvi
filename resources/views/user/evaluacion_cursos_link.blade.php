@@ -69,12 +69,13 @@
                       <tr class='likert-row'>
                         <td class='question'>
                           <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} <span class="obligatorio">*</span></legend>
+                          <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido</label>  
                         </td>
                         <td class='responses'>
                           <table class='likert-table'>
                             <tr>
                               <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="2" >
+                                <input  name='{{$indicador->id}}' type='radio' value="2" required>
                                 <label class='likert-label'>Siempre</label>
                               </td>
                               <td class='response styled-radio'>
@@ -84,7 +85,8 @@
                               <td class='response styled-radio'>
                                 <input  name='{{$indicador->id}}' type='radio' value="0" >
                                 <label class='likert-label'>Nunca</label>
-                              </td>          
+                              </td>   
+                                   
                             </tr>
                           </table>             
                         </td>
@@ -126,21 +128,25 @@
                     /*showErrors: function(errorMap, errorList) {
                         alert(`Your form contains ${this.numberOfInvalids()} errors`);
                     },*/
-                    invalidHandler: function(event, validator) {
+                    /*invalidHandler: function(event, validator) {
                         // 'this' refers to the form
                         var errors = validator.numberOfInvalids();
                         if (errors) {
                         var message = errors == 1
                             ? 'You missed 1 field. It has been highlighted'
                             : 'You missed ' + errors + ' fields. They have been highlighted';
-                        alert('test');
+                        alert(errors);
                         $("div.error span").html(message);
                         $("div.error").show();
                         } else {
                         $("div.error").hide();
                         }
+                    },*/
+                    errorPlacement: function errorPlacement(error, element) {  
+                        
+                        //element.insertBefore(error); 
+                    
                     },
-                    //errorPlacement: function errorPlacement(error, element) {  element.before(error); },
                     rules: {
                         @foreach($instrumento->categorias as $categoria)
                         @foreach($categoria->indicadores as $indicador)
@@ -152,23 +158,7 @@
 
 
                 });
-                form.validate({
-                    
-                    /*invalidHandler: function(event, validator) {
-                        // 'this' refers to the form
-                        var errors = validator.numberOfInvalids();
-                        if (errors) {
-                        var message = errors == 1
-                            ? 'You missed 1 field. It has been highlighted'
-                            : 'You missed ' + errors + ' fields. They have been highlighted';
-                        alert('test');
-                        $("div.error span").html(message);
-                        $("div.error").show();
-                        } else {
-                        $("div.error").hide();
-                        }
-                    }*/
-                });
+
                 form.steps({
                     headerTag: "h2",
                     bodyTag: "section",

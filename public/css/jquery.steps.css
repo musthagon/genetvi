@@ -318,13 +318,19 @@
     display: inline-block;
     margin-bottom: 0.5em;
 }
+.wizard > .content > .body label.error{
+    display: none;
+}
 
 .wizard > .content > .body label.error
 {
-    color: #8a1f11;
-    display: inline-block;
-    margin-left: 1.5em;
+    color: #ff3111;
+    /*display: inline-block;*/
+    /*margin-left: 1.5em;*/
+    font-weight: bold;
+    text-align: right;
 }
+
 
 .wizard > .actions
 {
