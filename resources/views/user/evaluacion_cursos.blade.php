@@ -28,7 +28,7 @@
       @if(!empty($instrumento))
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">{{$instrumento->nombre}}</h3>
+          <h3 class="box-title"><i class="fa fa-check"></i>{{$instrumento->nombre}}</h3>
         </div>
 
         <div class="box-body">
@@ -48,7 +48,7 @@
 
             @foreach($instrumento->categorias as $categoriaIndex => $categoria)
             <!-- Cat -->
-            <h2>{{$categoria->nombre}}</h2>
+            <h2>{{$categoria->nombre_corto}}</h2>
             <section>
               
               <table class='likert-form likert-table form-container'>

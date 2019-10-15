@@ -226,7 +226,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     @endif
   
 </script>
-
+<script>
+   window.FontAwesomeConfig = {
+      searchPseudoElements: true
+   }
+</script>
 <script src="/js/general.js"></script>
 
 @yield('javascript')

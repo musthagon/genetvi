@@ -61,8 +61,28 @@
     position: relative;
     display: block;
     width: 100%;
+
+    border-top: 1px solid #ebebeb;
+    border-bottom: 1px solid #ebebeb;
+    padding: 12px 20px;
+}
+.actions ul li a {
+    background-color: #2184be;
+}
+.actions ul li a:hover {
+    background-color: #226287;
 }
 
+.actions ul li:first-child a {
+    background: #f8f8f8;
+    color: #999;
+}
+.actions ul li:first-child a:hover {
+    background-color: #dfdfdf;
+}
+.wizard > .actions .disabled {
+    display: none;
+}
 .wizard.vertical > .steps
 {
     display: inline;
@@ -73,6 +93,17 @@
 .wizard > .steps .number
 {
     font-size: 1.429em;
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    border: 2px solid #999;
+    margin-right: 15px;
+    align-items: center;
+    padding: 5px;
+    position: relative;
+    display: flex;
+    text-align: center;
+    justify-content: center;
 }
 
 .wizard > .steps > ul > li
@@ -84,7 +115,16 @@
 .wizard > .actions > ul > li
 {
     float: left;
-    flex: 1 1 400px;
+    flex: 1 1 100px;
+    /*width: 96px;
+    height: 89px;*/
+}
+
+.wizard > .steps > ul > li{
+    border-right: 1px solid #ebebeb;
+}
+.wizard > .steps > ul > li:last-child{
+    border-right: none;
 }
 
 .wizard.vertical > .steps > ul > li
@@ -105,14 +145,20 @@
 
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
-    border-radius: 5px;
+    /*border-radius: 50%;*/
+    text-align: center;
+    display: flex;
+}
+
+.wizard > .steps > ul > li:before{
+    
 }
 
 .wizard > .steps .disabled a,
 .wizard > .steps .disabled a:hover,
 .wizard > .steps .disabled a:active
 {
-    background: #eee;
+    /*background: #eee;*/
     color: #aaa;
     cursor: default;
 }
@@ -121,26 +167,83 @@
 .wizard > .steps .current a:hover,
 .wizard > .steps .current a:active
 {
-    background: #2184be;
-    color: #fff;
+    /*background: #2184be;
+    color: #fff;*/
+    color: black;
     cursor: default;
+    font-weight: bold;
+}
+.wizard > .steps .current a > .number,
+.wizard > .steps .current a:hover > .number,
+.wizard > .steps .current a:active > .number{
+    border: 2px solid black;
+   
 }
 
 .wizard > .steps .done a,
 .wizard > .steps .done a:hover,
 .wizard > .steps .done a:active
 {
-    background: #9dc8e2;
-    color: #fff;
+    color: #1abc9c;
+}
+.wizard > .steps .done a > .number,
+.wizard > .steps .done a:hover > .number,
+.wizard > .steps .done a:active > .number{
+    font-size: 1.429em;
+    color: white;
+    border: 2px solid #1abc9c;
+}
+.wizard > .steps .done a > .number:after,
+.wizard > .steps .done a:hover > .number:after,
+.wizard > .steps .done a:active > .number:after{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: #1abc9c;
+    content: "\f00c";
+    font: normal normal normal 14px/1 FontAwesome;
+    font-weight: 900; 
+    
 }
 
 .wizard > .steps .error a,
 .wizard > .steps .error a:hover,
 .wizard > .steps .error a:active
 {
-    background: #ff3111;
-    color: #fff;
+    color: #ff3111;
 }
+.wizard > .steps .error a > .number,
+.wizard > .steps .error a:hover > .number,
+.wizard > .steps .error a:active > .number{
+    font-size: 1.429em;
+    color: white;
+    border: 2px solid #ff3111;
+}
+.wizard > .steps .error a > .number:after,
+.wizard > .steps .error a:hover > .number:after,
+.wizard > .steps .error a:active > .number:after{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: #ff3111;
+    content: "\f00d";
+    font: normal normal normal 14px/1 FontAwesome;
+    font-weight: 900; 
+    
+}
+
 
 .wizard > .content
 {
@@ -241,7 +344,9 @@
 
 .wizard > .actions > ul
 {
-    display: inline-block;
+    /*display: inline-block;*/
+    display: flex;
+    justify-content: flex-end;
     text-align: right;
 }
 
@@ -259,7 +364,7 @@
 .wizard > .actions a:hover,
 .wizard > .actions a:active
 {
-    background: #2184be;
+    /*background: #2184be;*/
     color: #fff;
     display: block;
     padding: 0.5em 1em;

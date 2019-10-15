@@ -27,6 +27,7 @@ Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
 // User Routes
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion2')->name('evaluacion2');
 Route::get('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion')->name('evaluacion');
 Route::post('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}/procesar', 'HomeController@evaluacion_procesar')->name('evaluacion_procesar');
 

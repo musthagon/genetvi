@@ -131,6 +131,60 @@ class HomeController extends Controller
         return redirect()->route('home')->with(['message' => "Error, no se puede evaluar este curso", 'alert-type' => 'error']);
         
     }
+
+    public function evaluacion2($id_curso, $id_instrumento){
+        $curso          = Curso::find($id_curso);
+        $instrumento    = Instrumento::find($id_instrumento);
+        $user           = Auth::user();
+
+        //1. Verificamos que el curso y el instrumento existan
+        if (!empty($curso) && !empty($instrumento)){ 
+
+            //2. Verificamos que el usuario este matriculado en este curso
+            if(empty(CursoParticipante::estaMatriculado($user->cvucv_id,$curso->id))){
+                return redirect()->route('home')->with(['message' => "Error, no estas matriculado a este curso", 'alert-type' => 'error']);
+            }
+            
+            //3. Verificamos que el instrumento sea valido
+            if(!$instrumento->esValido()){
+                return redirect()->route('home')->with(['message' => "Error, no puede evaluar en este momento", 'alert-type' => 'error']);
+            }
+
+            $categoria_raiz             = $curso->categoria->categoria_raiz;
+            $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+            //4. Verificamos que la categoria del curso tenga instrumentos habilitados para evaluar
+            if(!empty($instrumentos_habilitados)){
+                foreach($instrumentos_habilitados as $actual){
+                    
+                    //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
+                    if($actual->id == $instrumento->id){
+                        
+                        //6. Verificamos que el instrumento va dirigido al presente rol
+                        $rolUsuarioCurso = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
+                                ->where('cvucv_curso_id',$id_curso)
+                                ->first()->cvucv_rol_id;
+
+                        $instrumento_dirigido_usuario = $actual->instrumentoDirigidoaRol($rolUsuarioCurso);
+
+                        if(!$instrumento_dirigido_usuario){
+                            return redirect()->route('home')->with(['message' => "Error, no puede evaluar este curso", 'alert-type' => 'error']);
+                        }
+
+                        //7. Verificamos la cantidad de intentos de evaluacion del instrumento
+                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->id, $categoria_raiz->periodo_lectivo) >= 1){
+                            return redirect()->route('home')->with(['message' => "Error, ha excedido la cantidad máxima de intentos para evaluar este curso", 'alert-type' => 'error']);
+                        }
+
+                        return view('user.evaluacion_cursos_link', compact('instrumento','curso'));
+                    }
+                }
+                
+            }
+        }
+        
+        return redirect()->route('home')->with(['message' => "Error, no se puede evaluar este curso", 'alert-type' => 'error']);
+        
+    }
     public function evaluacion_procesar($id_curso, $id_instrumento,Request $request){
         $curso          = Curso::find($id_curso);
         $instrumento    = Instrumento::find($id_instrumento);

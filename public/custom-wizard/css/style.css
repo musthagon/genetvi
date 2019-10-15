@@ -1,0 +1,105 @@
+/* @extend display-flex; */
+display-flex, .form-group, .form-select, .form-radio, .form-textarea, .form-date, .form-radio-item, .form-flex, .form-date-item .select-icon, .form-date-item .select-icon i, #val, #button, .steps ul, .actions ul, .actions ul li a, .title, .number {
+  display: flex;
+  display: -webkit-flex; }
+
+/* @extend list-type-ulli; */
+list-type-ulli, ul, .actions ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0; }
+
+/* roboto-slab-300 - latin */
+@font-face {
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 300;
+  src: url("../fonts/roboto-slab/roboto-slab-v7-latin-300.eot");
+  /* IE9 Compat Modes */
+  src: local("Roboto Slab Light"), local("RobotoSlab-Light"), url("../fonts/roboto-slab/roboto-slab-v7-latin-300.eot?#iefix") format("embedded-opentype"), url("../fonts/roboto-slab/roboto-slab-v7-latin-300.woff2") format("woff2"), url("../fonts/roboto-slab/roboto-slab-v7-latin-300.woff") format("woff"), url("../fonts/roboto-slab/roboto-slab-v7-latin-300.ttf") format("truetype"), url("../fonts/roboto-slab/roboto-slab-v7-latin-300.svg#RobotoSlab") format("svg");
+  /* Legacy iOS */ }
+/* roboto-slab-regular - latin */
+@font-face {
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/roboto-slab/roboto-slab-v7-latin-regular.eot");
+  /* IE9 Compat Modes */
+  src: local("Roboto Slab Regular"), local("RobotoSlab-Regular"), url("../fonts/roboto-slab/roboto-slab-v7-latin-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/roboto-slab/roboto-slab-v7-latin-regular.woff2") format("woff2"), url("../fonts/roboto-slab/roboto-slab-v7-latin-regular.woff") format("woff"), url("../fonts/roboto-slab/roboto-slab-v7-latin-regular.ttf") format("truetype"), url("../fonts/roboto-slab/roboto-slab-v7-latin-regular.svg#RobotoSlab") format("svg");
+  /* Legacy iOS */ }
+/* roboto-slab-700 - latin */
+@font-face {
+  font-family: 'Roboto Slab';
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/roboto-slab/roboto-slab-v7-latin-700.eot");
+  /* IE9 Compat Modes */
+  src: local("Roboto Slab Bold"), local("RobotoSlab-Bold"), url("../fonts/roboto-slab/roboto-slab-v7-latin-700.eot?#iefix") format("embedded-opentype"), url("../fonts/roboto-slab/roboto-slab-v7-latin-700.woff2") format("woff2"), url("../fonts/roboto-slab/roboto-slab-v7-latin-700.woff") format("woff"), url("../fonts/roboto-slab/roboto-slab-v7-latin-700.ttf") format("truetype"), url("../fonts/roboto-slab/roboto-slab-v7-latin-700.svg#RobotoSlab") format("svg");
+  /* Legacy iOS */ }
+
+
+
+.clear {
+  clear: both; }
+
+h2 {
+  font-size: 20px;
+  color: #222;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0px;
+  padding-top: 35px; }
+
+body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #222;
+  font-weight: 400;
+  font-family: 'Roboto Slab';
+  margin: 0px;
+  background-image: url("/login_template/images/ucv.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  -moz-background-size: cover;
+  -webkit-background-size: cover;
+  -o-background-size: cover;
+  -ms-background-size: cover;
+  background-position: center center; 
+
+  /* Set a specific height */
+  min-height: 800px; 
+
+  /* Create the parallax scrolling effect */
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+
+.main {
+  padding: 95px 0; }
+
+.container {
+  width: 850px;
+  position: relative;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0px 5px 9.5px 0.5px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 5px 9.5px 0.5px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0px 5px 9.5px 0.5px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 5px 9.5px 0.5px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 5px 9.5px 0.5px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -o-border-radius: 10px;
+  -ms-border-radius: 10px; 
+  padding-bottom: 35px;
+}
+
+.obligatorio{
+  color: red;
+  font-weight: bold;
+}
