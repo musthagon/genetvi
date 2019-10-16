@@ -23,17 +23,47 @@
 
     <!-- Main css -->
     <link rel="stylesheet" href="/custom-wizard/css/style.css">
+
+    <style>
+      .hide-div{
+        display:none;
+      }
+      .show-div{
+        display:initial;
+      }
+      .descripcion{
+        padding: 50px 20px 50px 20px;
+        text-align: justify;
+      }
+      .anonimo{
+        padding: 50px 20px 0px 20px;
+        text-align: center;
+        font-style: italic;
+      }
+    </style>
 </head>
 
 <body>
-
     <div class="main">
 
         <div class="container">
-            <h2>Evaluación de {{$curso->cvucv_fullname}}</h2>
+          
+          <h2>Evaluación de {{$curso->cvucv_fullname}}</h2>
+
+          <div id="instrucciones" >
+            <div class="descripcion">
+              {{$instrumento->descripcion}}
+            </div>
+            <button id="iniciar" type="button" class="btn btn-block btn-success btn-lg">Iniciar</button>
+            <div class="anonimo">
+              Las respuestas de este instrumento son anónimas
+            </div>
+          </div>
+
+
           <!-- Instru -->
           @if(!empty($instrumento))
-          <form id="wizard" 
+          <form id="wizard" class="hide-div"
             action="{{ route('evaluacion_procesar', ['curso' => $curso, 'instrumento' => $instrumento]) }}" 
             method="POST">
 
@@ -45,7 +75,7 @@
             <h2>{{$categoria->nombre_corto}}</h2>
             <section>
               
-              <table class='likert-form likert-table form-container'>
+              <table class='likert-form likert-table form-container table-hover'>
                 <thead>
                   <tr class='likert-header'>
 
@@ -68,8 +98,10 @@
                     <fieldset>
                       <tr class='likert-row'>
                         <td class='question'>
-                          <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} <span class="obligatorio">*</span></legend>
-                          <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido</label>  
+                          <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} 
+                            <span class="obligatorio">*</span>
+                            <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido </label>
+                          </legend>
                         </td>
                         <td class='responses'>
                           <table class='likert-table'>
@@ -114,39 +146,20 @@
     
     <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
     <script type="text/javascript"  src="/js/jquery.steps.js"></script>
-    
-    
-    <!-- 
-    <script src="/custom-wizard/js/main.js"></script>-->
 
     <script>
         $(function (){
         
+          $("#iniciar").on('click', function(event){
+              $("#wizard").removeClass("hide-div");
+              $("#instrucciones").addClass("hide-div");
+          });
+
             @if(!empty($instrumento))
                 var form = $("#wizard");
                 form.validate({
-                    /*showErrors: function(errorMap, errorList) {
-                        alert(`Your form contains ${this.numberOfInvalids()} errors`);
-                    },*/
-                    /*invalidHandler: function(event, validator) {
-                        // 'this' refers to the form
-                        var errors = validator.numberOfInvalids();
-                        if (errors) {
-                        var message = errors == 1
-                            ? 'You missed 1 field. It has been highlighted'
-                            : 'You missed ' + errors + ' fields. They have been highlighted';
-                        alert(errors);
-                        $("div.error span").html(message);
-                        $("div.error").show();
-                        } else {
-                        $("div.error").hide();
-                        }
-                    },*/
-                    errorPlacement: function errorPlacement(error, element) {  
-                        
-                        //element.insertBefore(error); 
-                    
-                    },
+
+                    errorPlacement: function errorPlacement(error, element) {},
                     rules: {
                         @foreach($instrumento->categorias as $categoria)
                         @foreach($categoria->indicadores as $indicador)

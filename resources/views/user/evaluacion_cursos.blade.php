@@ -51,7 +51,7 @@
             <h2>{{$categoria->nombre_corto}}</h2>
             <section>
               
-              <table class='likert-form likert-table form-container'>
+              <table class='likert-form likert-table form-container table-hover'>
                 <thead>
                   <tr class='likert-header'>
 

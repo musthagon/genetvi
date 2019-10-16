@@ -73,10 +73,7 @@
     background-color: #226287;
 }
 
-.actions ul li:first-child a {
-    background: #f8f8f8;
-    color: #999;
-}
+
 .actions ul li:first-child a:hover {
     background-color: #dfdfdf;
 }
@@ -366,19 +363,78 @@
     margin: 0 0 0 1em;
 }
 
-.wizard > .actions a,
-.wizard > .actions a:hover,
-.wizard > .actions a:active
+.wizard > .actions a
 {
-    /*background: #2184be;*/
-    color: #fff;
+
+    /*color: #fff;
     display: block;
     padding: 0.5em 1em;
     text-decoration: none;
-
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
+    border-radius: 5px;*/
+    text-decoration: none;
+    /*width: 130px;*/
+    height: 40px;
+    background: linear-gradient(to bottom, #4eb5e5 0%,#389ed5 100%);
+    border: none;
     border-radius: 5px;
+    position: relative;
+    border-bottom: 4px solid #2b8bc6;
+    color: #fbfbfb;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    font-size: 15px;
+    text-align: left;
+    text-indent: 5px;
+    box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+.wizard > .actions a:after
+{
+    content: "";
+    width: 0;
+    height: 0;
+    display: block;
+    border-top: 20px solid #187dbc;
+    border-bottom: 20px solid #187dbc;
+    border-left: 16px solid transparent;
+    border-right: 20px solid #187dbc;
+    position: absolute;
+    opacity: 0.6;
+    right: 0;
+    top: 0;
+    border-radius: 0 5px 5px 0;
+}
+.wizard > .actions a:hover,
+.wizard > .actions a:active{
+    background: linear-gradient(to bottom, #226287 0%,#389ed5 100%);
+}
+
+/*.actions ul li:first-child a {
+    /background: #f8f8f8;
+    color: #999;
+}*/
+.wizard > .actions ul li:first-child a{
+    text-align: right;
+    padding-right: 7px;
+}
+.wizard > .actions ul li:first-child a:after{
+    content: "";
+    width: 0;
+    height: 0;
+    display: block;
+    border-top: 20px solid #187dbc;
+    border-bottom: 20px solid #187dbc;
+    border-right: 16px solid transparent;
+    border-left: 20px solid #187dbc;
+    position: absolute;
+    opacity: 0.6;
+    left: 0;
+    top: 0;
+    border-radius: 5px 0 0 5px;
 }
 
 .wizard > .actions .disabled a,
@@ -389,13 +445,6 @@
     color: #aaa;
 }
 
-.wizard > .loading
-{
-}
-
-.wizard > .loading .spinner
-{
-}
 
 
 
