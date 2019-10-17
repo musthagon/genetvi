@@ -3,7 +3,7 @@
 @section('css')
   <link rel='stylesheet' href='/css/foundation.min.css'>
   <link rel="stylesheet" href="/css/jquery.steps.css">
-  <link rel="stylesheet" href="/css/linkert-table.css">
+  
   <link rel="stylesheet" href="/adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
   <style>
     @media (max-width: 767px){
