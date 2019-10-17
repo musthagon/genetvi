@@ -19,6 +19,9 @@ class CreateInstrumentos extends Migration
             $table->longText('nombre_corto');
             $table->longText('descripcion');
             $table->boolean('habilitar')->default(true);
+            $table->boolean('anonimo')->default(true);
+            $table->boolean('puede_rechazar')->default(false);
+            $table->longText('opciones')->nullable();
             $table->timestamps();
         });
     }

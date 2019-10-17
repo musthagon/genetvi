@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEvaluaciones extends Migration
+class CreateInvitaciones extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,16 @@ class CreateEvaluaciones extends Migration
      */
     public function up()
     {
-        Schema::create('evaluaciones', function (Blueprint $table) {
+        Schema::create('invitaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->longText('respuestas')->nullable();
-            $table->float('percentil_eva', 8, 2)->unsigned()->nullable();
+            $table->string('token', 16)->unique();
+            $table->bigInteger('estatus_invitacion_id')->unsigned();
             $table->bigInteger('instrumento_id')->unsigned();
             $table->bigInteger('curso_id')->unsigned();
             $table->bigInteger('periodo_lectivo_id')->unsigned();
             $table->bigInteger('cvucv_user_id')->unsigned();
             $table->integer('usuario_id')->unsigned()->nullable();
+            
             $table->timestamps();
         });
     }
@@ -33,6 +34,6 @@ class CreateEvaluaciones extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluaciones');
+        Schema::dropIfExists('invitaciones');
     }
 }

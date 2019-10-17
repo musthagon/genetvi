@@ -30,7 +30,6 @@ class AddSisgevaConstraints extends Migration
 
         Schema::table('evaluaciones', function ($table) {
             $table->foreign('instrumento_id')->references('id')->on('instrumentos');
-            $table->foreign('usuario_id')->references('id')->on('users');
             $table->foreign('curso_id')->references('id')->on('cursos');
             $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos');
         });
@@ -39,6 +38,25 @@ class AddSisgevaConstraints extends Migration
             $table->foreign('indicador_id')->references('id')->on('indicadores')->onDelete('cascade');
             $table->foreign('categoria_id')->references('id')->on('categorias')->onDelete('cascade');
             $table->foreign('evaluacion_id')->references('id')->on('evaluaciones')->onDelete('cascade');
+        });
+
+        Schema::table('cursos_participantes', function ($table) {
+            $table->foreign('cvucv_curso_id')->references('id')->on('cursos')->onDelete('cascade');
+            $table->foreign('cvucv_rol_id')->references('id')->on('cursos_participantes_roles')->onDelete('cascade');
+        });
+
+        Schema::table('categorias_cursos', function ($table) {
+            $table->foreign('periodo_lectivo')->references('id')->on('periodos_lectivos');
+            $table->foreign('cvucv_category_parent_id')->references('id')->on('categorias_cursos')->onDelete('cascade');
+            $table->foreign('cvucv_category_super_parent_id')->references('id')->on('categorias_cursos')->onDelete('cascade');
+
+        });
+
+        Schema::table('invitaciones', function ($table) {
+            $table->foreign('instrumento_id')->references('id')->on('instrumentos');
+            $table->foreign('curso_id')->references('id')->on('cursos');
+            $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos');
+            $table->foreign('estatus_invitacion_id')->references('id')->on('estatus_invitaciones');
         });
 
     }
@@ -50,9 +68,10 @@ class AddSisgevaConstraints extends Migration
      */
     public function down()
     {           
-        Schema::table('categorias_instrumentos', function ($table) {
-            $table->dropForeign(['instrumento_id']);
-            $table->dropForeign(['categoria_id']);
+        
+        /*Schema::table('categorias_instrumentos', function ($table) {
+            $table->dropForeign('categorias_instrumentos_instrumento_id_foreign');
+            $table->dropForeign('categorias_instrumentos_categoria_id_foreign');
         });
 
         Schema::table('categorias_indicadores', function ($table) {
@@ -67,15 +86,32 @@ class AddSisgevaConstraints extends Migration
 
         Schema::table('evaluaciones', function ($table) {
             $table->dropForeign(['instrumento_id']);
-            $table->dropForeign(['usuario_id']);
             $table->dropForeign(['curso_id']);
             $table->dropForeign(['periodo_lectivo_id']);
-        });
+        });*/
 
         Schema::table('respuestas', function ($table) {
             $table->dropForeign(['indicador_id']);
             $table->dropForeign(['categoria_id']);
             $table->dropForeign(['evaluacion_id']);
+        });
+
+        Schema::table('cursos_participantes', function ($table) {
+            $table->dropForeign(['cvucv_curso_id']);
+            $table->dropForeign(['cvucv_rol_id']);
+        });
+
+        Schema::table('categorias_cursos', function ($table) {
+            $table->dropForeign(['periodo_lectivo']);
+            $table->dropForeign(['cvucv_category_parent_id']);
+            $table->dropForeign(['cvucv_category_super_parent_id']);
+        });
+
+        Schema::table('invitaciones', function ($table) {
+            $table->dropForeign(['instrumento_id']);
+            $table->dropForeign(['curso_id']);
+            $table->dropForeign(['periodo_lectivo_id']);
+            $table->dropForeign(['estatus_invitacion_id']);
         });
     }
 }

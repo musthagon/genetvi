@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCategorias extends Migration
+class CreateEstatusInvitaciones extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateCategorias extends Migration
      */
     public function up()
     {
-        Schema::create('categorias', function (Blueprint $table) {
+        Schema::create('estatus_invitaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->longText('nombre');
-            $table->longText('nombre_corto');
-            $table->longText('descripcion')->nullable();
-            $table->longText('opciones')->nullable();
-            $table->integer('orden')->nullable();
+            $table->string('nombre');
+            $table->string('nombre_corto');
+            $table->string('descripcion')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ class CreateCategorias extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categorias');
+        Schema::dropIfExists('estatus_invitaciones');
     }
 }
