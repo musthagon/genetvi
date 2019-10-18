@@ -47,8 +47,8 @@ class AddSisgevaConstraints extends Migration
 
         Schema::table('categorias_cursos', function ($table) {
             $table->foreign('periodo_lectivo')->references('id')->on('periodos_lectivos');
-            $table->foreign('cvucv_category_parent_id')->references('id')->on('categorias_cursos')->onDelete('cascade');
-            $table->foreign('cvucv_category_super_parent_id')->references('id')->on('categorias_cursos')->onDelete('cascade');
+            /*$table->foreign('cvucv_category_parent_id')->references('id')->on('categorias_cursos')->onDelete('cascade');
+            $table->foreign('cvucv_category_super_parent_id')->references('id')->on('categorias_cursos')->onDelete('cascade');*/
 
         });
 
@@ -103,8 +103,8 @@ class AddSisgevaConstraints extends Migration
 
         Schema::table('categorias_cursos', function ($table) {
             $table->dropForeign(['periodo_lectivo']);
-            $table->dropForeign(['cvucv_category_parent_id']);
-            $table->dropForeign(['cvucv_category_super_parent_id']);
+            /*$table->dropForeign(['cvucv_category_parent_id']);
+            $table->dropForeign(['cvucv_category_super_parent_id']);*/
         });
 
         Schema::table('invitaciones', function ($table) {

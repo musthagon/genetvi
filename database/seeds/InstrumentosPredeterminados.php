@@ -90,11 +90,11 @@ class InstrumentosPredeterminados extends Seeder
 
         $list_instrumentos = array(
             array(
-                "nombre"        =>"Instrumento de Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la Universidad Central de Venezuela desde la perspectiva de los Estudiantes.",
+                "nombre"        =>"Evaluación Tecnopedagógica del EVA desde la Visión Estudiante",
                 "nombre_corto"  =>"Curso como Estudiante",
                 "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma"),
             array(
-                "nombre"        =>"Instrumento de Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la Universidad Central de Venezuela desde la perspectiva de los Docentes.",
+                "nombre"        =>"Evaluación Tecnopedagógica del EVA desde la Visión Docente",
                 "nombre_corto"  =>"Curso como Docente",
                 "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma")
         );
@@ -208,15 +208,15 @@ class InstrumentosPredeterminados extends Seeder
         //Attacch categorias - instrumentos
         foreach($list_instrumentos as $nombreCorto => $instrumento){
             $instrumento = Instrumento::firstOrNew(['nombre' => $instrumento]);
-            $categoria = Categoria::firstOrNew(['nombre' => $categoria]);
+            /*$categoria = Categoria::firstOrNew(['nombre' => $categoria]);*/
             if ($instrumento->exists) {
                 
-                if ($instrumento->nombre == "Instrumento de Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la Universidad Central de Venezuela desde la perspectiva de los Estudiantes.") {
+                if ($instrumento->nombre == "Evaluación Tecnopedagógica del EVA desde la Visión Estudiante") {
                     foreach($list_categorias1 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria);
                     }
-                }else if($instrumento->nombre == "Instrumento de Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la Universidad Central de Venezuela desde la perspectiva de los Docentes.") {
+                }else if($instrumento->nombre == "Evaluación Tecnopedagógica del EVA desde la Visión Docente") {
                     foreach($list_categorias2 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria);

@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use TCG\Voyager\Traits\Seedable;
 
-class SISGEVADatabaseSeeder extends Seeder
+class GENETVIDatabaseSeeder extends Seeder
 {
     use Seedable;
 
@@ -18,5 +18,6 @@ class SISGEVADatabaseSeeder extends Seeder
     {
         $this->seed('CustomRolesSisgeva');
         $this->seed('CursosParticipantesTableSeeder');
+        $this->seed('InstrumentosPredeterminados');
     }
 }

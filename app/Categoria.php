@@ -12,7 +12,7 @@ class Categoria extends Model
      * @var string
      */
     protected $table = 'categorias';
-    protected $fillable = ['id','nombre','nombre_corto','orden'];
+    protected $fillable = ['id','nombre','nombre_corto','descripcion','opciones','orden'];
     
     public function indicadores(){
         return $this->belongsToMany('App\Indicador','categorias_indicadores','categoria_id','indicador_id')->using('App\CategoriaIndicador');
