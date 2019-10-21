@@ -485,10 +485,10 @@ class AdminController extends Controller
                     ->where('curso_id',$curso->id)
                     ->get();
                     
-                    foreach($revisores as $revisorIndex => $revisor){
+                    /*foreach($revisores as $revisorIndex => $revisor){
                         $usuario = User::find($revisor->usuario_id);
                         $listadoParticipantesRevisores [$periodo_index][$instrumento_index][$revisorIndex] = $usuario;
-                    }
+                    }*/
                     
                 }
             }
@@ -611,8 +611,7 @@ class AdminController extends Controller
             'indicadores_collection',
             'IndicadoresCharts',
             'cantidadEvaluacionesCursoCharts',
-            'promedioPonderacionCurso',
-            'listadoParticipantesRevisores'
+            'promedioPonderacionCurso'
         ));
     }
     

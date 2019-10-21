@@ -187,7 +187,8 @@ class PublicController extends Controller
         $alert_type = session()->get('alert-type'); 
 
         if( !isset($message) || !isset($alert_type)){
-            abort(404);
+            $message    = "La página que buscas, ya no se encuentra disponible.";
+            $alert_type = "Error"; 
         }
         return view('user.evaluacion_cursos_link', compact('message','alert_type'));
     }

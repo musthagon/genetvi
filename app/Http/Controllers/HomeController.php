@@ -38,38 +38,25 @@ class HomeController extends Controller
      */
     public function index(){   
         
-        
         $user = Auth::user();
 
-        //Verificar sincronización de datos del usuario
-        $cursos = $this->sync_user_courses();
+        $cursosEstudiante   = collect();
+        $cursosDocente      = collect();
 
-        $matriculacionesEstudiante= CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-                    ->where('cvucv_rol_id',5)
-                    ->get();
+        $matriculaciones= CursoParticipante::where('cvucv_user_id', $user->cvucv_id)->get();
 
-        $cursosEstudiante = collect();
-        foreach($matriculacionesEstudiante as $matriculacion){
+        foreach($matriculaciones as $matriculacion){
             $curso = Curso::find($matriculacion->cvucv_curso_id);
             if(!empty($curso)){
-                $cursosEstudiante [] = $curso;
+                if($matriculacion->cvucv_rol_id == 5){
+                    $cursosEstudiante [] = $curso;
+                }else{
+                    $cursosDocente [] = $curso;
+                }
+                
             }
         }
-
-        //Cursos que puede ver como docente
-        $matriculacionesDocente = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-                    ->where('cvucv_rol_id','!=',5)
-                    ->get();
-        $cursosDocente = collect();
-        foreach($matriculacionesDocente as $matriculacion){
-            $curso = Curso::find($matriculacion->cvucv_curso_id);
-            if(!empty($curso)){
-                $cursosDocente [] = $curso;
-            }
-        }
-          
-        
-
+                
         return view('user.panel', compact('cursosEstudiante','cursosDocente'));
     }
 
@@ -367,7 +354,7 @@ class HomeController extends Controller
         //Charts por indicadores de categora, en instrumento en un periodo lectivo
         $cantidadEvaluacionesCurso = [];
         $ponderacionCurso = [];
-        $listadoParticipantesRevisores = [];
+
         foreach($periodos_collection as $periodo_index=>$periodo){
 
             if(!empty($periodo)){
@@ -445,7 +432,7 @@ class HomeController extends Controller
                     ->avg('percentil_eva');
 
                     //Revisores del instrumento en el periodo lectivo
-                    $revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                    /*$revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
                     ->where('instrumento_id',$instrumento->id)
                     ->where('curso_id',$curso->id)
                     ->get();
@@ -453,7 +440,7 @@ class HomeController extends Controller
                     foreach($revisores as $revisorIndex => $revisor){
                         $usuario = User::find($revisor->usuario_id);
                         $listadoParticipantesRevisores [$periodo_index][$instrumento_index][$revisorIndex] = $usuario;
-                    }
+                    }*/
                     
                 }
             }
@@ -576,24 +563,20 @@ class HomeController extends Controller
             'indicadores_collection',
             'IndicadoresCharts',
             'cantidadEvaluacionesCursoCharts',
-            'promedioPonderacionCurso',
-            'listadoParticipantesRevisores'
+            'promedioPonderacionCurso'
         ));
     }
 
-    public function sync_user_courses(){
+    public function sync_user_courses(&$cursosEstudiante, &$cursosDocente ){
         $user = Auth::user();
 
+        //Consultamos los cursos del usuario
         $cursos_cvucv = $this->cvucv_get_users_courses($user->cvucv_id);
-
-        //Construir un array de colecciones
-        foreach($cursos_cvucv as $data){
-            $cursos[] = Curso::create($data['id'],$data['shortname'],$data['category'],$data['fullname'],$data['displayname'],$data['summary'],$data['visible']);
-        }  
         
         if(!empty($cursos_cvucv)){
 
-            $cursos_array = [];
+            $cursosEstudiante   = collect();
+            $cursosDocente      = collect();
             foreach($cursos_cvucv as $data){
 
                 $curso = Curso::find($data['id']);
@@ -616,40 +599,44 @@ class HomeController extends Controller
                     $curso->save();
                 }
 
-                //2. Verificamos que este matriculado en ese curso
-                $matriculacion = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-                    ->where('cvucv_curso_id', $data['id'])
-                    ->first();
-                //Si no esta, hay que matricularlo
-                if(empty($matriculacion)){
+                //2. Verificamos que este matriculado en ese curso -> Solicitamos los participantes del curso
+                $participantes_curso = $this->cvucv_get_participantes_curso($data['id']);
 
-                    $matriculacion = new CursoParticipante;
+                foreach($participantes_curso as $participante){
+                
+                    //Buscamos el usuario actual
+                    if($user->cvucv_id == $participante['id']){
+                        $matriculacion = CursoParticipante::where('cvucv_user_id', $participante['id'])
+                            ->where('cvucv_curso_id', $data['id'])
+                            ->first();
+                        //Si no esta, hay que matricularlo
+                        if(empty($matriculacion)){
+                            $matriculacion                 = new CursoParticipante;
 
-                    $matriculacion->user_id        = $user->id;
-                    $matriculacion->cvucv_user_id  = $user->cvucv_id;
-                    $matriculacion->cvucv_curso_id = $data['id'];
-                    $matriculacion->user_sync      = true;
-                    $matriculacion->curso_sync     = false;
+                            $matriculacion->user_id        = $user->id;
+                            $matriculacion->cvucv_user_id  = $participante['id'];
+                            $matriculacion->cvucv_curso_id = $data['id'];
+                            $matriculacion->user_sync      = true;
+                        }
+                        if(isset($participante['roles']) && !empty($participante['roles'])){
+                            $matriculacion->cvucv_rol_id = $participante['roles'][0]['roleid'];
 
-                    $matriculacion->save();
-
-                }else{
-                    //Ya esta syncronizada su data
-                    if(!$matriculacion->user_sync){
-                        $matriculacion->user_id     = $user->id;
-                        $matriculacion->user_sync   = true;
+                            //Es estudiante en el curso?
+                            if($participante['roles'][0]['roleid'] == 5){
+                                $cursosEstudiante->push($curso);
+                            }else{
+                                $cursosDocente->push($curso);
+                            }   
+                        }      
+                        /*$matriculacion->curso_sync   = true;*/
                         $matriculacion->save();
+
+                        break;
                     }
-                }
-
-                array_push($cursos_array, $curso);
+                }                     
             }
-            return $cursos_array;
-        }else{
-            return null;
+            
         }
-
-        return $cursos;
     }
     /**
      * CURL generíco usando GuzzleHTTP
