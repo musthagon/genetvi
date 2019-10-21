@@ -41,16 +41,17 @@
                                         @foreach($cursos as $curso)
                                         <tr>
                                             <td>{{$curso->id}}</td>
-                                            <td><a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve').'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                                            <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
                                             @php
-                                                // The Regular Expression filter
-                                                $reg_exUrl = "/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/";
-                                                                                    
                                                 $text = $curso->cvucv_summary;
-
-                                                // Check if there is a url in the text
-                                                if(preg_match($reg_exUrl, $text, $url)) {
-                                                    $text = preg_replace($reg_exUrl,  $url[0]."?token=".$wstoken , $text);
+                                                preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $match);
+                                                $links = $match[0];
+                                                if(!empty($links)){
+                                                    foreach($links as $link){
+                                                        if(strpos($link, env('CVUCV_GET_WEBSERVICE_ENDPOINT2', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2')) ) !== false){
+                                                            $text = str_replace($link, $link."?token=".$wstoken, $text);
+                                                        }
+                                                    }
                                                 }
                                             @endphp
                                             
@@ -58,9 +59,22 @@
 
                                             
                                             <td class="no-sort no-click" id="bread-actions">
-                                                                                           
+                                                @if($curso->evaluacionProgreso() == true)
+                                                    <a href="#" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                        <i class="voyager-eye"></i> Ver Estatus de Evaluación
+                                                    </a>
+                                                    <a href="{{ route('curso_cerrar_evaluacion_curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-danger" style="margin-right: 5px;">
+                                                        <i class="voyager-pause"></i> Cerrar Evaluación
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('curso_iniciar_evaluacion_curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                        <i class="voyager-play"></i> Iniciar Evaluación
+                                                    </a>
+                                                @endif
+                                                
+
                                                 <a href="{{ route('curso.visualizar', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
-                                                    <i class="voyager-list"></i> Ver
+                                                    <i class="voyager-list"></i> Ver Resultados de Evaluaciones
                                                 </a>
                                             </td>
                                         </tr>
@@ -107,18 +121,19 @@
                                         @foreach($categorias as $categoria)
                                         <tr>
                                             <td>{{$categoria->id}}</td>
-                                            <td><a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve').'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank"> {{$categoria->cvucv_name}} </a></td>
+                                            <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank"> {{$categoria->cvucv_name}} </a></td>
                                             @php
-                                                // The Regular Expression filter
-                                                $reg_exUrl = "/(?i)\b((?:https?:\/\/|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/";
-                                                                                    
                                                 $text = $categoria->cvucv_description;
-
-                                                // Check if there is a url in the text
-                                                if(preg_match($reg_exUrl, $text, $url)) {
-
-                                                    $text = preg_replace($reg_exUrl,  $url[0]."?token=".$wstoken , $text);
+                                                preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $match);
+                                                $links = $match[0];
+                                                if(!empty($links)){
+                                                    foreach($links as $link){
+                                                        if(strpos($link, env('CVUCV_GET_WEBSERVICE_ENDPOINT2', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2')) ) !== false){
+                                                            $text = str_replace($link, $link."?token=".$wstoken, $text);
+                                                        }
+                                                    }
                                                 }
+                                                
                                             @endphp
                                             
                                             <td class="course_summary">{!!$text!!}</td>

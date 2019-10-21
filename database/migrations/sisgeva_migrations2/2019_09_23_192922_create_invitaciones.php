@@ -23,7 +23,7 @@ class CreateInvitaciones extends Migration
             $table->bigInteger('periodo_lectivo_id')->unsigned();
             $table->bigInteger('cvucv_user_id')->unsigned();
             $table->integer('usuario_id')->unsigned()->nullable();
-            
+            $table->integer('cantidad_recordatorios')->default(0);
             $table->timestamps();
         });
     }

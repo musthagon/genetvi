@@ -21,6 +21,7 @@ class CreateInstrumentos extends Migration
             $table->boolean('habilitar')->default(true);
             $table->boolean('anonimo')->default(true);
             $table->boolean('puede_rechazar')->default(false);
+            $table->string('invitacion_automatica')->default(true);
             $table->longText('opciones')->nullable();
             $table->timestamps();
         });

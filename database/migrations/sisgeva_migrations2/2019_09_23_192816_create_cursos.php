@@ -21,7 +21,8 @@ class CreateCursos extends Migration
             $table->longText('cvucv_displayname')->nullable();
             $table->longText('cvucv_summary')->nullable();
             $table->string('cvucv_link')->nullable();
-            $table->boolean('cvucv_visible')->default(true);           
+            $table->boolean('cvucv_visible')->default(true);
+            $table->boolean('evaluacion_activa')->default(false);               
             $table->timestamps();
 
             $table->primary('id');

@@ -12,6 +12,7 @@ use App\Evaluacion;
 use App\User;
 use App\Categoria;
 use App\Indicador;
+use App\Invitacion;
 use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -204,6 +205,9 @@ class AdminController extends Controller
 
                 $curso->save();
                 
+                /*
+                * NO SINCRONIZAR PARTICIPANTES AHORA
+                *
                 $participantes_curso = $this->cvucv_get_participantes_curso($data['id']);
 
                 //Sincronizamos sus participantes
@@ -224,7 +228,7 @@ class AdminController extends Controller
                     $matriculacion->curso_sync   = true;
                     $matriculacion->save();
 
-                }
+                }*/
 
             }              
         } catch (Exception $e) {
@@ -612,217 +616,104 @@ class AdminController extends Controller
         ));
     }
     
-    /*public function visualizar_curso($id){        
+    /*
+    * Para gestionar la evaluacion
+    *
+    */
+    public function iniciar_evaluacion_curso($id){        
         $curso = Curso::find($id);
-
+        
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        //Tiene permitido acceder?**********************
-        $categoria = CategoriaDeCurso::where('id', $curso->cvucv_category_id)->first();
-        if(!empty($categoria) ){
-            if($categoria->cvucv_category_parent_id == 0){
-                $categoriaSuperPadre = $categoria;
-            }else{
-                $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
-            }
-            
-            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
-                return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
-            }
+        $categoria_raiz             = $curso->categoria->categoria_raiz;
+        $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+
+        if($instrumentos_habilitados->isEmpty() || ($categoria_raiz->periodo_lectivo==NULL)){
+            return redirect()->back()->with(['message' => "No está habilitada la evaluación para esta facultad/centro o dependencia", 'alert-type' => 'error']);
         }
 
-        //periodos lectivos con los cuales han evaluado este curso
-        $periodos_curso = Evaluacion::where('curso_id', $curso->id)->distinct('periodo_lectivo_id')->get(['periodo_lectivo_id']);
-        $periodos_collection = [];
-        foreach($periodos_curso as $periodo_index=>$periodo){
-            $actual = PeriodoLectivo::find($periodo->periodo_lectivo_id);
-            array_push($periodos_collection, $actual);
-        }
-        //periodos lectivos con los cuales han evaluado este curso
-        $instrumentos_curso = Evaluacion::where('curso_id', $curso->id)->distinct('instrumento_id')->get(['instrumento_id']);
-        $instrumentos_collection = [];
-        $nombreInstrumentos = [];
-        foreach($instrumentos_curso as $instrumento_index=>$instrumento){
-            $actual = Instrumento::find($instrumento->instrumento_id);
-            $nombreInstrumentos[$instrumento_index] = $actual->nombre;
-            array_push($instrumentos_collection, $actual);
-        }
+        //Buscamos los participantes
+        $participantes = $this->cvucv_get_participantes_curso($curso->id);
 
-        //Opciones del instrumento
-        $opciones_instrumento = ['Siempre', 'A veces', 'Nunca']; 
+        foreach($instrumentos_habilitados as $instrumento){
+            if($instrumento->invitacion_automatica){ //El instrumento es de matriculacion automatica
+                foreach($participantes as $indexParticipante => $participante){
 
-        //Charts por indicadores de categora, en instrumento en un periodo lectivo
+                    //Verificamos que no tenga invitación previa
+                    $invitacionAnterior = Invitacion::where('curso_id', $curso->id)
+                    ->where('periodo_lectivo_id', $categoria_raiz->periodo_lectivo)
+                    ->where('cvucv_user_id', $participante['id'])
+                    ->where('instrumento_id', $instrumento->id)
+                    ->first();
 
-        $cantidadEvaluacionesCurso = [];
-        $ponderacionCurso = [];
-        foreach($periodos_collection as $periodo_index=>$periodo){
+                    //Si no tiene invitación, hay que crearla
+                    if(empty($invitacionAnterior)){
 
-            if(!empty($periodo)){
-            foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+                        //Verificamos que el instrumento va a dirigido al usuario
+                        if(isset($participante['roles']) && !empty($participante['roles'])){
 
-                //Recorremos el instrumento para realizar los charts por indicador
-                if(!empty($instrumento)){  
-                
-                    $lista_categorias = [];
-                    foreach($instrumento->categorias as $categoria_index=>$categoria){
-
-                        $lista_indicadores = [];
-                        foreach($categoria->indicadores as $indicador_index=>$indicador){
-                            $k=0;
-                            $opciones_indicador = [];
-                            foreach($opciones_instrumento as $key=>$opcion){
-                                
-                                $valor = DB::table('evaluaciones')
-                                ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
-                                ->select('evaluaciones.*', 'respuestas.*')
-                                ->where('evaluaciones.curso_id',$curso->id)
-                                ->where('evaluaciones.instrumento_id',$instrumento->id)
-                                ->where('evaluaciones.periodo_lectivo_id',$periodo->id)
-                                ->where('respuestas.indicador_id',$indicador->id)
-                                ->where('respuestas.value_string',$opcion)
-                                ->count();
-                                $opciones_indicador[$k] = $valor;
-                                $k++;
-                            }
+                            $rolUsuarioCurso = $participante['roles'][0]['roleid'];
                             
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->labels($opciones_instrumento);
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->
-                            dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id.' '.$periodo_index.$instrumento_index.$categoria_index.$indicador_index, 
-                            'pie', 
-                            $opciones_indicador)->options([
-                                "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
-                            ]);
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->options([
-                                'title'=>[
-                                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br> del Instrumento: '.$instrumento->nombre
-                                ],
-                                'subtitle'=>[
-                                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-                                ],
-                                'tooltip'=> [
-                                    'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
-                                ],
-                                'plotOptions'=> [
-                                    'pie'=> [
-                                        'allowPointSelect'=> true,
-                                        'cursor'=> 'pointer',
-                                        'dataLabels'=> [
-                                            'enabled'=> true,
-                                            'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
-                                        ],
-                                    ],                            
-                                ],
-                            ]);
+                            $instrumento_dirigido_usuario = $instrumento->instrumentoDirigidoaRol($rolUsuarioCurso);
+
+                            if($instrumento_dirigido_usuario){
+                                do {
+                                    //generate a random string using Laravel's str_random helper
+                                    $token = str_random();
+                                } //verificamos que el token no exista
+                                while (Invitacion::where('token', $token)->first());
+        
+                                //se crea la invitacion
+                                $invite = Invitacion::create([
+                                    'token'                 => $token,
+                                    'estatus_invitacion_id' => 1, //Invitacion creada
+                                    'cantidad_recordatorios' => 0, 
+                                    'tipo_invitacion'       => 'automática',
+                                    'instrumento_id'        => $instrumento->id,
+                                    'curso_id'              => $curso->id,
+                                    'periodo_lectivo_id'    => $categoria_raiz->periodo_lectivo,
+                                    'cvucv_user_id'         => $participante['id'],
+                                    /*'usuario_id'            => $token,*/
+                                    
+                                ]);
+                            }
                         }
+
+                    }else{
+                        $invitacionAnterior->estatus_invitacion_id = 3;
+                        $invitacionAnterior->cantidad_recordatorios += 1;
+                        $invitacionAnterior->save();
                     }
-
-                    //Chart1. Cantidad personas que han evaluado el eva
-                    $cantidadEvaluacionesCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)
-                    ->where('curso_id',$curso->id)->count();
-                    
-
-                    //Chart2. Ponderacion de la evaluacion del eva
-                    $ponderacionCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)
-                    ->where('curso_id',$curso->id)
-                    ->avg('percentil_eva');
-
                 }
             }
-            }
+        }
+        //Actualizamos el atributo
+        $curso->actualizarEvaluacion(true);
+        
+        return redirect()->back()->with(['message' => "Evaluación iniciada", 'alert-type' => 'success']);
+    }
+    public function cerrar_evaluacion_curso($id){
+        $curso = Curso::find($id);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        //Chart1. Cantidad personas que han evaluado el eva
-        //Chart2. Ponderacion de la evaluacion del eva
-        $cantidadEvaluacionesCursoCharts = [];
-        $promedioPonderacionCurso = [];
-        if(!empty($cantidadEvaluacionesCurso) && !empty($ponderacionCurso)){
+        //Actualizamos el atributo
+        $curso->actualizarEvaluacion(false);
 
-            $cantidadEvaluacionesCursoCharts = new indicadoresChart;
-            $cantidadEvaluacionesCursoCharts->labels($nombreInstrumentos);
-
-            $promedioPonderacionCurso = new indicadoresChart;
-            $promedioPonderacionCurso->labels($nombreInstrumentos);
-
-            foreach($periodos_collection as $periodo_index=>$periodo){
-                $cantidadEvaluacionesCursoCharts->dataset($periodo->nombre, 'bar', $cantidadEvaluacionesCurso[$periodo_index]);
-                $promedioPonderacionCurso->dataset($periodo->nombre, 'bar', $ponderacionCurso[$periodo_index]);
-            }
-            $cantidadEvaluacionesCursoCharts->options([
-                'title'=>[
-                    'text' => 'Cantidad de Evaluaciones de '.$curso->cvucv_fullname
-                ],
-                'subtitle'=>[
-                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-                ],
-                'tooltip'=> [
-                    'valueSuffix'=> ' personas'
-                ],
-                'plotOptions'=> [
-                    'bar'=> [
-                        'dataLabels'=> [
-                            'enabled'=> true,
-                        ],
-                    ],                            
-                ],
-                'yAxis'=> [
-                    'min'=> 0,
-                    'title'=> [
-                        'text'=> 'Cantidad personas que evaluaron',
-                        'align'=> 'high'
-                    ],
-                    'labels'=> [
-                        'overflow'=> 'justify'
-                    ]
-                ],
-                
-            ]);
-            $promedioPonderacionCurso->options([
-                'title'=>[
-                    'text' => 'Promedio de la Ponderacion de '.$curso->cvucv_fullname
-                ],
-                'subtitle'=>[
-                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-                ],
-                'tooltip'=> [
-                    'valueSuffix'=> ' %'
-                ],
-                'plotOptions'=> [
-                    'bar'=> [
-                        'dataLabels'=> [
-                            'enabled'=> true,
-                        ],
-                    ],                            
-                ],
-                'yAxis'=> [
-                    'min'=> 0,
-                    'title'=> [
-                        'text'=> 'Promedio ponderacion del curso',
-                        'align'=> 'high'
-                    ],
-                    'labels'=> [
-                        'overflow'=> 'justify'
-                    ]
-                ],
-                
-            ]);
+        return redirect()->back()->with(['message' => "Evaluación cerrada", 'alert-type' => 'warning']);
+    }
+    public function estatus_evaluacion_curso($id){
+        $curso = Curso::find($id);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
-
-        return view('vendor.voyager.gestion.cursos_dashboards',
-        compact(
-            'curso',
-            'periodos_collection',
-            'instrumentos_collection',
-            'IndicadoresCharts',
-            'cantidadEvaluacionesCursoCharts',
-            'promedioPonderacionCurso'
-        ));
-    }*/
-
+    }
+    
 
     /**
      * CURL generíco usando GuzzleHTTP

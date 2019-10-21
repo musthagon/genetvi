@@ -47,4 +47,12 @@ class CategoriaDeCurso extends Model
 
     }
 
+    public function disponible_para_evaluar(){
+
+        if(!$this->instrumentos_habilitados->isEmpty){
+            return true;
+        }
+        return false;
+    }
+
 }

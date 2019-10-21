@@ -19,7 +19,7 @@ class Curso extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id', 'cvucv_shortname', 'cvucv_category_id', 'cvucv_fullname', 'cvucv_displayname', 'cvucv_summary', 'cvucv_visible', 'cvucv_link', 'cvucv_participantes'];
+    protected $fillable = ['id', 'cvucv_shortname', 'cvucv_category_id', 'cvucv_fullname', 'cvucv_displayname', 'cvucv_summary', 'cvucv_link', 'cvucv_visible', 'evaluacion_activa'];
 
     public static function existe_curso($cvucv_course_id){
         return Curso::query()
@@ -94,5 +94,13 @@ class Curso extends Model
 
     public function responsablesCurso(){
         return $this->belongsToMany('App\User','cursos_participantes','cvucv_curso_id','user_id')->using('App\CursoParticipante');
+    }
+
+    public function evaluacionProgreso(){
+        return $this->evaluacion_activa;
+    }
+    public function actualizarEvaluacion(bool $value){
+        $this->evaluacion_activa = $value;
+        $this->save();
     }
 }

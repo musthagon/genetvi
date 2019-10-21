@@ -27,12 +27,19 @@ Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
 
 // User Routes
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion2')->name('evaluacion2');
 Route::get('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion')->name('evaluacion');
 Route::post('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}/procesar', 'HomeController@evaluacion_procesar')->name('evaluacion_procesar');
 
 //Cursos dashboards
 Route::get('/home/curso/{id}', 'HomeController@visualizar_curso')->name('curso');
+
+//Public evaluacion
+Route::get('/evaluar_curso/id/{token}', 'PublicController@evaluacion')->name('evaluacion_link');
+Route::post('/evaluar_curso/procesar/{invitacion}', 'PublicController@evaluacion_procesar')->name('evaluacion_link_procesar');
+Route::get('/evaluar_curso/estatus/satisfactoria', 'PublicController@message')->name('evaluacion_satisfactoria');
+Route::get('/evaluar_curso/estatus/error', 'PublicController@message')->name('evaluacion_erronea');
+
+
 /*
 |--------------------------------------------------------------------------
 | Voyager Routes
@@ -61,5 +68,10 @@ Route::group(['prefix' => 'admin'], function () {
 
     //Cursos dashboards
     Route::get('gestion/curso/{id}', 'AdminController@visualizar_curso')->name('curso.visualizar');
+
+    //Evaluación de cursos
+    Route::get('gestion/curso/{id}/iniciar_evaluacion/', 'AdminController@iniciar_evaluacion_curso')->name('curso_iniciar_evaluacion_curso');
+    Route::get('gestion/curso/{id}/finalizar_evaluacion/', 'AdminController@cerrar_evaluacion_curso')->name('curso_cerrar_evaluacion_curso');
+    Route::get('gestion/curso/{id}/estatus_evaluacion/', 'AdminController@estatus_evaluacion_curso')->name('curso_estatus_evaluacion_curso');
  });
 

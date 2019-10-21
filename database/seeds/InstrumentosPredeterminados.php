@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Indicador;
 use App\Categoria;
 use App\Instrumento;
+use App\CursoParticipanteRol;
 
 class InstrumentosPredeterminados extends Seeder
 {
@@ -14,12 +15,12 @@ class InstrumentosPredeterminados extends Seeder
      */
     public function run()
     {
-        $indicadores[0]=array(
+        /*$indicadores[0]=array(
             "¿Ha tenido experiencia participando en otros Entornos Virtuales de Aprendizaje en la UCV?",
             "¿Dispone de un computador?",
             "¿Dispone de acceso a internet que le permita participar en el Entorno Virtual de Aprendizaje?",
             "¿Dispones un dispositivo móvil inteligente con acceso a internet?",
-        );
+        );*/
         $indicadores[1]=array(
             "El docente informa sobre el perfil de ingreso, requerimientos académicos y técnicos necesarios para participar en el Entorno Virtual de Aprendizaje.",
             "Se realizan planes de inducción, preparación y apoyo a los estudiantes para participar en el Entorno Virtual de Aprendizaje.",
@@ -61,7 +62,7 @@ class InstrumentosPredeterminados extends Seeder
         );
 
         $categorias=array(
-            "Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
+            //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
@@ -73,7 +74,7 @@ class InstrumentosPredeterminados extends Seeder
         );
 
         $list_categorias1=array(
-            "Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
+            //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
@@ -81,7 +82,7 @@ class InstrumentosPredeterminados extends Seeder
         );
 
         $list_categorias2=array(
-            "Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
+            //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia (Docentes)",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
@@ -137,12 +138,12 @@ class InstrumentosPredeterminados extends Seeder
             $actual = Categoria::firstOrNew(['nombre' => $categoria]);
             if ($actual->exists) {
                 
-                if ($actual->nombre == "Dimensión Perfil de Usuario") {
+                /*if ($actual->nombre == "Dimensión Perfil de Usuario") {
                     foreach($indicadores[0] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
                         $actual->indicadores()->attach($indicador);
                     }
-                }
+                }*/
 
                 if ($actual->nombre == "Dimensión Académica - Componente Estudiantil") {
                     foreach($indicadores[1] as $indicador){
@@ -206,6 +207,9 @@ class InstrumentosPredeterminados extends Seeder
         }
 
         //Attacch categorias - instrumentos
+        $rol_estudiante = CursoParticipanteRol::where('id',5)->first();
+        $roles_docente = CursoParticipanteRol::where('id','!=',5)->get();
+
         foreach($list_instrumentos as $nombreCorto => $instrumento){
             $instrumento = Instrumento::firstOrNew(['nombre' => $instrumento]);
             /*$categoria = Categoria::firstOrNew(['nombre' => $categoria]);*/
@@ -215,13 +219,27 @@ class InstrumentosPredeterminados extends Seeder
                     foreach($list_categorias1 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria);
+                        if(!empty($rol_estudiante)){
+                            $instrumento->roles_dirigido()->attach($rol_estudiante);
+                        }
+                        
                     }
                 }else if($instrumento->nombre == "Evaluación Tecnopedagógica del EVA desde la Visión Docente") {
                     foreach($list_categorias2 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria);
+                        if(!($roles_docente->isEmpty())){
+                            foreach($roles_docente as $rol){
+                                $instrumento->roles_dirigido()->attach($rol);
+                            }
+                        }
                     }
 
+                    /*Configuracion adicional del instrumento*/
+                    $instrumento->anonimo = false;
+                    $instrumento->puede_rechazar = true;
+                    $instrumento->invitacion_automatica = false;
+                    $instrumento->save();
                 }
             }
         }

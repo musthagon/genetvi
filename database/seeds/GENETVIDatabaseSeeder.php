@@ -19,5 +19,6 @@ class GENETVIDatabaseSeeder extends Seeder
         $this->seed('CustomRolesSisgeva');
         $this->seed('CursosParticipantesTableSeeder');
         $this->seed('InstrumentosPredeterminados');
+        $this->seed('EstatusInvitacionTableSeeder');
     }
 }

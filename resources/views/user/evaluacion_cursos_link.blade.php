@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="author" content="colorlib.com">
+	  <meta name="author" content="colorlib.com">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Evaluación de {{$curso->cvucv_fullname}}<</title>
+    <title>Evaluación de @isset($curso) {{$curso->cvucv_fullname}} @else Curso @endif</title>
 
     <!-- Font Icon -->
     <link rel="stylesheet" href="/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -14,8 +14,6 @@
     <link rel="stylesheet" href="/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="/adminlte/bower_components/Ionicons/css/ionicons.min.css">
-
-    
 
     <link rel='stylesheet' href='/css/foundation.min.css'>
     <link rel="stylesheet" href="/css/jquery.steps.css">
@@ -40,6 +38,23 @@
         text-align: center;
         font-style: italic;
       }
+      .message_title{
+        font-size: 4.25rem;
+      }
+      .message_font{
+        font-size: 6.75rem;
+      }
+      .message_icon1{
+        line-height: 1;
+        color: #24b663;
+      }
+      .message_icon2{
+        line-height: 1;
+        color: red;
+      }
+      .center{
+        text-align: center;
+      }
     </style>
 </head>
 
@@ -48,92 +63,116 @@
 
         <div class="container">
           
-          <h2>Evaluación de {{$curso->cvucv_fullname}}</h2>
+          @if(isset($message) && isset($alert_type))
 
-          <div id="instrucciones" >
-            <div class="descripcion">
-              {{$instrumento->descripcion}}
-            </div>
-            <button id="iniciar" type="button" class="btn btn-block btn-success btn-lg">Iniciar</button>
-            <div class="anonimo">
-              Las respuestas de este instrumento son anónimas
+          <h2 class="message_title">{{ $alert_type }}</h2>
+
+          <div class="center" >
+
+            @if($alert_type=="gracias")
+              <i class="fa fa-check message_font message_icon1"></i>
+            @else
+              <i class="fa fa-close message_font message_icon2"></i>
+            @endif
+
+
+            <div class="descripcion center">
+              {{ $message }}
             </div>
           </div>
 
+          @elseif(isset($curso) && isset($instrumento) && isset($invitacion))
 
-          <!-- Instru -->
-          @if(!empty($instrumento))
-          <form id="wizard" class="hide-div"
-            action="{{ route('evaluacion_procesar', ['curso' => $curso, 'instrumento' => $instrumento]) }}" 
-            method="POST">
+            <h2>Evaluación de {{$curso->cvucv_fullname}}</h2>
 
-            <!-- CSRF TOKEN -->
-            {{ csrf_field() }}
+            <div id="instrucciones" >
+              <div class="descripcion">
+                {!!$instrumento->descripcion!!}
+              </div>
+              <button id="iniciar" type="button" class="btn btn-block btn-success btn-lg">Iniciar</button>
+              @if($instrumento->anonimo)
+              <div class="anonimo">
+                Las respuestas de este instrumento son anónimas
+              </div>
+              @endif
+            </div>
 
-            @foreach($instrumento->categorias as $categoriaIndex => $categoria)
-            <!-- Cat -->
-            <h2>{{$categoria->nombre_corto}}</h2>
-            <section>
-              
-              <table class='likert-form likert-table form-container table-hover'>
-                <thead>
-                  <tr class='likert-header'>
 
-                    <!-- Cat - title -->
-                    <th class='question'>{{$categoria->nombre}}</th>
-                    <th class='responses'>
-                      <table class='likert-table'>
-                        <tr>
-                          <!-- Ops -->
-                          <th class='response'>Siempre</th>
-                          <th class='response'>A veces</th>
-                          <th class='response'>Nunca</th>
+            <!-- Instru -->
+            @if(!empty($instrumento))
+            <form id="wizard" class="hide-div"
+              action="{{ route('evaluacion_link_procesar', ['invitacion' => $invitacion->id]) }}" 
+              method="POST">
+
+              <!-- CSRF TOKEN -->
+              {{ csrf_field() }}
+
+              @foreach($instrumento->categorias as $categoriaIndex => $categoria)
+              <!-- Cat -->
+              <h2>{{$categoria->nombre_corto}}</h2>
+              <section>
+                
+                <table class='likert-form likert-table form-container table-hover'>
+                  <thead>
+                    <tr class='likert-header'>
+
+                      <!-- Cat - title -->
+                      <th class='question'>{{$categoria->nombre}}</th>
+                      <th class='responses'>
+                        <table class='likert-table'>
+                          <tr>
+                            <!-- Ops -->
+                            <th class='response'>Siempre</th>
+                            <th class='response'>A veces</th>
+                            <th class='response'>Nunca</th>
+                          </tr>
+                        </table>
+                      </th>
+                    </tr>
+                    <tbody class='likert'>
+                      @foreach($categoria->indicadores as $indicadorIndex => $indicador)
+                      <!-- Inds -->
+                      <fieldset>
+                        <tr class='likert-row'>
+                          <td class='question'>
+                            <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} 
+                              <span class="obligatorio">*</span>
+                              <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido </label>
+                            </legend>
+                          </td>
+                          <td class='responses'>
+                            <table class='likert-table'>
+                              <tr>
+                                <td class='response styled-radio'>
+                                  <input  name='{{$indicador->id}}' type='radio' value="2" required>
+                                  <label class='likert-label'>Siempre</label>
+                                </td>
+                                <td class='response styled-radio'>
+                                  <input  name='{{$indicador->id}}' type='radio' value="1" >
+                                  <label class='likert-label'>A veces</label>
+                                </td>
+                                <td class='response styled-radio'>
+                                  <input  name='{{$indicador->id}}' type='radio' value="0" >
+                                  <label class='likert-label'>Nunca</label>
+                                </td>   
+                                    
+                              </tr>
+                            </table>             
+                          </td>
                         </tr>
-                      </table>
-                    </th>
-                  </tr>
-                  <tbody class='likert'>
-                    @foreach($categoria->indicadores as $indicadorIndex => $indicador)
-                    <!-- Inds -->
-                    <fieldset>
-                      <tr class='likert-row'>
-                        <td class='question'>
-                          <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} 
-                            <span class="obligatorio">*</span>
-                            <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido </label>
-                          </legend>
-                        </td>
-                        <td class='responses'>
-                          <table class='likert-table'>
-                            <tr>
-                              <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="2" required>
-                                <label class='likert-label'>Siempre</label>
-                              </td>
-                              <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="1" >
-                                <label class='likert-label'>A veces</label>
-                              </td>
-                              <td class='response styled-radio'>
-                                <input  name='{{$indicador->id}}' type='radio' value="0" >
-                                <label class='likert-label'>Nunca</label>
-                              </td>   
-                                   
-                            </tr>
-                          </table>             
-                        </td>
-                      </tr>
-                    </fieldset>
-                    @endforeach
-                  </tbody>
-                </thead>
-              </table>
+                      </fieldset>
+                      @endforeach
+                    </tbody>
+                  </thead>
+                </table>
 
-            </section>
-            @endforeach
+              </section>
+              @endforeach
 
-            <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
-          </form>
+              <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
+            </form>
+            @endif
+
           @endif
 
         </div>
