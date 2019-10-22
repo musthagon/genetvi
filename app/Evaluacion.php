@@ -16,15 +16,15 @@ class Evaluacion extends Model
     protected $fillable = ['id','respuestas','instrumento_id','curso_id','usuario_id','periodo_lectivo_id','percentil_eva'];
 
     public function instrumento()    {
-        return $this->belongsTo('App\Instrumento','categorias_instrumento_id','id');
+        return $this->belongsTo('App\Instrumento','instrumento_id','id');
     }
 
     public function curso()    {
-        return $this->belongsTo('App\Curso','categorias_instrumento_id','id');
+        return $this->belongsTo('App\Curso','curso_id','id');
     }
 
     public function usuario()    {
-        return $this->belongsTo('App\User','categorias_instrumento_id','id');
+        return $this->belongsTo('App\User','usuario_id','id');
     }
 
     public function respuestas(){

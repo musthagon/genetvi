@@ -17,7 +17,7 @@ class CreateInvitaciones extends Migration
             $table->bigIncrements('id');
             $table->string('token', 16)->unique();
             $table->bigInteger('estatus_invitacion_id')->unsigned();
-            $table->string('tipo_invitacion');
+            $table->bigInteger('tipo_invitacion_id')->unsigned();
             $table->bigInteger('instrumento_id')->unsigned();
             $table->bigInteger('curso_id')->unsigned();
             $table->bigInteger('periodo_lectivo_id')->unsigned();

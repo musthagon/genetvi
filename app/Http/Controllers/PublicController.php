@@ -26,6 +26,9 @@ class PublicController extends Controller
         if (empty($invitacion)){ 
             return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, invitación para evaluar curso inválida", 'alert-type' => 'error']);
         }
+        if ($invitacion->estatus_invitacion_id == 8){ //Invitación revocada
+            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, invitación revocada", 'alert-type' => 'error']);
+        }
         if($invitacion->invitacionCompletada()){
             return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Ya evaluaste este curso", 'alert-type' => 'error']);
         }
@@ -58,6 +61,9 @@ class PublicController extends Controller
         
         if (empty($invitacion)){ 
             return redirect()->route('evaluacion_erronea')->with(['message' => "Error, invitación para evaluar curso inválida", 'alert-type' => 'error']);
+        }
+        if ($invitacion->estatus_invitacion_id == 8){ //Invitación revocada
+            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, invitación revocada", 'alert-type' => 'error']);
         }
         if($invitacion->invitacionCompletada()){
             return redirect()->route('evaluacion_erronea')->with(['message' => "Ya evaluaste este curso", 'alert-type' => 'error']);

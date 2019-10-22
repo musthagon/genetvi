@@ -103,4 +103,7 @@ class Curso extends Model
         $this->evaluacion_activa = $value;
         $this->save();
     }
+    public function periodo_lectivo_actual(){
+        return $this->categoria->categoria_raiz->periodo_lectivo_actual;
+    }
 }

@@ -57,6 +57,7 @@ class AddSisgevaConstraints extends Migration
             $table->foreign('curso_id')->references('id')->on('cursos');
             $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos');
             $table->foreign('estatus_invitacion_id')->references('id')->on('estatus_invitaciones');
+            $table->foreign('tipo_invitacion_id')->references('id')->on('tipo_invitaciones');
         });
 
     }
@@ -112,6 +113,7 @@ class AddSisgevaConstraints extends Migration
             $table->dropForeign(['curso_id']);
             $table->dropForeign(['periodo_lectivo_id']);
             $table->dropForeign(['estatus_invitacion_id']);
+            $table->dropForeign(['tipo_invitacion_id']);
         });
     }
 }

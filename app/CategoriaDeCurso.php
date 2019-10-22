@@ -42,8 +42,10 @@ class CategoriaDeCurso extends Model
         return $this->belongsToMany('App\Instrumento','instrumentos_habilitados','categoria_id','instrumento_id')->using('App\InstrumentosHabilitados');
     }
     public function categoria_raiz(){
+        if($this->cvucv_category_super_parent_id == NULL){
+            return $this;
+        }
         return $this->belongsTo('App\CategoriaDeCurso','cvucv_category_super_parent_id','id');
-        //return $this->belongsTo('App\CategoriaDeCurso','cvucv_category_parent_id')->where('cvucv_category_parent_id',0)->with('categoria_raiz');
 
     }
 
@@ -53,6 +55,10 @@ class CategoriaDeCurso extends Model
             return true;
         }
         return false;
+    }
+
+    public function periodo_lectivo_actual()    {
+        return $this->belongsTo('App\PeriodoLectivo','periodo_lectivo','id');
     }
 
 }

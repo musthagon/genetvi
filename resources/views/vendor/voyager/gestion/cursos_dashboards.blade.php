@@ -275,6 +275,9 @@
     <script>
         $(document).ready(function () {
             
+            var table = $('#participantes-data-table').DataTable(
+                );
+
         });
     </script>
 @stop

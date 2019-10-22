@@ -20,5 +20,6 @@ class GENETVIDatabaseSeeder extends Seeder
         $this->seed('CursosParticipantesTableSeeder');
         $this->seed('InstrumentosPredeterminados');
         $this->seed('EstatusInvitacionTableSeeder');
+        $this->seed('TipoInvitacionTableSeeder');
     }
 }

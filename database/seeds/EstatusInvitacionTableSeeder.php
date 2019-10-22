@@ -74,5 +74,16 @@ class EstatusInvitacionTableSeeder extends Seeder
                     'descripcion'   => 'estatus cuando se completa la invitación'
                 ])->save();
         }
+
+        $estatus = EstatusInvitacion::firstOrNew(['id' => '8']);
+        if (!$estatus->exists) {
+            $estatus->fill([
+                    'nombre'        => 'revocada',
+                    'nombre_corto'  => 'revocada',
+                    'descripcion'   => 'estatus cuando se revoca la invitación a eliminar a dicho usuario'
+                ])->save();
+        }
+
+
     }
 }

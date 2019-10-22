@@ -669,7 +669,7 @@ class AdminController extends Controller
                                     'token'                 => $token,
                                     'estatus_invitacion_id' => 1, //Invitacion creada
                                     'cantidad_recordatorios' => 0, 
-                                    'tipo_invitacion'       => 'automática',
+                                    'tipo_invitacion_id'       => 2, //Invitacion automatica
                                     'instrumento_id'        => $instrumento->id,
                                     'curso_id'              => $curso->id,
                                     'periodo_lectivo_id'    => $categoria_raiz->periodo_lectivo,
@@ -711,9 +711,94 @@ class AdminController extends Controller
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
-    }
-    
+        
+        //Invitaciones para el periodo lectivo actual....
+        $periodo_lectivo_actual = $curso->periodo_lectivo_actual();
+        if(empty($periodo_lectivo_actual)){
+            return redirect()->back()->with(['message' => "Error, no se encuentra configurado el periodo lectivo actual", 'alert-type' => 'error']);
+        }
 
+        $invitaciones_curso = Invitacion::where('curso_id',$curso->id)->where('periodo_lectivo_id',$periodo_lectivo_actual->id)->get();
+
+        //Buscamos los participantes
+        //$participantes = $this->cvucv_get_participantes_curso($curso->id);
+
+        //Buscamos
+        $revisores = [];
+        foreach($invitaciones_curso as $invitacion_index => $invitacion){
+            $revisores[$invitacion_index] = $invitacion->user_profile();
+        }
+
+        return view('vendor.voyager.gestion.cursos_estatus_evaluacion',
+        compact(
+            'curso',
+            'periodo_lectivo_actual',
+            'invitaciones_curso',
+            'revisores'
+        ));
+    }
+    public function enviar_recordatorio($id_curso, $invitacion){        
+        $curso = Curso::find($id_curso);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+
+        //Verificamos que tenga invitación previa
+        $invitacionAnterior = Invitacion::find($invitacion);
+
+        //Si no tiene invitación
+        if(empty($invitacionAnterior)){
+            return redirect()->back()->with(['message' => "La invitación no existe", 'alert-type' => 'error']);
+        }
+
+        //Enviamos la invitacion
+        $message = $this->messageTemplate($invitacionAnterior->user_profile(), $curso, $invitacionAnterior->token);
+        $response = $this->cvucv_send_instant_message($invitacionAnterior->cvucv_user_id, $message, 1);
+
+        if(isset($response[0]['msgid'])){
+            if($response[0]['msgid'] == -1){
+                return redirect()->back()->with(['message' => "Error para enviar recordatorio, intente luego", 'alert-type' => 'error']);
+            }
+        }
+
+        //Actualizamos
+        $invitacionAnterior->estatus_invitacion_id = 3;
+        $invitacionAnterior->cantidad_recordatorios += 1;
+        $invitacionAnterior->save();
+        
+        
+        return redirect()->back()->with(['message' => "Recordatorio enviado", 'alert-type' => 'success']);
+    }
+    public function revocar_invitacion($id_curso, $invitacion){        
+        $curso = Curso::find($id_curso);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+
+        //Verificamos que tenga invitación previa
+        $invitacionAnterior = Invitacion::find($invitacion);
+
+        //Si no tiene invitación
+        if(empty($invitacionAnterior)){
+            return redirect()->back()->with(['message' => "La invitación no existe", 'alert-type' => 'error']);
+        }
+
+        //Actualizamos
+        $invitacionAnterior->estatus_invitacion_id = 8;
+        $invitacionAnterior->cantidad_recordatorios = 0;
+        $invitacionAnterior->save();
+        
+        return redirect()->back()->with(['message' => "Invitación a evaluar revocada", 'alert-type' => 'success']);
+    }
+
+    public function messageTemplate($user_profile, $curso, $token){
+        $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
+        <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
+
+        return $message;
+    }
     /**
      * CURL generíco usando GuzzleHTTP
      *
@@ -803,6 +888,27 @@ class AdminController extends Controller
             'criteria[0][key]'      => $key,
             'criteria[0][value]'    => $value,
             'addsubcategories'      => $subcategories
+        ];
+
+        $response = $this->send_curl('POST', $endpoint, $params);
+        
+        return $response;
+    }
+    /**
+     * Envia un mensaje instantaneo al usuario
+     *
+     */
+    public function cvucv_send_instant_message($user_id, $message, $format)    {
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+
+        $params = [
+            'wsfunction'                => 'core_message_send_instant_messages',
+            'wstoken'                   => $wstoken,
+            'moodlewsrestformat'        => 'json',
+            'messages[0][touserid]'     => $user_id,
+            'messages[0][text]'         => $message,
+            'messages[0][textformat]'   => $format,
         ];
 
         $response = $this->send_curl('POST', $endpoint, $params);
