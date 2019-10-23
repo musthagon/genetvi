@@ -74,6 +74,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('gestion/curso/{id}/finalizar_evaluacion/', 'AdminController@cerrar_evaluacion_curso')->name('curso_cerrar_evaluacion_curso');
     Route::get('gestion/curso/{id}/estatus_evaluacion/', 'AdminController@estatus_evaluacion_curso')->name('curso_estatus_evaluacion_curso');
 
+    Route::post('gestion/curso/{id}/estatus_evaluacion/invitar_evaluacion', 'AdminController@invitar_evaluacion_curso')->name('curso_invitar_evaluacion_curso');
+
     Route::get('gestion/curso/{id}/enviar_recordatorio/{invitacion}', 'AdminController@enviar_recordatorio')->name('curso_enviar_recordatorio');
     Route::get('gestion/curso/{id}/revocar_invitacion/{invitacion}', 'AdminController@revocar_invitacion')->name('curso_revocar_invitacion');
 

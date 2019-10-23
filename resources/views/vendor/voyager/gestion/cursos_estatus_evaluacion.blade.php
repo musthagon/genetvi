@@ -113,35 +113,45 @@
                     </div>
 
 
-                    <div class="panel panel-bordered">
-                        <div class="panel-body">
+                    <form role="form"
+                        class="form-edit-add"
+                        action="{{ route('curso_invitar_evaluacion_curso', ['id' => $curso->id]) }}"
+                        method="POST">
 
-                                <div class="page-title-content">
-                                    <h1 class="page-title page-title-custom">
-                                        <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->cvucv_fullname}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->nombre}}</div>
-                                    </h1>
+                        <!-- CSRF TOKEN -->
+                        {{ csrf_field() }}
 
-                                </div>
+                        <div class="panel panel-bordered">
+                            <div class="panel-body">
 
-                                <form role="form"
-                                    class="form-edit-add"
-                                    action="#"
-                                    method="POST">
+                                    <div class="page-title-content">
+                                        <h1 class="page-title page-title-custom">
+                                            <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->cvucv_fullname}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->nombre}}</div>
+                                        </h1>
 
-                                    <!-- CSRF TOKEN -->
-                                    {{ csrf_field() }}
+                                    </div>
 
                                     <div class="form-group  col-md-12 ">
                                         <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
-                                        <select id="search_users" class="js-data-example-ajax form-control select2" name="users" multiple>
+                                        <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple>
                                         </select>
                                     </div>
 
-                                </form>
+                                    <div class="form-group  col-md-12 ">
+                                        <label class="control-label" for="name">Instrumentos a invitar</label>
+                                        <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple>
+                                            @foreach($instrumentos_manuales as $instrumento)
+                                            <option value="{{$instrumento->id}}">{{$instrumento->nombre}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                            </div>
 
+                            <div class="panel-footer">
+                                <button type="submit" class="btn btn-primary save">Enviar invitación para evaluar</button>
+                            </div>
                         </div>
-                    </div>
-
+                    </form>
                 </div>
             </div>
         </div>

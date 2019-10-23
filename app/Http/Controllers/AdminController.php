@@ -729,12 +729,25 @@ class AdminController extends Controller
             $revisores[$invitacion_index] = $invitacion->user_profile();
         }
 
+        //Instrumentos de matriculacion manuak
+        //periodos lectivos con los cuales han evaluado este curso
+        $invitaciones = Invitacion::where('curso_id', $curso->id)->distinct('instrumento_id')->get(['instrumento_id']);
+        $instrumentos_manuales = [];
+        foreach($invitaciones as $invitacion){
+            $actual = Instrumento::find($invitacion->instrumento_id);
+            if($actual->invitacion_automatica){
+                array_push($instrumentos_manuales, $actual);
+            }
+            
+        }
+
         return view('vendor.voyager.gestion.cursos_estatus_evaluacion',
         compact(
             'curso',
             'periodo_lectivo_actual',
             'invitaciones_curso',
-            'revisores'
+            'revisores',
+            'instrumentos_manuales'
         ));
     }
     public function enviar_recordatorio($id_curso, $invitacion){        
@@ -792,7 +805,18 @@ class AdminController extends Controller
         
         return redirect()->back()->with(['message' => "Invitación a evaluar revocada", 'alert-type' => 'success']);
     }
+    public function invitar_evaluacion_curso($id, Request $request){
+        dd($request);
+        $curso = Curso::find($id);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
 
+        
+
+        return redirect()->back()->with(['message' => "Evaluación cerrada", 'alert-type' => 'warning']);
+    }
     public function messageTemplate($user_profile, $curso, $token){
         $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
         <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
