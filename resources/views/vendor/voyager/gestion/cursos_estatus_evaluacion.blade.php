@@ -155,7 +155,6 @@
 
 @section('css')
     <link rel="stylesheet" href="/css/user_list.css">
-
     <style>
 
 
@@ -194,10 +193,6 @@
                 $('input[name="row_id"]').prop('checked', $(this).prop('checked'));
             });
 
-
-            $(".js-example-tags").select2({
-            tags: true
-            });
             
             $.ajaxSetup({
                 headers: {
@@ -206,6 +201,7 @@
             });
 
             $("#search_users").select2({
+                theme: "bootstrap",
                 language: {
                     // You can find all of the options in the language files provided in the
                     // build. They all must be functions that return the string that should be
