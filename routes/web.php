@@ -76,5 +76,8 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::get('gestion/curso/{id}/enviar_recordatorio/{invitacion}', 'AdminController@enviar_recordatorio')->name('curso_enviar_recordatorio');
     Route::get('gestion/curso/{id}/revocar_invitacion/{invitacion}', 'AdminController@revocar_invitacion')->name('curso_revocar_invitacion');
+
+    //Get users ajax
+    Route::get('campus_users', 'AdminController@campus_users')->name('campus_users');
  });
 

@@ -799,6 +799,85 @@ class AdminController extends Controller
 
         return $message;
     }
+
+    public function campus_users(Request $request){
+
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN2");
+
+        if(!isset($request->lastname)){
+            return [];
+        }
+
+        $values = preg_split('/[\s,]+/', $request->lastname, 2);
+
+        if(isset($values[0]) && isset($values[1])){
+            $nombre = "%".$values[0]."%"; 
+            $apellido = "%".$values[1]."%"; 
+
+            $params = [
+                'wsfunction'            => 'core_user_get_users',
+                'wstoken'               => $wstoken,
+                'moodlewsrestformat'    => 'json',
+                'criteria[0][key]'      => "firstname",
+                'criteria[0][value]'    => $nombre,
+                'criteria[1][key]'      => "lastname",
+                'criteria[1][value]'    => $apellido
+            ];
+        }elseif(isset($values[0])){
+            $nombre = "%".$values[0]."%";  
+
+            $params = [
+                'wsfunction'            => 'core_user_get_users',
+                'wstoken'               => $wstoken,
+                'moodlewsrestformat'    => 'json',
+                'criteria[0][key]'      => "firstname",
+                'criteria[0][value]'    => $nombre
+            ];
+        }elseif(isset($values[1])){
+            $apellido = "%".$values[1]."%"; 
+            
+            $params = [
+                'wsfunction'            => 'core_user_get_users',
+                'wstoken'               => $wstoken,
+                'moodlewsrestformat'    => 'json',
+                'criteria[0][key]'      => "lastname",
+                'criteria[0][value]'    => $apellido
+            ];
+        }else{
+            return [];
+        }
+
+        $response = $this->send_curl('POST', $endpoint, $params);
+
+        //Construimos la paginación
+        if(isset($response['users']) && isset($request->page)){
+            $page = $request->page;
+            $pagination = 20;
+
+            $offset = ($page - 1) * $pagination;
+
+            //$response;
+            $count = count($response['users']);
+
+            $users = array_slice($response['users'],$offset,$pagination);
+
+            $endCount = $offset + $pagination;
+            $morePages = $count > $endCount;
+
+            $results = array(
+                "results" => $users,
+                "pagination" => array(
+                    "more" => $morePages
+                )
+            );
+
+            return response()->json($results);
+        }
+
+        return $response;
+    
+    }
     /**
      * CURL generíco usando GuzzleHTTP
      *
@@ -915,4 +994,5 @@ class AdminController extends Controller
         
         return $response;
     }
+
 }

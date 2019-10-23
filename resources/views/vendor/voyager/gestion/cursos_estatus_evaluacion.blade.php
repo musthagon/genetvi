@@ -111,6 +111,37 @@
                             
                         </div>
                     </div>
+
+
+                    <div class="panel panel-bordered">
+                        <div class="panel-body">
+
+                                <div class="page-title-content">
+                                    <h1 class="page-title page-title-custom">
+                                        <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->cvucv_fullname}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->nombre}}</div>
+                                    </h1>
+
+                                </div>
+
+                                <form role="form"
+                                    class="form-edit-add"
+                                    action="#"
+                                    method="POST">
+
+                                    <!-- CSRF TOKEN -->
+                                    {{ csrf_field() }}
+
+                                    <div class="form-group  col-md-12 ">
+                                        <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
+                                        <select id="search_users" class="js-data-example-ajax form-control select2" name="users" multiple>
+                                        </select>
+                                    </div>
+
+                                </form>
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -123,14 +154,20 @@
 
 
 @section('css')
+    <link rel="stylesheet" href="/css/user_list.css">
 
     <style>
+
 
     </style>
 @stop
 
 @section('javascript')
+
     <script>
+        // CSRF Token
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+        
         $(document).ready(function () {
             var table = $('#dataTable').DataTable({!! json_encode(
                     array_merge([
@@ -156,6 +193,75 @@
             $('.select_all').on('click', function(e) {
                 $('input[name="row_id"]').prop('checked', $(this).prop('checked'));
             });
+
+
+            $(".js-example-tags").select2({
+            tags: true
+            });
+            
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $("#search_users").select2({
+                language: {
+                    // You can find all of the options in the language files provided in the
+                    // build. They all must be functions that return the string that should be
+                    // displayed.
+                    inputTooShort: function () {
+                        return "Mínimo 4 caracteres";
+                    }
+                },
+                ajax: {
+                    
+                    url: "{{route('campus_users')}}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            //_token: CSRF_TOKEN,
+                            lastname: params.term, // search term
+                            page: params.page || 1,
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: 'Buscar usuarios por nombre y/o apellido',
+                minimumInputLength: 2,
+                templateResult: formatRepo,
+                templateSelection: formatRepoSelection
+            });
+
+            function formatRepo (results) {
+                if (results.loading) {
+                    return results.text;
+                }
+
+                var $container = $(
+                    "<div class='select2-result-repository clearfix'>" +
+                    "<div class='select2-result-repository__avatar'><img src='" + results.profileimageurl + "' /></div>" +
+                    "<div class='select2-result-repository__meta'>" +
+                        "<div class='select2-result-repository__title'></div>" +
+                        "<div class='select2-result-repository__description'></div>" +
+                        "</div>" +
+                    "</div>" +
+                    "</div>"
+                );
+
+                $container.find(".select2-result-repository__title").text(results.fullname);
+                $container.find(".select2-result-repository__description").text(results.email);
+
+                return $container;
+            }
+
+            function formatRepoSelection (repo) {
+                return repo.fullname || repo.text;
+            }
+            
+        
+        
         });
     </script>
 @stop
