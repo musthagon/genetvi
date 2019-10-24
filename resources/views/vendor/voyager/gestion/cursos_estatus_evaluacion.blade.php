@@ -133,13 +133,13 @@
 
                                     <div class="form-group  col-md-12 ">
                                         <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
-                                        <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple>
+                                        <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
                                         </select>
                                     </div>
 
                                     <div class="form-group  col-md-12 ">
                                         <label class="control-label" for="name">Instrumentos a invitar</label>
-                                        <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple>
+                                        <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
                                             @foreach($instrumentos_manuales as $instrumento)
                                             <option value="{{$instrumento->id}}">{{$instrumento->nombre}}</option>
                                             @endforeach

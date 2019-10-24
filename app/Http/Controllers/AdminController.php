@@ -730,13 +730,12 @@ class AdminController extends Controller
         }
 
         //Instrumentos de matriculacion manuak
-        //periodos lectivos con los cuales han evaluado este curso
-        $invitaciones = Invitacion::where('curso_id', $curso->id)->distinct('instrumento_id')->get(['instrumento_id']);
+        $categoria_raiz             = $curso->categoria->categoria_raiz;
+        $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
         $instrumentos_manuales = [];
-        foreach($invitaciones as $invitacion){
-            $actual = Instrumento::find($invitacion->instrumento_id);
-            if($actual->invitacion_automatica){
-                array_push($instrumentos_manuales, $actual);
+        foreach($instrumentos_habilitados as $instrumento){
+            if(!$instrumento->invitacion_automatica){ //Instrumentos de matriculacion manual
+                array_push($instrumentos_manuales, $instrumento);
             }
             
         }
@@ -806,16 +805,59 @@ class AdminController extends Controller
         return redirect()->back()->with(['message' => "Invitación a evaluar revocada", 'alert-type' => 'success']);
     }
     public function invitar_evaluacion_curso($id, Request $request){
-        dd($request);
+        
+        if(!isset($request->users)){
+            return redirect()->back()->with(['message' => "No ha seleccionado ningún usuario para invitar a evaluar", 'alert-type' => 'error']);
+        }
+
+        if(!isset($request->instrumentos_manuales)){
+            return redirect()->back()->with(['message' => "No ha seleccionado ningún instrumento", 'alert-type' => 'error']);
+        }
         $curso = Curso::find($id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        
+        $instrumentos = $request->instrumentos_manuales;
+        $usuarios = $request->users;
+        $total_invitacion = 0 ;
+        foreach($instrumentos as $instrumentoIndex => $instrumento){
 
-        return redirect()->back()->with(['message' => "Evaluación cerrada", 'alert-type' => 'warning']);
+            $instrumentoActual = Instrumento::find($instrumento);
+            if(empty($instrumentoActual)){
+                return redirect()->back()->with(['message' => "Uno de los instrumentos seleccionados no existe", 'alert-type' => 'error']);
+            }
+            if($instrumentoActual->invitacion_automatica){
+                return redirect()->back()->with(['message' => "El instrumento: ".$instrumentoActual->nombre." no es válido", 'alert-type' => 'error']);
+            }
+
+            foreach($usuarios as $usuarioIndex => $usuario){
+
+
+                do {
+                    //generate a random string using Laravel's str_random helper
+                    $token = str_random();
+                } //verificamos que el token no exista
+                while (Invitacion::where('token', $token)->first());
+
+                //se crea la invitacion
+                Invitacion::create([
+                    'token'                     => $token,
+                    'estatus_invitacion_id'     => 1, //Invitacion creada
+                    'cantidad_recordatorios'    => 0, 
+                    'tipo_invitacion_id'        => 1, //Invitacion automatica
+                    'instrumento_id'            => $instrumentoActual->id,
+                    'curso_id'                  => $curso->id,
+                    'periodo_lectivo_id'        => $curso->periodo_lectivo_actual()->id,
+                    'cvucv_user_id'             => $usuario                    
+                ]);
+
+            }
+            $total_invitacion = ($instrumentoIndex + 1)*($usuarioIndex + 1);
+        }
+
+        return redirect()->back()->with(['message' => $total_invitacion." Usuarios invitados", 'alert-type' => 'success']);
     }
     public function messageTemplate($user_profile, $curso, $token){
         $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
