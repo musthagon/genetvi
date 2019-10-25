@@ -41,7 +41,7 @@ class Categoria extends Model
     }
     
     public function categoriaPersonalizada(){
-        return $this->indicadores_medibles;
+        return !$this->indicadores_medibles;
     }
 
     public function existenIndicadoresObligatorios(){

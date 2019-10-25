@@ -1,0 +1,1 @@
+<div class="tipo_{{$indicador->getTipo()}}">{{$indicador->getTipo()}}</div>

@@ -107,3 +107,35 @@ body {
     width: 90%;
   }
 }
+.hide-div{
+  display:none;
+}
+.show-div{
+  display:initial;
+}
+.descripcion{
+  padding: 50px 20px 50px 20px;
+  text-align: justify;
+}
+.anonimo{
+  padding: 50px 20px 0px 20px;
+  text-align: center;
+  font-style: italic;
+}
+.message_title{
+  font-size: 4.25rem;
+}
+.message_font{
+  font-size: 6.75rem;
+}
+.message_icon1{
+  line-height: 1;
+  color: #24b663;
+}
+.message_icon2{
+  line-height: 1;
+  color: red;
+}
+.center{
+  text-align: center;
+}
