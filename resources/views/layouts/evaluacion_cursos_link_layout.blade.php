@@ -19,8 +19,11 @@
     <link rel='stylesheet' href='/css/foundation.min.css'>
     <link rel="stylesheet" href="/css/jquery.steps.css">
     <link rel="stylesheet" href="/css/linkert-table.css">
-    <link rel="stylesheet" href="/select2-4.0.11/css/select2.min.css">
 
+    <!-- Select2 -->
+    <link rel="stylesheet" href="/adminlte/bower_components/select2/dist/css/select2.min.css">
+
+    <link rel="stylesheet" href="/adminlte/css/AdminLTE.min.css">
     
     <!-- Main css -->
     <link rel="stylesheet" href="/custom-wizard/css/style.css">
@@ -62,10 +65,20 @@
     <!-- JS -->
     <!-- jQuery 3 -->
     <script src="/adminlte/bower_components/jquery/dist/jquery.min.js"></script>
-    
+    <!-- Bootstrap 3.3.7 -->
+    <script src="/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- Select2 -->
+    <script src="/adminlte/bower_components/select2/dist/js/select2.full.min.js"></script>
+
+    <!-- SlimScroll -->
+    <script src="/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    <!-- FastClick -->
+    <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/adminlte/js/adminlte.min.js"></script>
+
     <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
     <script type="text/javascript"  src="/js/jquery.steps.js"></script>
-    <script type="text/javascript"  src="/select2-4.0.11/js/select2.min.js"> </script>
 
     @yield('javascript')
     @stack('javascript')

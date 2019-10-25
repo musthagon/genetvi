@@ -105,13 +105,9 @@
 
 @section('javascript')  
     <script>
-        $(document).ready(function () {
-          
-          $(".select2").select2({});
-
-        });
         $(function (){
           
+          //$('.select2').select2()
 
           $("#iniciar").on('click', function(event){
               $("#wizard").removeClass("hide-div");
