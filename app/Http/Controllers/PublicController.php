@@ -21,39 +21,34 @@ class PublicController extends Controller
 
     public function evaluacion($token){
         $invitacion     = Invitacion::where('token',$token)->first();
-        
 
+        //Verificamos la invitación
         if (empty($invitacion)){ 
-            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, invitación para evaluar curso inválida", 'alert-type' => 'error']);
+            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, invitación para evaluar curso inválida", 'alert-type' => 'error']);
         }
-        if ($invitacion->estatus_invitacion_id == 8){ //Invitación revocada
-            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, invitación revocada", 'alert-type' => 'error']);
+        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, invitación revocada", 'alert-type' => 'error']);
         }
-        if($invitacion->invitacionCompletada()){
-            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Ya evaluaste este curso", 'alert-type' => 'error']);
+        if($invitacion->invitacion_completada()){
+            return redirect()->route('evaluacion_erronea')->with(['message' => "Ya evaluaste este curso", 'alert-type' => 'error']);
         }
 
-        $curso          = Curso::find($invitacion->curso_id);
-        $instrumento    = Instrumento::find($invitacion->instrumento_id);
-        $periodo        = PeriodoLectivo::find($invitacion->periodo_lectivo_id);
+        $curso          = $invitacion->curso;
+        $instrumento    = $invitacion->instrumento;
+        $periodo        = $invitacion->periodo;
 
         if (empty($curso) || empty($instrumento) || empty($periodo)){ 
-            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, el curso o instrumento no estan disponibles en este momento", 'alert-type' => 'error']);
+            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, el curso o instrumento no estan disponibles en este momento", 'alert-type' => 'error']);
         }
 
         if(!$instrumento->esValido()){
-            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, el instrumento de evaluación no se encuentra disponible en este momento", 'alert-type' => 'error']);
+            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, el instrumento de evaluación no se encuentra disponible en este momento", 'alert-type' => 'error']);
         }
 
         //Actualizamos el estatus de la invitacion
-        if($instrumento->puede_rechazar){
-            $invitacion->estatus_invitacion_id = 4; //Invitacion aceptada
-        }else{
-            $invitacion->estatus_invitacion_id = 6; // Invitacion leída
-        }
-        $invitacion->save();
+        $invitacion->actualizar_estatus_leida();
         
-        return view('user.evaluacion_cursos_link', compact('invitacion','instrumento','curso'));
+        return view('user.evaluacion_cursos_link', compact('invitacion','curso', 'instrumento','periodo'));
                 
     }
     public function evaluacion_procesar($invitacion_id,Request $request){
@@ -80,7 +75,7 @@ class PublicController extends Controller
         //Verificamos que los campos del request no esten vacíos
         foreach($instrumento->categorias as $categorias){
             foreach($categorias->indicadores as $indicador){
-                if(!isset($request->{($indicador->id)} )){  
+                if(!isset($request->{($indicador->id)}) && $indicador->requerido() ){  
                     return redirect()->route('evaluacion_erronea')->with(['message' => "Debe completar el campo: ".$indicador->nombre, 'alert-type' => 'error']);
                 }
 

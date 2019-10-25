@@ -106,4 +106,12 @@ class Curso extends Model
     public function periodo_lectivo_actual(){
         return $this->categoria->categoria_raiz->periodo_lectivo_actual;
     }
+
+    public function getNombre(){
+        return $this->cvucv_fullname;
+    }
+
+    public function getID(){
+        return $this->id;
+    }
 }

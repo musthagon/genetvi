@@ -18,6 +18,12 @@ class Instrumento extends Model
         return $this->belongsToMany('App\Categoria','categorias_instrumentos','instrumento_id','categoria_id')->using('App\CategoriaInstrumento');
     }
 
+    public function categoriasOrdenadas(){
+        return $this->categorias->sortBy(function($categoria){
+            return $categoria->orden;
+        });
+    }
+
     public function roles_dirigido(){
         return $this->belongsToMany('App\CursoParticipanteRol','instrumentos_cursos_participantes_roles','instrumento_id','curso_participante_rol_id')->using('App\InstrumentoCursoParticipanteRol');
     }
@@ -56,5 +62,21 @@ class Instrumento extends Model
             }
         }
         return false;
+    }
+
+    public function getNombre(){
+        return $this->nombre;
+    }
+
+    public function getDescripcion(){
+        return $this->descripcion;
+    }
+
+    public function getAnonimo(){
+        return $this->anonimo;
+    }
+
+    public function getID(){
+        return $this->id;
     }
 }

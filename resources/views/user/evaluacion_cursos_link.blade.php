@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	  <meta name="author" content="colorlib.com">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Evaluación de @isset($curso) {{$curso->cvucv_fullname}} @else Curso @endif</title>
+    <title>Evaluación de @isset($curso) {{$curso->getNombre()}} @else Curso @endif</title>
 
     <!-- Font Icon -->
     <link rel="stylesheet" href="/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -83,14 +83,14 @@
 
           @elseif(isset($curso) && isset($instrumento) && isset($invitacion))
 
-            <h2>Evaluación de {{$curso->cvucv_fullname}}</h2>
+            <h2>Evaluación de {{$curso->getNombre()}}</h2>
 
             <div id="instrucciones" >
               <div class="descripcion">
-                {!!$instrumento->descripcion!!}
+                {!!$instrumento->getDescripcion()!!}
               </div>
               <button id="iniciar" type="button" class="btn btn-block btn-success btn-lg">Iniciar</button>
-              @if($instrumento->anonimo)
+              @if($instrumento->getAnonimo())
               <div class="anonimo">
                 Las respuestas de este instrumento son anónimas
               </div>
@@ -101,15 +101,15 @@
             <!-- Instru -->
             @if(!empty($instrumento))
             <form id="wizard" class="hide-div"
-              action="{{ route('evaluacion_link_procesar', ['invitacion' => $invitacion->id]) }}" 
+              action="{{ route('evaluacion_link_procesar', ['invitacion' => $invitacion->getID()]) }}" 
               method="POST">
 
               <!-- CSRF TOKEN -->
               {{ csrf_field() }}
 
-              @foreach($instrumento->categorias as $categoriaIndex => $categoria)
+              @foreach($instrumento->categoriasOrdenadas() as $categoriaIndex => $categoria)
               <!-- Cat -->
-              <h2>{{$categoria->nombre_corto}}</h2>
+              <h2>{{$categoria->getNombre()}}</h2>
               <section>
                 
                 <table class='likert-form likert-table form-container table-hover'>
@@ -117,42 +117,49 @@
                     <tr class='likert-header'>
 
                       <!-- Cat - title -->
-                      <th class='question'>{{$categoria->nombre}}</th>
+                      <th class='question'>{{$categoria->getNombre()}}</th>
                       <th class='responses'>
                         <table class='likert-table'>
                           <tr>
                             <!-- Ops -->
-                            <th class='response'>Siempre</th>
-                            <th class='response'>A veces</th>
-                            <th class='response'>Nunca</th>
+                            @if($categoria->categoriaPersonalizada())
+                              <th class='response'>Siempre</th>
+                              <th class='response'>A veces</th>
+                              <th class='response'>Nunca</th>
+                            @else
+                            <th class='response'>Opciones</th>
+                            @endif
                           </tr>
                         </table>
                       </th>
                     </tr>
                     <tbody class='likert'>
-                      @foreach($categoria->indicadores as $indicadorIndex => $indicador)
+                      @foreach($categoria->indicadoresOrdenados() as $indicadorIndex => $indicador)
                       <!-- Inds -->
                       <fieldset>
                         <tr class='likert-row'>
                           <td class='question'>
-                            <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->nombre}} 
-                              <span class="obligatorio">*</span>
-                              <label for="{{$indicador->id}}" class="likert-legend error">El campo es requerido </label>
+                            <legend class='likert-legend'>{{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
+                              @if($indicador->requerido())
+                                <span class="obligatorio">*</span>
+                              @endif
+                              <label for="{{$indicador->getID()}}" class="likert-legend error">El campo es requerido </label>
+                              
                             </legend>
                           </td>
                           <td class='responses'>
                             <table class='likert-table'>
                               <tr>
                                 <td class='response styled-radio'>
-                                  <input  name='{{$indicador->id}}' type='radio' value="2" required>
+                                  <input  name='{{$indicador->getID()}}' type='radio' value="2" required>
                                   <label class='likert-label'>Siempre</label>
                                 </td>
                                 <td class='response styled-radio'>
-                                  <input  name='{{$indicador->id}}' type='radio' value="1" >
+                                  <input  name='{{$indicador->getID()}}' type='radio' value="1" >
                                   <label class='likert-label'>A veces</label>
                                 </td>
                                 <td class='response styled-radio'>
-                                  <input  name='{{$indicador->id}}' type='radio' value="0" >
+                                  <input  name='{{$indicador->getID()}}' type='radio' value="0" >
                                   <label class='likert-label'>Nunca</label>
                                 </td>   
                                     
@@ -165,11 +172,12 @@
                     </tbody>
                   </thead>
                 </table>
-
+                @if($categoria->existenIndicadoresObligatorios())
+                  <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
+                @endif
               </section>
               @endforeach
 
-              <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
             </form>
             @endif
 
@@ -202,7 +210,9 @@
                     rules: {
                         @foreach($instrumento->categorias as $categoria)
                         @foreach($categoria->indicadores as $indicador)
-                        '{{$indicador->id}}' : {required :true},
+                          @if($indicador->requerido())
+                          '{{$indicador->id}}' : {required :true},
+                          @endif
                         @endforeach
                         @endforeach               
                         

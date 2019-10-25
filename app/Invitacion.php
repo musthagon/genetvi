@@ -9,13 +9,6 @@ class Invitacion extends Model
     protected $table = 'invitaciones';
     protected $fillable = ['id', 'token', 'estatus_invitacion_id', 'tipo_invitacion_id', 'instrumento_id', 'curso_id', 'periodo_lectivo_id', 'cvucv_user_id', 'usuario_id','numero_invitacion'];
 
-    public function invitacionCompletada(){
-        if($this->estatus_invitacion_id == 7){
-            return true;
-        }
-        return false;
-    }
-
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');
     }
@@ -52,6 +45,15 @@ class Invitacion extends Model
         return false;
     }
 
+    public function actualizar_estatus_leida(){
+        if($this->instrumento->puede_rechazar){
+            $this->estatus_invitacion_id = 4; //Invitacion aceptada
+        }else{
+            $this->estatus_invitacion_id = 6; // Invitacion leída
+        }
+        $this->save();
+    }
+
     /**
      * CURL generíco usando GuzzleHTTP
      *
@@ -85,5 +87,9 @@ class Invitacion extends Model
         $response = $this->send_curl('GET', $endpoint, $params);
         
         return $response[0];
+    }
+
+    public function getID(){
+        return $this->id;
     }
 }
