@@ -68,18 +68,12 @@
     <!-- Bootstrap 3.3.7 -->
     <script src="/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- Select2 -->
-    <script src="/adminlte/bower_components/select2/dist/js/select2.full.min.js"></script>
-
-    <!-- SlimScroll -->
-    <script src="/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-    <!-- FastClick -->
-    <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/adminlte/js/adminlte.min.js"></script>
-
+    <script src="/adminlte/bower_components/select2/dist/js/select2.js"></script>
+    <!-- Jquery Validate -->
     <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
     <script type="text/javascript"  src="/js/jquery.steps.js"></script>
 
+    
     @yield('javascript')
     @stack('javascript')
 

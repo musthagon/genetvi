@@ -100,15 +100,34 @@
 @stop
 
 @section('css')
-  <style> </style>
+  <style>
+
+    #wizard .select2-selection--multiple ul input{
+      border: none;
+    }
+    #wizard textarea {
+      resize: none;
+    }
+
+    #wizard .select2-selection--multiple:before {
+        content: "";
+        position: absolute;
+        right: 7px;
+        top: 42%;
+        border-top: 5px solid #888;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+    }
+    #wizard .select2 li input{
+      width: initial !important;
+    }
+  </style>
 @stop
 
 @section('javascript')  
     <script>
         $(function (){
           
-          //$('.select2').select2()
-
           $("#iniciar").on('click', function(event){
               $("#wizard").removeClass("hide-div");
               $("#instrucciones").addClass("hide-div");
@@ -158,6 +177,16 @@
                   }
               });
           @endif
+
+          $('.select2').select2({
+            minimumResultsForSearch: -1,
+            allowClear: true,
+            placeholder: function() {
+                $(this).data('placeholder');
+            }
+          });
+
+
         });
     </script>
 @stop
