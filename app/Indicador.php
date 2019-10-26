@@ -33,4 +33,11 @@ class Indicador extends Model
     public function requerido(){
         return $this->requerido;
     }
+
+    public function multipleField(){
+        if($this->getTipo() == 'select_multiple'){
+            return true;
+        }
+        return false;
+    }
 }

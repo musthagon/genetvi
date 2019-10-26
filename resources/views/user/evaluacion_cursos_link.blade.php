@@ -69,7 +69,7 @@
                         @endif
                       <div>  
 
-                      <label for="{{$indicador->getID()}}" class="likert-legend error">El campo es requerido </label>
+                      <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
                       
                     </legend>
                   </td>
@@ -138,18 +138,15 @@
               form.validate({
 
                   errorPlacement: function errorPlacement(error, element) {},
-                  rules: {
+                    rules: {
                       @foreach($instrumento->categorias as $categoria)
                       @foreach($categoria->indicadores as $indicador)
                         @if($indicador->requerido())
-                        '{{$indicador->id}}' : {required :true},
+                          '{{$indicador->id}}@if($indicador->multipleField())[]@endif' : {required :true},
                         @endif
                       @endforeach
                       @endforeach               
-                      
                   }
-
-
               });
 
               form.steps({

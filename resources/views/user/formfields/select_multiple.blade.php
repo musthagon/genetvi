@@ -7,7 +7,6 @@
                     name="{{$indicador->getID()}}[]" 
                     data-placeholder="{{$indicador->getNombre()}}"
                     multiple>
-                    <option></option>
                     <option>Alabama</option>
                     <option>Alaska</option>
                     <option>California</option>
