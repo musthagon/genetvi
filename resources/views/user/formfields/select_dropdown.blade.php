@@ -7,13 +7,22 @@
                     name="{{$indicador->getID()}}"
                     data-placeholder="{{$indicador->getNombre()}}">
                     <option></option>
-                    <option>Alabama</option>
-                    <option>Alaska</option>
-                    <option>California</option>
-                    <option>Delaware</option>
-                    <option>Tennessee</option>
-                    <option>Texas</option>
-                    <option>Washington</option>
+                    @php
+                        $opciones_indicador = $indicador->getOpciones();
+                        if(isset($opciones_indicador[$indicador->getOpcionesEstructura(1)])){
+                            $opciones = $opciones_indicador[$indicador->getOpcionesEstructura(1)];
+                        }else{
+                            $opciones = [];
+                        }
+                    @endphp
+                    @foreach($opciones as $key => $opcion)
+                        <option value="{{$key}}" 
+                            @if(isset($opciones_indicador[$indicador->getOpcionesEstructura(2)]) && $opciones_indicador[$indicador->getOpcionesEstructura(2)] == $key)
+                            selected 
+                            @endif>
+                            {{$opcion}}
+                        </option>
+                    @endforeach
                 </select>
             </div>
         </div>

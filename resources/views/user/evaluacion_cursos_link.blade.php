@@ -74,6 +74,7 @@
                     </legend>
                   </td>
                   <td class='responses'>
+                    
                     @if(!$categoria->categoriaPersonalizada())
                       @include('user.formfields.likert')
                     @else
@@ -102,25 +103,7 @@
 @section('css')
   <style>
 
-    #wizard .select2-selection--multiple ul input{
-      border: none;
-    }
-    #wizard textarea {
-      resize: none;
-    }
-
-    #wizard .select2-selection--multiple:before {
-        content: "";
-        position: absolute;
-        right: 7px;
-        top: 42%;
-        border-top: 5px solid #888;
-        border-left: 4px solid transparent;
-        border-right: 4px solid transparent;
-    }
-    #wizard .select2 li input{
-      width: initial !important;
-    }
+    
   </style>
 @stop
 
@@ -146,7 +129,25 @@
                         @endif
                       @endforeach
                       @endforeach               
-                  }
+                  },
+                  highlight: function (element, errorClass, validClass) {
+                      var target;
+                      if ($(element).is('select')) {
+                          target = $(element).parent('div');
+                      } else {
+                          target = $(element);
+                      }
+                      target.addClass(errorClass).removeClass(validClass);
+                  },
+                  unhighlight: function (element, errorClass, validClass) {
+                      var target;
+                      if ($(element).is('select')) {
+                          target = $(element).parent('div');
+                      } else {
+                          target = $(element);
+                      }
+                      target.addClass(validClass).removeClass(errorClass);
+                  },
               });
 
               form.steps({
@@ -182,6 +183,10 @@
                 $(this).data('placeholder');
             }
           });
+
+          $('.select2').select2({}).on("change", function (e) {
+              $(this).valid()
+          })
 
 
         });

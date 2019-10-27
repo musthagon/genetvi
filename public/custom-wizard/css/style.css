@@ -139,3 +139,35 @@ body {
 .center{
   text-align: center;
 }
+
+#wizard .select2-selection--multiple ul input{
+  border: none;
+}
+#wizard textarea {
+  resize: none;
+}
+[type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea {
+  margin: 0;
+}
+
+#wizard .select2-selection--multiple:before {
+    content: "";
+    position: absolute;
+    right: 7px;
+    top: 42%;
+    border-top: 5px solid #888;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+}
+#wizard .select2 li input{
+  width: initial !important;
+}
+
+#wizard > .content > .body input.error,
+#wizard > .content > .body textarea.error, 
+.error .select2-container--default .select2-selection--multiple,
+.error .select2-container--default .select2-selection--single  {
+    background: rgb(251, 227, 228);
+    border: 1px solid #fbc2c4;
+    color: #8a1f11;
+}

@@ -20,6 +20,12 @@ class PublicController extends Controller
 {
 
     public function evaluacion($token){
+        /*$indicador = Indicador::find(26);
+        //$indicador = Indicador::find(27);
+        dd($indicador->getOpciones());
+        //dd($indicador->opciones);
+        dd(json_decode($indicador->opciones,true));*/
+
         $invitacion     = Invitacion::where('token',$token)->first();
 
         //Verificamos la invitación

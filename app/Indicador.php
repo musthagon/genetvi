@@ -40,4 +40,24 @@ class Indicador extends Model
         }
         return false;
     }
+
+    public function getOpciones(){
+        $options = [];
+        if($this->opciones != null){
+            $options = json_decode($this->opciones,true);
+        }
+        return $options;
+    }
+
+    public function getOpcionesEstructura($number){
+        if($number == 1){
+            return 'options';
+        }elseif($number ==2){
+            return 'default';
+        }
+
+        return null;
+        
+    }
+
 }
