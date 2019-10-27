@@ -5,7 +5,8 @@
                 <input type="text" class="form-control" 
                     style="width: 100%;" 
                     name="{{$indicador->getID()}}"
-                    placeholder="{{$indicador->getNombre()}}"/>
+                    placeholder="{{$indicador->getNombre()}}"
+                    value="{{old($indicador->getID())}}"/>
             </div>
         </div>
     </div>

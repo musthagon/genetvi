@@ -53,4 +53,51 @@ class Categoria extends Model
         }
         return false;
     }
+
+
+    public function getOpciones(){//Retornamos las opciones del indicador que se escriben en el code-editor
+        $options = [];
+        if($this->opciones != null){
+            $options = json_decode($this->opciones,true);
+        }
+        return $options;
+    }
+
+    public function getOpcionesEstructura($number){//Retornamos los campos de las opciones del indicador del code-editor 
+
+        switch ($number) {
+            case "1":
+                return 'likert';
+            break;
+        }
+
+        return null;
+    }
+
+    public function likertOpciones(){
+        if( isset($this->getOpciones()[$this->getOpcionesEstructura(1)]) ){   
+            $likert_type = $this->getOpciones()[$this->getOpcionesEstructura(1)];
+        }else{ 
+            $likert_type = 1;
+        }
+
+        switch ($likert_type) {
+            case "1":
+                $likert = [ 
+                    "likert_2" => "Siempre", 
+                    "likert_1" => "A veces", 
+                    "likert_0" => "Nunca" ];
+            break;
+            case "2":
+                $likert = [ 
+                    "likert_4" => "Totalmente de acuerdo",
+                    "likert_3" => "De acuerdo",
+                    "likert_2" => "Ni de acuerdo ni en desacuerdo",
+                    "likert_1" => "En desacuerdo",
+                    "likert_0" => "Totalmente en desacuerdo"];
+            break;
+        }
+
+        return $likert;
+    }
 }

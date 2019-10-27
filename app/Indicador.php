@@ -34,30 +34,61 @@ class Indicador extends Model
         return $this->requerido;
     }
 
-    public function multipleField(){
+    public function multipleField(){ //Los campos del formularios que se almacenan como un array name=id[]
+
         if($this->getTipo() == 'select_multiple'){
             return true;
         }
         return false;
     }
 
-    public function getOpciones(){
-        $options = [];
+    public function getOpciones($opcion_number = 0){//Retornamos las opciones del indicador que se escriben en el code-editor
+        $opciones = []; //Opciones predeterminadas
         if($this->opciones != null){
-            $options = json_decode($this->opciones,true);
+            $opciones = json_decode($this->opciones,true);
         }
-        return $options;
+        
+        switch ($opcion_number) {
+            case "1":
+                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                    return $opciones[$this->getOpcionesEstructura($opcion_number)];
+                }
+                return ['Si' => 'Si', 'No' => 'No']; //Opciones predeterminadas
+            break;
+            case "2":
+                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                    return $opciones[$this->getOpcionesEstructura($opcion_number)];
+                }
+                return null; //Opciones predeterminadas
+            break;
+        }
+
+        return $opciones;
     }
 
-    public function getOpcionesEstructura($number){
-        if($number == 1){
-            return 'options';
-        }elseif($number ==2){
-            return 'default';
+    public function getOpcionesEstructura($number){//Retornamos los campos de las opciones del indicador del code-editor 
+
+        switch ($number) {
+            case "1":
+                return 'opciones';
+            break;
+            case "2":
+                return 'predeterminado';
+            break;
         }
 
         return null;
+    }
+
+    public function esMedible(){//Verificamos si el indicador es una pregunta abierta o cerrada, para poder graficarlo
+        $tipo_indicador = $this->getTipo();
+        if ($tipo_indicador == "likert" ||
+            $tipo_indicador == "select_dropdown" ||
+            $tipo_indicador == "select_multiple") {
+            return true;
+        }
         
+        return false;
     }
 
 }

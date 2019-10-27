@@ -57,10 +57,10 @@ class PublicController extends Controller
         if (empty($invitacion)){ 
             return $this->message("Error, invitación para evaluar curso inválida", "error");
         }
-        if ($invitacion->invitacion_revocadaÇ()){ 
+        if ($invitacion->invitacion_revocada()){ 
             return $this->message("Error, invitación revocada", "error");
         }
-        if($invitacion->invitacionCompletada()){
+        if($invitacion->invitacion_completada()){
             return $this->message("Ya evaluaste este curso", "error");
         }
 
@@ -78,13 +78,13 @@ class PublicController extends Controller
                 if(!isset($request->{($indicador->id)}) && $indicador->requerido() ){  
                     return redirect()
                         ->back()
-                        ->withInput(Input::all())
+                        ->withInput()
                         ->with(['message' => "Debe completar el campo: ".$indicador->nombre, 'alert-type' => 'error']);
                 }
 
             }
         }
-
+        dd("jajaja");
         //3. Verificamos que el instrumento sea valido
         if(!$instrumento->esValido()){
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");

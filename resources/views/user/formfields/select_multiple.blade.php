@@ -7,19 +7,10 @@
                     name="{{$indicador->getID()}}[]" 
                     data-placeholder="{{$indicador->getNombre()}}"
                     multiple>
-                    @php
-                        $opciones_indicador = $indicador->getOpciones();
-                        if(isset($opciones_indicador[$indicador->getOpcionesEstructura(1)])){
-                            $opciones = $opciones_indicador[$indicador->getOpcionesEstructura(1)];
-                        }else{
-                            $opciones = ['Si' => 'Si', 'No' => 'No'];
-                        }
-                    @endphp
-                    @foreach($opciones as $key => $opcion)
-                        <option value="{{$key}}" 
-                            @if(isset($opciones_indicador[$indicador->getOpcionesEstructura(2)]) && $opciones_indicador[$indicador->getOpcionesEstructura(2)] == $key)
-                            selected 
-                            @endif>
+                    @foreach($indicador->getOpciones(1) as $key => $opcion)
+                        <option value="{{$key}}"
+                            @if((collect(old($indicador->getID()))->contains($key))) selected 
+                            @elseif( collect(old($indicador->getID()))->isEmpty() && $indicador->getOpciones(2)  == $key)selected @endif>
                             {{$opcion}}
                         </option>
                     @endforeach
