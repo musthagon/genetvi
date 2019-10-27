@@ -23,6 +23,9 @@
     <!-- Select2 -->
     <link rel="stylesheet" href="/adminlte/bower_components/select2/dist/css/select2.min.css">
 
+    <!-- Toastr style -->
+    <link rel="stylesheet" href="/toastr/css/toastr.min.css">
+    
     <link rel="stylesheet" href="/adminlte/css/AdminLTE.min.css">
     
     <!-- Main css -->
@@ -42,7 +45,7 @@
 
             <div class="center" >
 
-              @if($alert_type=="gracias")
+              @if($alert_type=="success")
                 <i class="fa fa-check message_font message_icon1"></i>
               @else
                 <i class="fa fa-close message_font message_icon2"></i>
@@ -73,6 +76,50 @@
     <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
     <script type="text/javascript"  src="/js/jquery.steps.js"></script>
 
+    <!-- Toastr style -->
+    <script src="/toastr/js/toastr.min.js"></script>
+    <script>
+        $(function (){
+          toastr.options = {
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": true,
+          "progressBar": true,
+          "positionClass": "toast-top-right",
+          "preventDuplicates": true,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+          }
+        });
+        @if(Session::has('message'))
+        var type = "{{ Session::get('alert-type', 'info') }}";
+        switch(type){
+            case 'info':
+                toastr.info("{{ Session::get('message') }}");
+                break;
+
+            case 'warning':
+                toastr.warning("{{ Session::get('message') }}");
+                break;
+
+            case 'success':
+                toastr.success("{{ Session::get('message') }}");
+                break;
+
+            case 'error':
+                toastr.error("{{ Session::get('message') }}");
+                break;
+        }
+        @endif
+      
+    </script>
     
     @yield('javascript')
     @stack('javascript')

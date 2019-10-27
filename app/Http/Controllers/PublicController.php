@@ -20,23 +20,17 @@ class PublicController extends Controller
 {
 
     public function evaluacion($token){
-        /*$indicador = Indicador::find(26);
-        //$indicador = Indicador::find(27);
-        dd($indicador->getOpciones());
-        //dd($indicador->opciones);
-        dd(json_decode($indicador->opciones,true));*/
-
         $invitacion     = Invitacion::where('token',$token)->first();
 
         //Verificamos la invitación
         if (empty($invitacion)){ 
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, invitación para evaluar curso inválida", 'alert-type' => 'error']);
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
         }
         if ($invitacion->invitacion_revocada()){ //Invitación revocada
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, invitación revocada", 'alert-type' => 'error']);
+            return $this->message("Error, invitación revocada", "error");
         }
         if($invitacion->invitacion_completada()){
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Ya evaluaste este curso", 'alert-type' => 'error']);
+            return $this->message("Ya evaluaste este curso", "error");
         }
 
         $curso          = $invitacion->curso;
@@ -44,11 +38,11 @@ class PublicController extends Controller
         $periodo        = $invitacion->periodo;
 
         if (empty($curso) || empty($instrumento) || empty($periodo)){ 
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, el curso o instrumento no estan disponibles en este momento", 'alert-type' => 'error']);
+            return $this->message("Error, el curso o instrumento no estan disponibles en este momento", "error");
         }
 
         if(!$instrumento->esValido()){
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, el instrumento de evaluación no se encuentra disponible en este momento", 'alert-type' => 'error']);
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
         }
 
         //Actualizamos el estatus de la invitacion
@@ -61,13 +55,13 @@ class PublicController extends Controller
         $invitacion     = Invitacion::find($invitacion_id);
         
         if (empty($invitacion)){ 
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, invitación para evaluar curso inválida", 'alert-type' => 'error']);
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
         }
-        if ($invitacion->estatus_invitacion_id == 8){ //Invitación revocada
-            return redirect()->route('evaluacion_erronea')->withInput()->with(['message' => "Error, invitación revocada", 'alert-type' => 'error']);
+        if ($invitacion->invitacion_revocadaÇ()){ 
+            return $this->message("Error, invitación revocada", "error");
         }
         if($invitacion->invitacionCompletada()){
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Ya evaluaste este curso", 'alert-type' => 'error']);
+            return $this->message("Ya evaluaste este curso", "error");
         }
 
         $curso          = Curso::find($invitacion->curso_id);
@@ -75,14 +69,17 @@ class PublicController extends Controller
         
         //1. Verificamos que el curso y el instrumento existan
         if (empty($curso) || empty($instrumento)){ 
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, el curso o instrumento no estan disponibles en este momento", 'alert-type' => 'error']);
+            return $this->message("Error, el curso o instrumento no estan disponibles en este momento", "error");
         }
 
         //Verificamos que los campos del request no esten vacíos
         foreach($instrumento->categorias as $categorias){
             foreach($categorias->indicadores as $indicador){
                 if(!isset($request->{($indicador->id)}) && $indicador->requerido() ){  
-                    return redirect()->route('evaluacion_erronea')->with(['message' => "Debe completar el campo: ".$indicador->nombre, 'alert-type' => 'error']);
+                    return redirect()
+                        ->back()
+                        ->withInput(Input::all())
+                        ->with(['message' => "Debe completar el campo: ".$indicador->nombre, 'alert-type' => 'error']);
                 }
 
             }
@@ -90,7 +87,7 @@ class PublicController extends Controller
 
         //3. Verificamos que el instrumento sea valido
         if(!$instrumento->esValido()){
-            return redirect()->route('evaluacion_erronea')->with(['message' => "Error, el instrumento de evaluación no se encuentra disponible en este momento", 'alert-type' => 'error']);
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
         }
 
         $categoria_raiz             = $curso->categoria->categoria_raiz;
@@ -110,10 +107,18 @@ class PublicController extends Controller
                     $percentil_value_categoria = $instrumento->percentilValue();
                     $percentil_total_eva = 0;
                     $percentil_value_opciones = 2; //Opciones (Siempre y a veces) el Nunca, es 0
+
+                    //Buscamos las categorias del instrumento
                     foreach($instrumento->categorias as $categoria){
                         $categoria_field = array();
                         $j = 0;
-                        $percentil_value_indicadores = $percentil_value_categoria/$categoria->percentilValue();
+                        $categoria_percentilValue = $categoria->percentilValue();
+                        $percentil_value_indicadores = 0;
+                        if($categoria_percentilValue != 0){
+                            $percentil_value_indicadores = $percentil_value_categoria/$categoria_percentilValue;
+                        }
+
+                        //Recorremos los indicadores del instrumento para calcular su valor numérico
                         foreach($categoria->indicadores as $indicador){
                             if(isset($request->{($indicador->id)} )){
                                 
@@ -154,12 +159,12 @@ class PublicController extends Controller
                     $evaluacion->percentil_eva       = $percentil_total_eva;
                     $evaluacion->instrumento_id      = $instrumento->id;
                     $evaluacion->curso_id            = $curso->id;
-                    /*$evaluacion->usuario_id          = $user->id;*/
                     $evaluacion->cvucv_user_id          = $invitacion->cvucv_user_id;
                     $evaluacion->periodo_lectivo_id  = $categoria_raiz->periodo_lectivo;
 
                     $evaluacion->save();
 
+                    //Guardamos las respuestas ya procesadas / calculadas
                     foreach($respuestas as $respuesta){
                         foreach($respuesta as $campos){
                             $respuesta = new Respuesta;
@@ -181,17 +186,17 @@ class PublicController extends Controller
                     $invitacion->estatus_invitacion_id = 7; //Invitacion completada
                     $invitacion->save();
 
-                    return redirect()->route('evaluacion_satisfactoria')->with(['message' => "Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", 'alert-type' => 'gracias']);
+                    return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
                 }
             }
             
         }
     }
 
-    public function message(){
+    public function message($message, $alert_type){
         
-        $message    = session()->get('message');
-        $alert_type = session()->get('alert-type'); 
+        $message    = $message;
+        $alert_type = $alert_type; 
 
         if( !isset($message) || !isset($alert_type)){
             $message    = "La página que buscas, ya no se encuentra disponible.";

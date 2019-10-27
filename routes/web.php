@@ -36,9 +36,6 @@ Route::get('/home/curso/{id}', 'HomeController@visualizar_curso')->name('curso')
 //Public evaluacion
 Route::get('/evaluar_curso/id/{token}', 'PublicController@evaluacion')->name('evaluacion_link');
 Route::post('/evaluar_curso/procesar/{invitacion}', 'PublicController@evaluacion_procesar')->name('evaluacion_link_procesar');
-Route::get('/evaluar_curso/estatus/satisfactoria', 'PublicController@message')->name('evaluacion_satisfactoria');
-Route::get('/evaluar_curso/estatus/error', 'PublicController@message')->name('evaluacion_erronea');
-
 
 /*
 |--------------------------------------------------------------------------

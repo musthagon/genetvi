@@ -12,7 +12,7 @@
                         if(isset($opciones_indicador[$indicador->getOpcionesEstructura(1)])){
                             $opciones = $opciones_indicador[$indicador->getOpcionesEstructura(1)];
                         }else{
-                            $opciones = [];
+                            $opciones = ['Si' => 'Si', 'No' => 'No'];
                         }
                     @endphp
                     @foreach($opciones as $key => $opcion)

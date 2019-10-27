@@ -18,7 +18,6 @@
       @endif
     </div>
 
-
     <!-- Instru -->
     @if(!empty($instrumento))
     <form id="wizard" class="hide-div"
@@ -48,7 +47,7 @@
                       <th class='response'>A veces</th>
                       <th class='response'>Nunca</th>
                     @else
-                    <th class='response'>Opciones</th>
+                      <th class='response'>Opciones</th>
                     @endif
                   </tr>
                 </table>
@@ -74,12 +73,9 @@
                     </legend>
                   </td>
                   <td class='responses'>
-                    
-                    @if(!$categoria->categoriaPersonalizada())
-                      @include('user.formfields.likert')
-                    @else
-                      @include('user.formfields.'.$indicador->getTipo())
-                    @endif            
+                  
+                    @include('user.formfields.'.$indicador->getTipo())
+                                
                   </td>
                 </tr>
               </fieldset>
