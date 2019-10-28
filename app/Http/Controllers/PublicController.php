@@ -133,28 +133,20 @@ class PublicController extends Controller
             foreach($categoria->indicadores as $indicador){
                 if(isset($request->{($indicador->id)} )){
                     
-                    $value_string = "Nunca";
-                    $value_percentil_request = 0;
-                    switch ($request->{($indicador->id)}) {
-                        case "2":
-                            $value_string = "Siempre";
-                            $value_percentil_request = 2;
-                        break;
-                        case "1":
-                            $value_string = "A veces";
-                            $value_percentil_request = 1;
-                        break;
-                    }
+                    
                     if($categoria_percentilValue == 0 || !$indicador->esMedible()){
                         $percentil_indicador_actual = -1;
                     }else{
-                        $percentil_value_opciones = $indicador->percentilValue($categoria_likertType); //Cantidad de opciones
+
+                        $percentil_value_opciones = $indicador->percentilValueOpciones($categoria_likertType); //Cantidad de opciones
+                        $value_percentil_request = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria->likertOpciones());
+
                         $percentil_indicador_actual =($percentil_value_indicadores/$percentil_value_opciones) * $value_percentil_request;
                         $percentil_total_eva = $percentil_total_eva + $percentil_indicador_actual;
                     }
                     
                     $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
-                    $categoria_field[$j]['value_string']    = $value_string;
+                    $categoria_field[$j]['value_string']    = $request->{($indicador->id)};
                     $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
                     $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
                     $categoria_field[$j]['indicador_id']    = $indicador->id;
@@ -166,12 +158,12 @@ class PublicController extends Controller
             $respuestas[$i] = $categoria_field;
             $i++;
         }
-        $respuestas_save = json_encode($respuestas);
+        /*$respuestas_save = json_encode($respuestas);*/
 
         //Guardamos la evaluacion realizada
         $evaluacion = new Evaluacion;
 
-        $evaluacion->respuestas          = $respuestas_save;
+        /*$evaluacion->respuestas          = $respuestas_save;*/
         $evaluacion->percentil_eva       = $percentil_total_eva;
         $evaluacion->instrumento_id      = $instrumento->id;
         $evaluacion->curso_id            = $curso->id;

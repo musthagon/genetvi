@@ -101,7 +101,7 @@ class Indicador extends Model
         return false;
     }
 
-    public function percentilValue($likertType = 1){
+    public function percentilValueOpciones($likertType = 1){
         $tipo_indicador = $this->getTipo();
         $cantidad_opciones = 0;
         if ($tipo_indicador == "likert"){
@@ -117,4 +117,28 @@ class Indicador extends Model
         return $cantidad_opciones;
     }
 
+    public function percentilValueRequest($string_request, $percentilValueOpciones, $likertOpciones){
+        $opcionValue = $percentilValueOpciones;
+        if($opcionValue == 0){ return 0; }
+
+        if($this->getTipo() == "likert"){
+            foreach($likertOpciones as $key => $opcion){
+                if($string_request == $key){
+                    
+                    break;
+                }
+                $opcionValue = $opcionValue - 1;
+            }
+        }else{
+            foreach($this->getOpciones(1) as $key => $opcion){
+                if($string_request == $key){
+    
+                    break;
+                }
+                $opcionValue = $opcionValue - 1;
+            }
+        }
+
+        return $opcionValue;
+    }
 }
