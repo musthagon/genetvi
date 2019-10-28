@@ -46,8 +46,20 @@ class Instrumento extends Model
         return true;
     }
 
-    public function percentilValue(){
-        $cantidad = $this->categorias->count();
+    public function percentilValue(){ //Buscamos las categorias con idicadores que se puedan evaluar, si una categoria no tiene indicadores medibles -> no la contamos
+
+        $categorias = $this->categorias;
+        $cantidad = 0;
+
+        foreach($categorias as $categoria){
+            foreach($categoria->indicadores as $indicador){
+                if($indicador->esMedible()){
+                    $cantidad++;
+                    break;
+                }
+            }
+        }
+        
         if($cantidad != 0){
             return 100/$cantidad;
         }

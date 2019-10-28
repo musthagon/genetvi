@@ -33,7 +33,18 @@ class Categoria extends Model
     }
 
     public function percentilValue(){
-        return $this->indicadores->count();
+ 
+        $cantidad = 0;
+
+        foreach($this->indicadores as $indicador){
+            if($indicador->esMedible()){
+                $cantidad++;
+                break;
+            }
+        }
+        
+        return $cantidad;
+              
     }
 
     public function getNombre(){
@@ -73,21 +84,24 @@ class Categoria extends Model
 
         return null;
     }
-
-    public function likertOpciones(){
+    public function likertType(){
         if( isset($this->getOpciones()[$this->getOpcionesEstructura(1)]) ){   
             $likert_type = $this->getOpciones()[$this->getOpcionesEstructura(1)];
         }else{ 
-            $likert_type = 1;
+            return "1";
         }
 
+        if($likert_type != "2"){
+            return "1";
+        }
+        return $likert_type;
+    }
+
+    public function likertOpciones(){
+
+        $likert_type = $this->likertType();
+
         switch ($likert_type) {
-            case "1":
-                $likert = [ 
-                    "likert_2" => "Siempre", 
-                    "likert_1" => "A veces", 
-                    "likert_0" => "Nunca" ];
-            break;
             case "2":
                 $likert = [ 
                     "likert_4" => "Totalmente de acuerdo",
@@ -96,6 +110,13 @@ class Categoria extends Model
                     "likert_1" => "En desacuerdo",
                     "likert_0" => "Totalmente en desacuerdo"];
             break;
+            default:
+                $likert = [ 
+                    "likert_2" => "Siempre", 
+                    "likert_1" => "A veces", 
+                    "likert_0" => "Nunca" ];
+            break;
+            
         }
 
         return $likert;

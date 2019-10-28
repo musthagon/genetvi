@@ -61,6 +61,12 @@ class Indicador extends Model
                 }
                 return null; //Opciones predeterminadas
             break;
+            case "3":
+                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                    return $opciones[$this->getOpcionesEstructura($opcion_number)];
+                }
+                return true; //Opciones predeterminadas
+            break;
         }
 
         return $opciones;
@@ -75,6 +81,9 @@ class Indicador extends Model
             case "2":
                 return 'predeterminado';
             break;
+            case "3":
+                return 'medible';
+            break;
         }
 
         return null;
@@ -83,12 +92,29 @@ class Indicador extends Model
     public function esMedible(){//Verificamos si el indicador es una pregunta abierta o cerrada, para poder graficarlo
         $tipo_indicador = $this->getTipo();
         if ($tipo_indicador == "likert" ||
-            $tipo_indicador == "select_dropdown" ||
-            $tipo_indicador == "select_multiple") {
-            return true;
+            $tipo_indicador == "select_dropdown" ) {
+            if($this->getOpciones(3)){
+                return true;
+            }
         }
         
         return false;
+    }
+
+    public function percentilValue($likertType = 1){
+        $tipo_indicador = $this->getTipo();
+        $cantidad_opciones = 0;
+        if ($tipo_indicador == "likert"){
+            $cantidad_opciones = 2;
+            if($likertType == 2){
+                $cantidad_opciones = 5;
+            }
+        }elseif ($tipo_indicador == "select_dropdown" ||
+            $tipo_indicador == "select_multiple") {
+            $cantidad_opciones = count($this->getOpciones(1));
+        }
+        
+        return $cantidad_opciones;
     }
 
 }

@@ -73,8 +73,8 @@ class PublicController extends Controller
         }
 
         //Verificamos que los campos del request no esten vacíos
-        foreach($instrumento->categorias as $categorias){
-            foreach($categorias->indicadores as $indicador){
+        foreach($instrumento->categoriasOrdenadas() as $categorias){
+            foreach($categorias->indicadoresOrdenados() as $indicador){
                 if(!isset($request->{($indicador->id)}) && $indicador->requerido() ){  
                     return redirect()
                         ->back()
@@ -84,7 +84,6 @@ class PublicController extends Controller
 
             }
         }
-        dd("jajaja");
         //3. Verificamos que el instrumento sea valido
         if(!$instrumento->esValido()){
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
@@ -94,103 +93,118 @@ class PublicController extends Controller
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
 
         //4. Verificamos que la categoria del curso tenga instrumentos habilitados para evaluar
-        if(!empty($instrumentos_habilitados)){
-            foreach($instrumentos_habilitados as $actual){
+        if(empty($instrumentos_habilitados)){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
+        }
 
-                //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
-                if($actual->id == $instrumento->id){
-                             
-                    //Procesamos las respuestas
-                    $respuestas = array();
-                    $i = 0;
-                    //Es para calcular el valor numerico de la evaluación 
-                    $percentil_value_categoria = $instrumento->percentilValue();
-                    $percentil_total_eva = 0;
-                    $percentil_value_opciones = 2; //Opciones (Siempre y a veces) el Nunca, es 0
+        $instrumento_disponible = false;
+        foreach($instrumentos_habilitados as $actual){
+            //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
+            if($actual->id == $instrumento->id){
+                $instrumento_disponible = true;
+            }
+        } 
+        if(!$instrumento_disponible){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
+        }
 
-                    //Buscamos las categorias del instrumento
-                    foreach($instrumento->categorias as $categoria){
-                        $categoria_field = array();
-                        $j = 0;
-                        $categoria_percentilValue = $categoria->percentilValue();
-                        $percentil_value_indicadores = 0;
-                        if($categoria_percentilValue != 0){
-                            $percentil_value_indicadores = $percentil_value_categoria/$categoria_percentilValue;
-                        }
+        
 
-                        //Recorremos los indicadores del instrumento para calcular su valor numérico
-                        foreach($categoria->indicadores as $indicador){
-                            if(isset($request->{($indicador->id)} )){
-                                
-                                $value_string = "Nunca";
-                                $value_percentil_request = 0;
-                                switch ($request->{($indicador->id)}) {
-                                    case "2":
-                                        $value_string = "Siempre";
-                                        $value_percentil_request = 2;
-                                    break;
-                                    case "1":
-                                        $value_string = "A veces";
-                                        $value_percentil_request = 1;
-                                    break;
-                                }
-                                $percentil_indicador_actual =($percentil_value_indicadores/$percentil_value_opciones) * $value_percentil_request;
-                                $percentil_total_eva = $percentil_total_eva + $percentil_indicador_actual;
-
-                                $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
-                                $categoria_field[$j]['value_string']    = $value_string;
-                                $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
-                                $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
-                                $categoria_field[$j]['indicador_id']    = $indicador->id;
-                                $categoria_field[$j]['categoria_id']    = $categoria->id;
-
-                                $j++;
-                            }
-                        }
-                        $respuestas[$i] = $categoria_field;
-                        $i++;
-                    }
-                    $respuestas_save = json_encode($respuestas);
-
-                    //Guardamos la evaluacion realizada
-                    $evaluacion = new Evaluacion;
-
-                    $evaluacion->respuestas          = $respuestas_save;
-                    $evaluacion->percentil_eva       = $percentil_total_eva;
-                    $evaluacion->instrumento_id      = $instrumento->id;
-                    $evaluacion->curso_id            = $curso->id;
-                    $evaluacion->cvucv_user_id          = $invitacion->cvucv_user_id;
-                    $evaluacion->periodo_lectivo_id  = $categoria_raiz->periodo_lectivo;
-
-                    $evaluacion->save();
-
-                    //Guardamos las respuestas ya procesadas / calculadas
-                    foreach($respuestas as $respuesta){
-                        foreach($respuesta as $campos){
-                            $respuesta = new Respuesta;
-
-                            $respuesta->value_string     = $campos['value_string'];
-                            $respuesta->value_request    = $campos['value_request'];
-                            $respuesta->value_percentil  = $campos['value_percentil'];
-                            $respuesta->indicador_nombre = $campos['indicador_nombre'] ;
-                            $respuesta->indicador_id     = $campos['indicador_id'];
-                            $respuesta->categoria_id     = $campos['categoria_id'] ;
-                            $respuesta->evaluacion_id    = $evaluacion->id;
                             
-                            $respuesta->save();
-                        }
+        //Procesamos las respuestas
+        $respuestas = array();
+        $i = 0;
+        //Es para calcular el valor numerico de la evaluación 
+        $percentil_value_categoria = $instrumento->percentilValue();
+        $percentil_total_eva = 0;
+
+        //Buscamos las categorias del instrumento
+        foreach($instrumento->categorias as $categoria){
+            $categoria_field = array();
+            $j = 0;
+            $categoria_percentilValue = $categoria->percentilValue();
+            $percentil_value_indicadores = 0;
+            if($categoria_percentilValue != 0){
+                $percentil_value_indicadores = $percentil_value_categoria/$categoria_percentilValue;
+            }
+
+            //Recorremos los indicadores del instrumento para calcular su valor numérico
+            $categoria_likertType = $categoria->likertType();
+            foreach($categoria->indicadores as $indicador){
+                if(isset($request->{($indicador->id)} )){
+                    
+                    $value_string = "Nunca";
+                    $value_percentil_request = 0;
+                    switch ($request->{($indicador->id)}) {
+                        case "2":
+                            $value_string = "Siempre";
+                            $value_percentil_request = 2;
+                        break;
+                        case "1":
+                            $value_string = "A veces";
+                            $value_percentil_request = 1;
+                        break;
                     }
+                    if($categoria_percentilValue == 0 || !$indicador->esMedible()){
+                        $percentil_indicador_actual = -1;
+                    }else{
+                        $percentil_value_opciones = $indicador->percentilValue($categoria_likertType); //Cantidad de opciones
+                        $percentil_indicador_actual =($percentil_value_indicadores/$percentil_value_opciones) * $value_percentil_request;
+                        $percentil_total_eva = $percentil_total_eva + $percentil_indicador_actual;
+                    }
+                    
+                    $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
+                    $categoria_field[$j]['value_string']    = $value_string;
+                    $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
+                    $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
+                    $categoria_field[$j]['indicador_id']    = $indicador->id;
+                    $categoria_field[$j]['categoria_id']    = $categoria->id;
 
-
-                    //Actualizamos el estatus de la invitacion
-                    $invitacion->estatus_invitacion_id = 7; //Invitacion completada
-                    $invitacion->save();
-
-                    return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
+                    $j++;
                 }
             }
-            
+            $respuestas[$i] = $categoria_field;
+            $i++;
         }
+        $respuestas_save = json_encode($respuestas);
+
+        //Guardamos la evaluacion realizada
+        $evaluacion = new Evaluacion;
+
+        $evaluacion->respuestas          = $respuestas_save;
+        $evaluacion->percentil_eva       = $percentil_total_eva;
+        $evaluacion->instrumento_id      = $instrumento->id;
+        $evaluacion->curso_id            = $curso->id;
+        $evaluacion->cvucv_user_id       = $invitacion->cvucv_user_id;
+        $evaluacion->periodo_lectivo_id  = $categoria_raiz->periodo_lectivo;
+
+        $evaluacion->save();
+
+        //Guardamos las respuestas ya procesadas / calculadas
+        foreach($respuestas as $respuesta){
+            foreach($respuesta as $campos){
+                $respuesta = new Respuesta;
+
+                $respuesta->value_string     = $campos['value_string'];
+                $respuesta->value_request    = $campos['value_request'];
+                $respuesta->value_percentil  = $campos['value_percentil'];
+                $respuesta->indicador_nombre = $campos['indicador_nombre'] ;
+                $respuesta->indicador_id     = $campos['indicador_id'];
+                $respuesta->categoria_id     = $campos['categoria_id'] ;
+                $respuesta->evaluacion_id    = $evaluacion->id;
+                
+                $respuesta->save();
+            }
+        }
+
+
+        //Actualizamos el estatus de la invitacion
+        $invitacion->estatus_invitacion_id = 7; //Invitacion completada
+        $invitacion->save();
+
+        return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
+        
+    
     }
 
     public function message($message, $alert_type){
