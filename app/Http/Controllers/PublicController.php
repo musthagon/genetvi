@@ -73,7 +73,8 @@ class PublicController extends Controller
         }
 
         //Verificamos que los campos del request no esten vacíos
-        foreach($instrumento->categoriasOrdenadas() as $categorias){
+        $instrumento_categorias = $instrumento->categoriasOrdenadas();
+        foreach($instrumento_categorias as $categorias){
             foreach($categorias->indicadoresOrdenados() as $indicador){
                 if(!isset($request->{($indicador->id)}) && $indicador->requerido() ){  
                     return redirect()
@@ -119,10 +120,11 @@ class PublicController extends Controller
         $percentil_total_eva = 0;
 
         //Buscamos las categorias del instrumento
-        foreach($instrumento->categorias as $categoria){
+        foreach($instrumento_categorias as $categoria){
             $categoria_field = array();
             $j = 0;
             $categoria_percentilValue = $categoria->percentilValue();
+
             $percentil_value_indicadores = 0;
             if($categoria_percentilValue != 0){
                 $percentil_value_indicadores = $percentil_value_categoria/$categoria_percentilValue;
@@ -130,24 +132,30 @@ class PublicController extends Controller
 
             //Recorremos los indicadores del instrumento para calcular su valor numérico
             $categoria_likertType = $categoria->likertType();
-            foreach($categoria->indicadores as $indicador){
+            $categoria_likertOpciones = $categoria->likertOpciones();
+            /*dd($request);*/
+            foreach($categoria->indicadoresOrdenados() as $indicador){
                 if(isset($request->{($indicador->id)} )){
-                    
                     
                     if($categoria_percentilValue == 0 || !$indicador->esMedible()){
                         $percentil_indicador_actual = -1;
                     }else{
 
                         $percentil_value_opciones = $indicador->percentilValueOpciones($categoria_likertType); //Cantidad de opciones
-                        $value_percentil_request = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria->likertOpciones());
+                        $value_percentil_request = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria_likertOpciones);
 
                         $percentil_indicador_actual =($percentil_value_indicadores/$percentil_value_opciones) * $value_percentil_request;
                         $percentil_total_eva = $percentil_total_eva + $percentil_indicador_actual;
                     }
                     
                     $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
-                    $categoria_field[$j]['value_string']    = $request->{($indicador->id)};
-                    $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
+                    if($indicador->getTipo() != "select_multiple"){
+                        $categoria_field[$j]['value_string']    = $request->{($indicador->id)};
+                        $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
+                    }else{
+                        $categoria_field[$j]['value_string']    = "";
+                        $categoria_field[$j]['value_request']   = "";
+                    }
                     $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
                     $categoria_field[$j]['indicador_id']    = $indicador->id;
                     $categoria_field[$j]['categoria_id']    = $categoria->id;

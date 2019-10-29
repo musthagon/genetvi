@@ -39,7 +39,6 @@ class Categoria extends Model
         foreach($this->indicadores as $indicador){
             if($indicador->esMedible()){
                 $cantidad++;
-                break;
             }
         }
         
@@ -91,7 +90,7 @@ class Categoria extends Model
             return "1";
         }
 
-        if($likert_type != "2"){
+        if($likert_type != "2"){ //Likerts disponibles
             return "1";
         }
         return $likert_type;
@@ -104,17 +103,17 @@ class Categoria extends Model
         switch ($likert_type) {
             case "2":
                 $likert = [ 
-                    "likert_4" => "Totalmente de acuerdo",
-                    "likert_3" => "De acuerdo",
-                    "likert_2" => "Ni de acuerdo ni en desacuerdo",
-                    "likert_1" => "En desacuerdo",
-                    "likert_0" => "Totalmente en desacuerdo"];
+                    "Totalmente de acuerdo"             => "Totalmente de acuerdo",
+                    "De acuerdo"                        => "De acuerdo",
+                    "Ni de acuerdo ni en desacuerdo"    => "Ni de acuerdo ni en desacuerdo",
+                    "En desacuerdo"                     => "En desacuerdo",
+                    "Totalmente en desacuerdo"          => "Totalmente en desacuerdo"];
             break;
             default:
                 $likert = [ 
-                    "likert_2" => "Siempre", 
-                    "likert_1" => "A veces", 
-                    "likert_0" => "Nunca" ];
+                    "Siempre"   => "Siempre", 
+                    "A veces"   => "A veces", 
+                    "Nunca"     => "Nunca" ];
             break;
             
         }

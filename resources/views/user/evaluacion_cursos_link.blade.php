@@ -26,8 +26,8 @@
 
       <!-- CSRF TOKEN -->
       {{ csrf_field() }}
-
-      @foreach($instrumento->categoriasOrdenadas() as $categoriaIndex => $categoria)
+      @php $categoriaIndex = 0; @endphp
+      @foreach($instrumento->categoriasOrdenadas() as $categoria)
       <!-- Cat -->
       <h2>{{$categoria->getNombre()}}</h2>
       <section>
@@ -54,7 +54,8 @@
               </th>
             </tr>
             <tbody class='likert'>
-              @foreach($categoria->indicadoresOrdenados() as $indicadorIndex => $indicador)
+              @php $indicadorIndex = 0; @endphp
+              @foreach($categoria->indicadoresOrdenados() as $indicador)
               <!-- Inds -->
               <fieldset>
                 <tr class='likert-row'>
@@ -79,6 +80,7 @@
                   </td>
                 </tr>
               </fieldset>
+              @php $indicadorIndex = $indicadorIndex + 1; @endphp
               @endforeach
             </tbody>
           </thead>
@@ -87,6 +89,7 @@
           <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
         @endif
       </section>
+      @php $categoriaIndex = $categoriaIndex + 1; @endphp
       @endforeach
 
     </form>
