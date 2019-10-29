@@ -151,10 +151,10 @@ class PublicController extends Controller
                     $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
                     if($indicador->getTipo() != "select_multiple"){
                         $categoria_field[$j]['value_string']    = $request->{($indicador->id)};
-                        $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
+                        /*$categoria_field[$j]['value_request']   = $request->{($indicador->id)};*/
                     }else{
-                        $categoria_field[$j]['value_string']    = "";
-                        $categoria_field[$j]['value_request']   = "";
+                        $categoria_field[$j]['value_string']    = json_encode($request->{($indicador->id)});;
+                        /*$categoria_field[$j]['value_request']   = "";*/
                     }
                     $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
                     $categoria_field[$j]['indicador_id']    = $indicador->id;
@@ -166,12 +166,12 @@ class PublicController extends Controller
             $respuestas[$i] = $categoria_field;
             $i++;
         }
-        /*$respuestas_save = json_encode($respuestas);*/
+        $respuestas_save = json_encode($respuestas);
 
         //Guardamos la evaluacion realizada
         $evaluacion = new Evaluacion;
 
-        /*$evaluacion->respuestas          = $respuestas_save;*/
+        $evaluacion->respuestas          = $respuestas_save;
         $evaluacion->percentil_eva       = $percentil_total_eva;
         $evaluacion->instrumento_id      = $instrumento->id;
         $evaluacion->curso_id            = $curso->id;
@@ -186,7 +186,7 @@ class PublicController extends Controller
                 $respuesta = new Respuesta;
 
                 $respuesta->value_string     = $campos['value_string'];
-                $respuesta->value_request    = $campos['value_request'];
+                /*$respuesta->value_request    = $campos['value_request'];*/
                 $respuesta->value_percentil  = $campos['value_percentil'];
                 $respuesta->indicador_nombre = $campos['indicador_nombre'] ;
                 $respuesta->indicador_id     = $campos['indicador_id'];
