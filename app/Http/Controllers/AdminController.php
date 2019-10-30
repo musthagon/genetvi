@@ -365,19 +365,17 @@ class AdminController extends Controller
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        //Tiene permitido acceder?
-        $categoria = CategoriaDeCurso::where('id', $curso->cvucv_category_id)->first();
-        if(!empty($categoria) ){
-            if($categoria->cvucv_category_parent_id == 0){
-                $categoriaSuperPadre = $categoria;
-            }else{
-                $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
-            }
-            
-            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
-                return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
-            }
+        //Tiene permitido acceder a la categoria?
+        $categoria = CategoriaDeCurso::find($curso->cvucv_category_id);
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
         }
+        $categoriaSuperPadre = $categoria->categoria_raiz;
+        
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+        
 
         //periodos lectivos con los cuales han evaluado este curso
         $periodos_curso = Evaluacion::where('curso_id', $curso->id)->distinct('periodo_lectivo_id')->get(['periodo_lectivo_id']);
@@ -396,9 +394,6 @@ class AdminController extends Controller
             array_push($instrumentos_collection, $actual);
         }
 
-        //Opciones del instrumento
-        //$opciones_instrumento = ['Siempre', 'A veces', 'Nunca']; 
-
         //Charts por indicadores de categora, en instrumento en un periodo lectivo
         $cantidadEvaluacionesCurso = [];
         $ponderacionCurso = [];
@@ -414,7 +409,6 @@ class AdminController extends Controller
                     $lista_categorias = [];
                     foreach($instrumento->categorias as $categoria_index=>$categoria){
 
-                        $lista_indicadores = [];
                         foreach($categoria->indicadores as $indicador_index=>$indicador){
 
                             $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
@@ -423,15 +417,7 @@ class AdminController extends Controller
                             $opciones_indicador = [];
                             foreach($opciones_instrumento as $key=>$opcion){
                                 
-                                $valor = DB::table('evaluaciones')
-                                ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
-                                ->select('evaluaciones.*', 'respuestas.*')
-                                ->where('evaluaciones.curso_id',$curso->id)
-                                ->where('evaluaciones.instrumento_id',$instrumento->id)
-                                ->where('evaluaciones.periodo_lectivo_id',$periodo->id)
-                                ->where('respuestas.indicador_id',$indicador->id)
-                                ->where('respuestas.value_string',$key)
-                                ->count();
+                                $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $indicador, $key);
                                 $opciones_indicador[$k] = $valor;
                                 $k++;
                             }
@@ -483,7 +469,7 @@ class AdminController extends Controller
                     ->avg('percentil_eva');
 
                     //Revisores del instrumento en el periodo lectivo
-                    $revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                    /*$revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
                     ->where('instrumento_id',$instrumento->id)
                     ->where('curso_id',$curso->id)
                     ->get();
