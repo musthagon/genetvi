@@ -6,10 +6,8 @@ use Illuminate\Http\Request;
 use App\Instrumento;
 use App\Curso;
 use App\CategoriaDeCurso;
-use App\CursoParticipante;
 use App\PeriodoLectivo;
 use App\Evaluacion;
-use App\User;
 use App\Categoria;
 use App\Indicador;
 use App\Invitacion;
@@ -357,6 +355,49 @@ class AdminController extends Controller
     * Y lo relacionado a ese curso
     *
     */
+    public function consultar_grafico(Request $request, $id){
+        $chart = new indicadoresChart;
+
+        if(isset($request->number)){
+            $array = [3,4,(int)$request->number];
+            $array2 = [(int)$request->number,4,3];
+            $chart->dataset('Sample Test', 'bar', $array );
+            $chart->dataset('Sample Test', 'line', $array2 );
+        }else{
+            $chart->dataset('Sample Test', 'bar', [3,4,1]);
+            $chart->dataset('Sample Test', 'line', [1,4,3]);
+        }
+        
+
+        return $chart->api();
+    }
+    public function test($id){
+        $curso = Curso::find($id);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+
+        $chart = new indicadoresChart;
+
+        $api = route('curso.consultar_grafico', ['id'=> $curso->id]);
+
+        $chart->labels(['test1', 'test2', 'test3'])
+            ->load($api);
+
+
+        /*$chart->labels(['One', 'Two', 'Three', 'Four']);
+        $chart->dataset('My dataset', 'line', [1, 2, 3, 4]);
+        $chart->dataset('My dataset 2', 'line', [4, 3, 2, 1]);*/
+
+        return view('vendor.voyager.gestion.cursos_dashboards_test',
+        compact(
+            'curso',
+            'chart'
+        ));
+
+    }
+
     public function visualizar_curso($id){        
         
         $curso = Curso::find($id);
