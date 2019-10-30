@@ -141,4 +141,16 @@ class Indicador extends Model
 
         return $opcionValue;
     }
+
+    public function indicadorOpciones($likert){
+        $tipo_indicador = $this->getTipo();
+        if($this->esMedible()){
+            if ($tipo_indicador == "likert"){
+                return $likert;
+            }else{
+                return $this->getOpciones(1);
+            }
+        }
+        return [];
+    }
 }

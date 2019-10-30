@@ -397,7 +397,7 @@ class AdminController extends Controller
         }
 
         //Opciones del instrumento
-        $opciones_instrumento = ['Siempre', 'A veces', 'Nunca']; 
+        //$opciones_instrumento = ['Siempre', 'A veces', 'Nunca']; 
 
         //Charts por indicadores de categora, en instrumento en un periodo lectivo
         $cantidadEvaluacionesCurso = [];
@@ -416,6 +416,9 @@ class AdminController extends Controller
 
                         $lista_indicadores = [];
                         foreach($categoria->indicadores as $indicador_index=>$indicador){
+
+                            $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+                            
                             $k=0;
                             $opciones_indicador = [];
                             foreach($opciones_instrumento as $key=>$opcion){
@@ -427,14 +430,14 @@ class AdminController extends Controller
                                 ->where('evaluaciones.instrumento_id',$instrumento->id)
                                 ->where('evaluaciones.periodo_lectivo_id',$periodo->id)
                                 ->where('respuestas.indicador_id',$indicador->id)
-                                ->where('respuestas.value_string',$opcion)
+                                ->where('respuestas.value_string',$key)
                                 ->count();
                                 $opciones_indicador[$k] = $valor;
                                 $k++;
                             }
                             
                             $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->labels($opciones_instrumento);
+                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->labels(array_keys($opciones_instrumento));
                             $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->
                             dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id.' '.$periodo_index.$instrumento_index.$categoria_index.$indicador_index, 
                             'pie', 
