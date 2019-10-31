@@ -13,6 +13,7 @@
 @section('content')
 
     <main class="cd-main-content">
+        
 		<div class="cd-tab-filter-wrapper">
 			<div class="cd-tab-filter">
 				<ul class="cd-filters">

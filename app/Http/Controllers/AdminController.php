@@ -30,14 +30,26 @@ class AdminController extends Controller
         $this->middleware('admin.user');
     }   
 
-    /*Para revisar si el usuario es admin */
-    public function isAdminRedirect(){
+    public function isAdminRedirect(){//Verifica si el usuario es admin
         $isAdmin = Auth::user()->hasRole('admin');
 
         if(!$isAdmin){
             return redirect()->route('home');
         }
     }
+    public function checkAccess_ver($curso){//Verifica si tiene acceso a visualizar la categoría del curso
+        $categoria = CategoriaDeCurso::find($curso->cvucv_category_id);
+
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
+        }
+        $categoriaSuperPadre = $categoria->categoria_raiz;
+        
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+    }
+
     /**
      * Para  Visualizar y sincronizar las categorias, cursos, participantes, roles
      *
@@ -355,7 +367,7 @@ class AdminController extends Controller
     * Y lo relacionado a ese curso
     *
     */
-    public function consultar_grafico(Request $request, $id){
+    public function consultar_grafico(Request $request, $id){//Crea la data de los dashboards consultados dinamicamente fetch() JS
         $chart = new indicadoresChart;
 
         if(isset($request->number)){
@@ -371,29 +383,210 @@ class AdminController extends Controller
 
         return $chart->api();
     }
-    public function test($id){
-        $curso = Curso::find($id);
+    public function consultar_grafico_indicadores($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id){//Crea la data de los dashboards consultados dinamicamente fetch() JS
+        $chart = new indicadoresChart;
+
+        if(!isset($curso_id) || !isset($periodo_id) || !isset($instrumento_id) || !isset($categoria_id) || !isset($indicador_id)){
+            return json_encode (json_decode ("{}"));
+        }
+        $curso          = Curso::find($curso_id);
+        $instrumento    = Instrumento::find($instrumento_id);
+        $periodo        = PeriodoLectivo::find($periodo_id);
+        $categoria      = Categoria::find($categoria_id);
+        $indicador      = Indicador::find($indicador_id);
+
+        if(empty($categoria) || empty($indicador) || empty($periodo) || empty($instrumento) || empty($curso)){
+            return json_encode (json_decode ("{}"));
+        }
+        $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+        
+        
+        //return json_encode (json_decode ("{}"));
+        
+        $k=0;
+        $opciones_indicador = [];
+        foreach($opciones_instrumento as $key=>$opcion){
+            $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $indicador, $key);
+            $opciones_indicador[$k] = $valor;
+            $k++;
+        }
+
+        $chart->dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id, 'bar',$opciones_indicador);
+        
+
+
+            //$chart->dataset('Sample Test', 'pie', [0 =>"3", 1 => "4",2=>"1"]);
+            //$chart->dataset('Sample Test', 'line', [1,4,3]);
+
+
+        return $chart->api();
+    }
+
+    public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
+        $curso = Curso::find($curso_id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        $chart = new indicadoresChart;
+        //Tiene permitido acceder a la categoria?
+        $this->checkAccess_ver($curso);
 
-        $api = route('curso.consultar_grafico', ['id'=> $curso->id]);
+        //instrumentos con los cuales han evaluado este curso
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
+        
+        //periodos lectivos con los cuales han evaluado este curso
+        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
 
-        $chart->labels(['test1', 'test2', 'test3'])
-            ->load($api);
+        //categorias con los cuales han evaluado este curso
+        $categorias_collection      = Evaluacion::categorias_de_evaluacion_del_curso($curso->id);
+        
+        //indicadores con los cuales han evaluado este curso
+        $indicadores_collection     = Evaluacion::indicadores_de_evaluacion_del_curso($curso->id);
 
+        $indicadores_collection_charts = [];
 
-        /*$chart->labels(['One', 'Two', 'Three', 'Four']);
-        $chart->dataset('My dataset', 'line', [1, 2, 3, 4]);
-        $chart->dataset('My dataset 2', 'line', [4, 3, 2, 1]);*/
+        foreach($periodos_collection as $periodo_index=>$periodo){
+        foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+        foreach($instrumento->categorias as $categoria_index=>$categoria){
+        foreach($categoria->indicadores as $indicador_index=>$indicador){
+
+            $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
+
+            $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] ->options([
+                "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                'title'=>[
+                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
+                                Del Instrumento: '.$instrumento->nombre.'<br>
+                                En el periodo lectivo: '.$periodo->nombre
+                ],
+                'subtitle'=>[
+                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+                ],
+                'tooltip'=> [
+                    'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
+                ],
+                'plotOptions'=> [
+                    'pie'=> [
+                        'allowPointSelect'=> true,
+                        'cursor'=> 'pointer',
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                            'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
+                        ],
+                    ],                            
+                ],
+            ]);
+
+            $api = route('curso.consultar_grafico_indicadores', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]);
+
+            $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+            $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
+                ->labels(array_keys($opciones_instrumento))->load($api);
+        }
+        }
+        }
+        }
+
+        //Charts por indicadores de categora, en instrumento en un periodo lectivo
+        /*$cantidadEvaluacionesCurso = [];
+        $ponderacionCurso = [];
+        $listadoParticipantesRevisores = [];
+        foreach($periodos_collection as $periodo_index=>$periodo){
+
+            if(!empty($periodo)){
+            foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+
+                //Recorremos el instrumento para realizar los charts por indicador
+                if(!empty($instrumento)){  
+                
+                    $lista_categorias = [];
+                    foreach($instrumento->categorias as $categoria_index=>$categoria){
+
+                        foreach($categoria->indicadores as $indicador_index=>$indicador){
+
+                            $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+                            
+                            $k=0;
+                            $opciones_indicador = [];
+                            foreach($opciones_instrumento as $key=>$opcion){
+                                
+                                $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $indicador, $key);
+                                $opciones_indicador[$k] = $valor;
+                                $k++;
+                            }
+                            
+                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
+                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->labels(array_keys($opciones_instrumento));
+                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->
+                            dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id.' '.$periodo_index.$instrumento_index.$categoria_index.$indicador_index, 
+                            'pie', 
+                            $opciones_indicador)->options([
+                                "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                            ]);
+                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->options([
+                                'title'=>[
+                                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
+                                                Del Instrumento: '.$instrumento->nombre.'<br>
+                                                En el periodo lectivo: '.$periodo->nombre
+                                ],
+                                'subtitle'=>[
+                                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+                                ],
+                                'tooltip'=> [
+                                    'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
+                                ],
+                                'plotOptions'=> [
+                                    'pie'=> [
+                                        'allowPointSelect'=> true,
+                                        'cursor'=> 'pointer',
+                                        'dataLabels'=> [
+                                            'enabled'=> true,
+                                            'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                        ],
+                                    ],                            
+                                ],
+                            ]);
+                        }
+                    }
+
+                    //Chart1. Cantidad personas que han evaluado el eva
+                    $cantidadEvaluacionesCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                    ->where('instrumento_id',$instrumento->id)
+                    ->where('curso_id',$curso->id)->count();
+                    
+
+                    //Chart2. Ponderacion de la evaluacion del eva
+                    $ponderacionCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                    ->where('instrumento_id',$instrumento->id)
+                    ->where('curso_id',$curso->id)
+                    ->avg('percentil_eva');
+
+                    //Revisores del instrumento en el periodo lectivo
+                    //$revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                    //->where('instrumento_id',$instrumento->id)
+                    //->where('curso_id',$curso->id)
+                    //->get();
+                    
+                    //foreach($revisores as $revisorIndex => $revisor){
+                    //    $usuario = User::find($revisor->usuario_id);
+                    //    $listadoParticipantesRevisores [$periodo_index][$instrumento_index][$revisorIndex] = $usuario;
+                    //}
+                    
+                }
+            }
+            }
+        }
+*/
 
         return view('vendor.voyager.gestion.cursos_dashboards_test',
         compact(
             'curso',
-            'chart'
+            'periodos_collection',
+            'instrumentos_collection',
+            'categorias_collection',
+            'indicadores_collection',
+            'indicadores_collection_charts'
         ));
 
     }
@@ -406,34 +599,25 @@ class AdminController extends Controller
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
+        
         //Tiene permitido acceder a la categoria?
-        $categoria = CategoriaDeCurso::find($curso->cvucv_category_id);
-        if(empty($categoria) ){
-            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
-        }
-        $categoriaSuperPadre = $categoria->categoria_raiz;
-        
-        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
-            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
-        }
-        
+        $this->checkAccess_ver($curso);
+
+        //instrumentos con los cuales han evaluado este curso
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
 
         //periodos lectivos con los cuales han evaluado este curso
-        $periodos_curso = Evaluacion::where('curso_id', $curso->id)->distinct('periodo_lectivo_id')->get(['periodo_lectivo_id']);
-        $periodos_collection = [];
-        foreach($periodos_curso as $periodo_index=>$periodo){
-            $actual = PeriodoLectivo::find($periodo->periodo_lectivo_id);
-            array_push($periodos_collection, $actual);
-        }
-        //periodos lectivos con los cuales han evaluado este curso
-        $instrumentos_curso = Evaluacion::where('curso_id', $curso->id)->distinct('instrumento_id')->get(['instrumento_id']);
-        $instrumentos_collection = [];
-        $nombreInstrumentos = [];
-        foreach($instrumentos_curso as $instrumento_index=>$instrumento){
-            $actual = Instrumento::find($instrumento->instrumento_id);
-            $nombreInstrumentos[$instrumento_index] = $actual->nombre;
-            array_push($instrumentos_collection, $actual);
-        }
+        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
+
+        //categorias con los cuales han evaluado este curso
+        $categorias_collection      = Evaluacion::categorias_de_evaluacion_del_curso($curso->id);
+        
+        //indicadores con los cuales han evaluado este curso
+        $indicadores_collection     = Evaluacion::indicadores_de_evaluacion_del_curso($curso->id);
+
+
+
+
 
         //Charts por indicadores de categora, en instrumento en un periodo lectivo
         $cantidadEvaluacionesCurso = [];
@@ -601,32 +785,7 @@ class AdminController extends Controller
             ]);
         }
 
-        //categorias con los cuales han evaluado este curso
-        $categorias_collection = [];
-        $categoriasDisponibles = DB::table('evaluaciones')
-                ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
-                ->select('respuestas.categoria_id')
-                ->where('evaluaciones.curso_id',$curso->id)
-                ->distinct('categoria_id')
-                ->get();
 
-        foreach($categoriasDisponibles as $categoria){
-            $actual = Categoria::find($categoria->categoria_id);
-            array_push($categorias_collection, $actual);
-        }
-
-        //indicadores con los cuales han evaluado este curso
-        $indicadores_collection = [];
-        $indicadoresDisponibles = DB::table('evaluaciones')
-                ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
-                ->select('respuestas.indicador_id')
-                ->where('evaluaciones.curso_id',$curso->id)
-                ->distinct('indicador_id')
-                ->get();
-        foreach($indicadoresDisponibles as $indicador){
-            $actual = Indicador::find($indicador->indicador_id);
-            array_push($indicadores_collection, $actual);
-        }
 
         //Buscamos los participantes
         $participantes = $this->cvucv_get_participantes_curso($curso->id);
@@ -889,91 +1048,14 @@ class AdminController extends Controller
 
         return redirect()->back()->with(['message' => $total_invitacion." Usuarios invitados", 'alert-type' => 'success']);
     }
-    public function messageTemplate($user_profile, $curso, $token){
+    public function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico
         $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
         <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
 
         return $message;
     }
 
-    public function campus_users(Request $request){
-
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN2");
-
-        if(!isset($request->lastname)){
-            return [];
-        }
-
-        $values = preg_split('/[\s,]+/', $request->lastname, 2);
-
-        if(isset($values[0]) && isset($values[1])){
-            $nombre = "%".$values[0]."%"; 
-            $apellido = "%".$values[1]."%"; 
-
-            $params = [
-                'wsfunction'            => 'core_user_get_users',
-                'wstoken'               => $wstoken,
-                'moodlewsrestformat'    => 'json',
-                'criteria[0][key]'      => "firstname",
-                'criteria[0][value]'    => $nombre,
-                'criteria[1][key]'      => "lastname",
-                'criteria[1][value]'    => $apellido
-            ];
-        }elseif(isset($values[0])){
-            $nombre = "%".$values[0]."%";  
-
-            $params = [
-                'wsfunction'            => 'core_user_get_users',
-                'wstoken'               => $wstoken,
-                'moodlewsrestformat'    => 'json',
-                'criteria[0][key]'      => "firstname",
-                'criteria[0][value]'    => $nombre
-            ];
-        }elseif(isset($values[1])){
-            $apellido = "%".$values[1]."%"; 
-            
-            $params = [
-                'wsfunction'            => 'core_user_get_users',
-                'wstoken'               => $wstoken,
-                'moodlewsrestformat'    => 'json',
-                'criteria[0][key]'      => "lastname",
-                'criteria[0][value]'    => $apellido
-            ];
-        }else{
-            return [];
-        }
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-
-        //Construimos la paginación
-        if(isset($response['users']) && isset($request->page)){
-            $page = $request->page;
-            $pagination = 20;
-
-            $offset = ($page - 1) * $pagination;
-
-            //$response;
-            $count = count($response['users']);
-
-            $users = array_slice($response['users'],$offset,$pagination);
-
-            $endCount = $offset + $pagination;
-            $morePages = $count > $endCount;
-
-            $results = array(
-                "results" => $users,
-                "pagination" => array(
-                    "more" => $morePages
-                )
-            );
-
-            return response()->json($results);
-        }
-
-        return $response;
     
-    }
     /**
      * CURL generíco usando GuzzleHTTP
      *
@@ -1091,4 +1173,86 @@ class AdminController extends Controller
         return $response;
     }
 
+    /**
+     * Consulta los usuarios del Campus Virtual y configura la paginación
+     *
+     */
+    public function campus_users(Request $request){
+
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN2");
+
+        if(!isset($request->lastname)){
+            return [];
+        }
+
+        $values = preg_split('/[\s,]+/', $request->lastname, 2);
+
+        if(isset($values[0]) && isset($values[1])){
+            $nombre = "%".$values[0]."%"; 
+            $apellido = "%".$values[1]."%"; 
+
+            $params = [
+                'wsfunction'            => 'core_user_get_users',
+                'wstoken'               => $wstoken,
+                'moodlewsrestformat'    => 'json',
+                'criteria[0][key]'      => "firstname",
+                'criteria[0][value]'    => $nombre,
+                'criteria[1][key]'      => "lastname",
+                'criteria[1][value]'    => $apellido
+            ];
+        }elseif(isset($values[0])){
+            $nombre = "%".$values[0]."%";  
+
+            $params = [
+                'wsfunction'            => 'core_user_get_users',
+                'wstoken'               => $wstoken,
+                'moodlewsrestformat'    => 'json',
+                'criteria[0][key]'      => "firstname",
+                'criteria[0][value]'    => $nombre
+            ];
+        }elseif(isset($values[1])){
+            $apellido = "%".$values[1]."%"; 
+            
+            $params = [
+                'wsfunction'            => 'core_user_get_users',
+                'wstoken'               => $wstoken,
+                'moodlewsrestformat'    => 'json',
+                'criteria[0][key]'      => "lastname",
+                'criteria[0][value]'    => $apellido
+            ];
+        }else{
+            return [];
+        }
+
+        $response = $this->send_curl('POST', $endpoint, $params);
+
+        //Construimos la paginación
+        if(isset($response['users']) && isset($request->page)){
+            $page = $request->page;
+            $pagination = 20;
+
+            $offset = ($page - 1) * $pagination;
+
+            //$response;
+            $count = count($response['users']);
+
+            $users = array_slice($response['users'],$offset,$pagination);
+
+            $endCount = $offset + $pagination;
+            $morePages = $count > $endCount;
+
+            $results = array(
+                "results" => $users,
+                "pagination" => array(
+                    "more" => $morePages
+                )
+            );
+
+            return response()->json($results);
+        }
+
+        return $response;
+    
+    }
 }

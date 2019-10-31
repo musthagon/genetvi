@@ -1,64 +1,34 @@
-form.validate({
 
-errorPlacement: function errorPlacement(error, element) {},
-  rules: {
-    @foreach($instrumento->categorias as $categoria)
-    @foreach($categoria->indicadores as $indicador)
-      @if($indicador->requerido())
-        '{{$indicador->id}}@if($indicador->multipleField())[]@endif' : {required :true},
-      @endif
+    @foreach($periodos_collection as $periodo_index=>$periodo)
+                    @if(!empty($periodo))
+                    @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
+                    @if(!empty($instrumento))
+                    @foreach($instrumento->categorias as $categoria_index=>$categoria)
+                    @foreach($categoria->indicadores as $indicador_index=>$indicador)
+                        <div class="chartTarget col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
+                            {!! $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
+                        </div>
+                    @endforeach
+                    @endforeach
+                    @endif
+                    @endforeach
+                    @endif
+                    @endforeach
+    
+    
+    
+    
+    
+    @foreach($periodos_collection as $periodo_index=>$periodo)
+    @if(!empty($periodo))
+    @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
+    @if(!empty($instrumento))
+    @foreach($instrumento->categorias as $categoria_index=>$categoria)
+    @foreach($categoria->indicadores as $indicador_index=>$indicador)
+        {!! $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
     @endforeach
-    @endforeach               
-},
-highlight: function (element, errorClass, validClass) {
-    var target;
-    if ($(element).is('select')) {
-        target = $(element).parent('div');
-    } else {
-        target = $(element);
-    }
-    target.addClass(errorClass).removeClass(validClass);
-},
-unhighlight: function (element, errorClass, validClass) {
-    var target;
-    if ($(element).is('select')) {
-        target = $(element).parent('div');
-    } else {
-        target = $(element);
-    }
-    target.addClass(validClass).removeClass(errorClass);
-},
-});
-
-form.validate({
-
-errorPlacement: function errorPlacement(error, element) {},
-  rules: {
-    @foreach($instrumento->categorias as $categoria)
-    @foreach($categoria->indicadores as $indicador)
-      @if($indicador->requerido())
-        '{{$indicador->id}}@if($indicador->multipleField())[]@endif' : {required :true},
-      @endif
     @endforeach
-    @endforeach               
-},
-highlight: function (element, errorClass, validClass) {
-    var target;
-    if ($(element).is('select')) {
-        target = $(element).parent('div');
-    } else {
-        target = $(element);
-    }
-    target.addClass(errorClass).removeClass(validClass);
-},
-unhighlight: function (element, errorClass, validClass) {
-    var target;
-    if ($(element).is('select')) {
-        target = $(element).parent('div');
-    } else {
-        target = $(element);
-    }
-    target.addClass(validClass).removeClass(errorClass);
-},
-
-});
+    @endif
+    @endforeach
+    @endif
+    @endforeach

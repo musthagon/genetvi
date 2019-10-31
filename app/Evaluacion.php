@@ -4,6 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Instrumento;
+use App\Curso;
+use App\CategoriaDeCurso;
+use App\PeriodoLectivo;
+use App\Categoria;
+use App\Indicador;
+use App\Invitacion;
 
 class Evaluacion extends Model
 {
@@ -51,5 +58,53 @@ class Evaluacion extends Model
             ->where('respuestas.value_string',$key)
             ->count();
         return $valor;
+    }
+    public static function periodos_lectivos_de_evaluacion_del_curso($id){
+        $periodos_curso = Evaluacion::where('curso_id', $id)->distinct('periodo_lectivo_id')->get(['periodo_lectivo_id']);
+        $periodos_collection = [];
+        foreach($periodos_curso as $periodo_index=>$periodo){
+            $actual = PeriodoLectivo::find($periodo->periodo_lectivo_id);
+            array_push($periodos_collection, $actual);
+        }
+        return $periodos_collection;
+    }
+    public static function instrumentos_de_evaluacion_del_curso($id, &$instrumentos_collection, &$nombreInstrumentos){
+        $instrumentos_curso = Evaluacion::where('curso_id', $id)->distinct('instrumento_id')->get(['instrumento_id']);
+        $instrumentos_collection = [];
+        $nombreInstrumentos = [];
+        foreach($instrumentos_curso as $instrumento_index=>$instrumento){
+            $actual = Instrumento::find($instrumento->instrumento_id);
+            $nombreInstrumentos[$instrumento_index] = $actual->nombre;
+            array_push($instrumentos_collection, $actual);
+        }
+    }
+    public static function categorias_de_evaluacion_del_curso($id){
+        $categorias_collection = [];
+        $categoriasDisponibles = DB::table('evaluaciones')
+                ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
+                ->select('respuestas.categoria_id')
+                ->where('evaluaciones.curso_id',$id)
+                ->distinct('categoria_id')
+                ->get();
+
+        foreach($categoriasDisponibles as $categoria){
+            $actual = Categoria::find($categoria->categoria_id);
+            array_push($categorias_collection, $actual);
+        }
+        return $categorias_collection;
+    }
+    public static function indicadores_de_evaluacion_del_curso($id){
+        $indicadores_collection = [];
+        $indicadoresDisponibles = DB::table('evaluaciones')
+                ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
+                ->select('respuestas.indicador_id')
+                ->where('evaluaciones.curso_id',$id)
+                ->distinct('indicador_id')
+                ->get();
+        foreach($indicadoresDisponibles as $indicador){
+            $actual = Indicador::find($indicador->indicador_id);
+            array_push($indicadores_collection, $actual);
+        }
+        return $indicadores_collection;
     }
 }

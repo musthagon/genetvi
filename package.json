@@ -19,6 +19,7 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "echarts": "^4.4.0",
         "toastr": "^2.1.4"
     }
 }
