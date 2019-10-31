@@ -39,6 +39,16 @@
 		<section class="cd-gallery">
             <section class="page-content browse container-fluid ">
                 <div class="row">
+                    @if(!empty($cantidadEvaluacionesCursoCharts))
+                    <div class="chartTarget col-md-12 mix general">
+                        {!! $cantidadEvaluacionesCursoCharts->container() !!}
+                    </div>
+                    @endif
+                    @if(!empty($promedioPonderacionCurso))
+                    <div class="chartTarget col-md-12 mix general">
+                        {!! $promedioPonderacionCurso->container() !!}
+                    </div>
+                    @endif
 
                     @foreach($periodos_collection as $periodo_index=>$periodo)
                     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
@@ -159,11 +169,18 @@
     <script>
         $(document).ready(function () {
             
-            var table = $('#participantes-data-table').DataTable(
-                );
+            var table = $('.data_table').DataTable(
+            );
     
         });
     </script>
+
+    @if(!empty($cantidadEvaluacionesCursoCharts))
+    {!! $cantidadEvaluacionesCursoCharts->script() !!}
+    @endif
+    @if(!empty($promedioPonderacionCurso))
+    {!! $promedioPonderacionCurso->script() !!}
+    @endif
 
     @foreach($periodos_collection as $periodo_index=>$periodo)
     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)

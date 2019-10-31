@@ -71,6 +71,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('gestion/curso/{curso_id}/consultar_grafico_indicadores/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
 
 
+    Route::get('gestion/curso/{curso_id}/consultar_grafico_generales/tipo/{tipo}', 'AdminController@consultar_grafico_generales')->name('curso.consultar_grafico_generales');
+
+
+
     //Evaluación de cursos
     Route::get('gestion/curso/{id}/iniciar_evaluacion/', 'AdminController@iniciar_evaluacion_curso')->name('curso_iniciar_evaluacion_curso');
     Route::post('gestion/curso/{id}/finalizar_evaluacion/', 'AdminController@cerrar_evaluacion_curso')->name('curso_cerrar_evaluacion_curso');

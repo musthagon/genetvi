@@ -400,9 +400,7 @@ class AdminController extends Controller
         }
         $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
         
-        
-        //return json_encode (json_decode ("{}"));
-        
+                
         $k=0;
         $opciones_indicador = [];
         foreach($opciones_instrumento as $key=>$opcion){
@@ -413,13 +411,65 @@ class AdminController extends Controller
 
         $chart->dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id, 'bar',$opciones_indicador);
         
-
-
-            //$chart->dataset('Sample Test', 'pie', [0 =>"3", 1 => "4",2=>"1"]);
-            //$chart->dataset('Sample Test', 'line', [1,4,3]);
+        $chart->dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id, 'line',$opciones_indicador);
 
 
         return $chart->api();
+    }
+
+    public function consultar_grafico_generales($curso_id, $tipo){//Crea la data de los dashboards consultados dinamicamente fetch() JS
+        if(!isset($curso_id) || !isset($tipo)){
+            return json_encode (json_decode ("{}"));
+        }
+
+        //$tipo = (int)$tipo ;
+        if($tipo != "1" && $tipo != "2"){
+            /*return json_encode (json_decode ("{}"));*/
+            $chart = new indicadoresChart;
+            $chart->dataset('Sample Test', 'bar', [3,4,1]);
+            $chart->dataset('Sample Test', 'line', [1,4,3]);
+            return $chart->api();
+        }
+
+
+        $curso = Curso::find($curso_id);
+        
+        if(empty($curso)){
+            return json_encode (json_decode ("{}"));
+        }
+
+        //instrumentos con los cuales han evaluado este curso
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
+        
+        //periodos lectivos con los cuales han evaluado este curso
+        $periodos_collection = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
+
+        $chart = new indicadoresChart;
+
+        
+        //Charts por indicadores de categora, en instrumento en un periodo lectivo
+        $query = [];
+        foreach($periodos_collection as $periodo_index=>$periodo){
+            foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+                if($tipo == "1"){
+                    $query [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                        ->where('instrumento_id',$instrumento->id)
+                        ->where('curso_id',$curso->id)->count();
+
+                }else{
+                    $query [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
+                        ->where('instrumento_id',$instrumento->id)
+                        ->where('curso_id',$curso->id)
+                        ->avg('percentil_eva');
+                }
+            }
+
+            $chart->dataset($periodo->nombre, 'bar', $query[$periodo_index]);
+            
+        }
+
+        return $chart->api();
+
     }
 
     public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
@@ -446,6 +496,10 @@ class AdminController extends Controller
 
         $indicadores_collection_charts = [];
 
+        //Chart1. Cantidad personas que han evaluado el eva
+        //Chart2. Ponderacion de la evaluacion del eva
+        $cantidadEvaluacionesCursoCharts = [];
+        $promedioPonderacionCurso = [];
         foreach($periodos_collection as $periodo_index=>$periodo){
         foreach($instrumentos_collection as $instrumento_index=>$instrumento){
         foreach($instrumento->categorias as $categoria_index=>$categoria){
@@ -486,100 +540,78 @@ class AdminController extends Controller
                     ->labels(array_keys($opciones_instrumento))->load($api);
             }
         }
+        }   
         }
         }
-        }
 
-        //Charts por indicadores de categora, en instrumento en un periodo lectivo
-        /*$cantidadEvaluacionesCurso = [];
-        $ponderacionCurso = [];
-        $listadoParticipantesRevisores = [];
-        foreach($periodos_collection as $periodo_index=>$periodo){
+        $cantidadEvaluacionesCursoCharts= new indicadoresChart;
+        $cantidadEvaluacionesCursoCharts->labels($nombreInstrumentos);
+        $cantidadEvaluacionesCursoCharts->options([
+            'title'=>[
+                'text' => 'Cantidad de Evaluaciones de '.$curso->cvucv_fullname
+            ],
+            'subtitle'=>[
+                'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+            ],
+            'tooltip'=> [
+                'valueSuffix'=> ' personas'
+            ],
+            'plotOptions'=> [
+                'bar'=> [
+                    'dataLabels'=> [
+                        'enabled'=> true,
+                    ],
+                ],                            
+            ],
+            'yAxis'=> [
+                'min'=> 0,
+                'title'=> [
+                    'text'=> 'Cantidad personas que evaluaron',
+                    'align'=> 'high'
+                ],
+                'labels'=> [
+                    'overflow'=> 'justify'
+                ]
+            ],
+        ]);
 
-            if(!empty($periodo)){
-            foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+        $api = route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->id]);
+        $cantidadEvaluacionesCursoCharts->load($api);
 
-                //Recorremos el instrumento para realizar los charts por indicador
-                if(!empty($instrumento)){  
-                
-                    $lista_categorias = [];
-                    foreach($instrumento->categorias as $categoria_index=>$categoria){
+        $promedioPonderacionCurso = new indicadoresChart;
+        $promedioPonderacionCurso->labels($nombreInstrumentos);        
+        $promedioPonderacionCurso->options([
+            'title'=>[
+                'text' => 'Promedio de la Ponderacion de '.$curso->cvucv_fullname
+            ],
+            'subtitle'=>[
+                'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+            ],
+            'tooltip'=> [
+                'valueSuffix'=> ' %'
+            ],
+            'plotOptions'=> [
+                'bar'=> [
+                    'dataLabels'=> [
+                        'enabled'=> true,
+                    ],
+                ],                            
+            ],
+            'yAxis'=> [
+                'min'=> 0,
+                'title'=> [
+                    'text'=> 'Promedio ponderacion del curso',
+                    'align'=> 'high'
+                ],
+                'labels'=> [
+                    'overflow'=> 'justify'
+                ]
+            ],
+        ]);
+        
+        $api = route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->id]);
+        $promedioPonderacionCurso->load($api);
 
-                        foreach($categoria->indicadores as $indicador_index=>$indicador){
-
-                            $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
-                            
-                            $k=0;
-                            $opciones_indicador = [];
-                            foreach($opciones_instrumento as $key=>$opcion){
-                                
-                                $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $indicador, $key);
-                                $opciones_indicador[$k] = $valor;
-                                $k++;
-                            }
-                            
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->labels(array_keys($opciones_instrumento));
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->
-                            dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id.' '.$periodo_index.$instrumento_index.$categoria_index.$indicador_index, 
-                            'pie', 
-                            $opciones_indicador)->options([
-                                "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
-                            ]);
-                            $IndicadoresCharts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->options([
-                                'title'=>[
-                                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
-                                                Del Instrumento: '.$instrumento->nombre.'<br>
-                                                En el periodo lectivo: '.$periodo->nombre
-                                ],
-                                'subtitle'=>[
-                                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-                                ],
-                                'tooltip'=> [
-                                    'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
-                                ],
-                                'plotOptions'=> [
-                                    'pie'=> [
-                                        'allowPointSelect'=> true,
-                                        'cursor'=> 'pointer',
-                                        'dataLabels'=> [
-                                            'enabled'=> true,
-                                            'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
-                                        ],
-                                    ],                            
-                                ],
-                            ]);
-                        }
-                    }
-
-                    //Chart1. Cantidad personas que han evaluado el eva
-                    $cantidadEvaluacionesCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)
-                    ->where('curso_id',$curso->id)->count();
-                    
-
-                    //Chart2. Ponderacion de la evaluacion del eva
-                    $ponderacionCurso [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)
-                    ->where('curso_id',$curso->id)
-                    ->avg('percentil_eva');
-
-                    //Revisores del instrumento en el periodo lectivo
-                    //$revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    //->where('instrumento_id',$instrumento->id)
-                    //->where('curso_id',$curso->id)
-                    //->get();
-                    
-                    //foreach($revisores as $revisorIndex => $revisor){
-                    //    $usuario = User::find($revisor->usuario_id);
-                    //    $listadoParticipantesRevisores [$periodo_index][$instrumento_index][$revisorIndex] = $usuario;
-                    //}
-                    
-                }
-            }
-            }
-        }
-*/
 
         return view('vendor.voyager.gestion.cursos_dashboards_test',
         compact(
@@ -588,7 +620,9 @@ class AdminController extends Controller
             'instrumentos_collection',
             'categorias_collection',
             'indicadores_collection',
-            'indicadores_collection_charts'
+            'indicadores_collection_charts',
+            'cantidadEvaluacionesCursoCharts',
+            'promedioPonderacionCurso'
         ));
 
     }
@@ -616,10 +650,6 @@ class AdminController extends Controller
         
         //indicadores con los cuales han evaluado este curso
         $indicadores_collection     = Evaluacion::indicadores_de_evaluacion_del_curso($curso->id);
-
-
-
-
 
         //Charts por indicadores de categora, en instrumento en un periodo lectivo
         $cantidadEvaluacionesCurso = [];
