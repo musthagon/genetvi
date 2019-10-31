@@ -44,9 +44,11 @@
                     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
-                        <div class="chartTarget col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
-                            {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
-                        </div>
+                        @if($indicador->esMedible())
+                            <div class="chartTarget col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
+                                {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
+                            </div>
+                        @endif
                     @endforeach
                     @endforeach
                     @endforeach
@@ -167,7 +169,9 @@
     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
     @foreach($instrumento->categorias as $categoria_index=>$categoria)
     @foreach($categoria->indicadores as $indicador_index=>$indicador)
-        {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
+        @if($indicador->esMedible())
+            {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
+        @endif
     @endforeach
     @endforeach
     @endforeach

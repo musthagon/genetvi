@@ -451,38 +451,40 @@ class AdminController extends Controller
         foreach($instrumento->categorias as $categoria_index=>$categoria){
         foreach($categoria->indicadores as $indicador_index=>$indicador){
 
-            $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
+            if($indicador->esMedible()){
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
 
-            $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] ->options([
-                "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
-                'title'=>[
-                    'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
-                                Del Instrumento: '.$instrumento->nombre.'<br>
-                                En el periodo lectivo: '.$periodo->nombre
-                ],
-                'subtitle'=>[
-                    'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-                ],
-                'tooltip'=> [
-                    'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
-                ],
-                'plotOptions'=> [
-                    'pie'=> [
-                        'allowPointSelect'=> true,
-                        'cursor'=> 'pointer',
-                        'dataLabels'=> [
-                            'enabled'=> true,
-                            'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
-                        ],
-                    ],                            
-                ],
-            ]);
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] ->options([
+                    "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                    'title'=>[
+                        'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
+                                    Del Instrumento: '.$instrumento->nombre.'<br>
+                                    En el periodo lectivo: '.$periodo->nombre
+                    ],
+                    'subtitle'=>[
+                        'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+                    ],
+                    'tooltip'=> [
+                        'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    ],
+                    'plotOptions'=> [
+                        'pie'=> [
+                            'allowPointSelect'=> true,
+                            'cursor'=> 'pointer',
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                                'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
+                            ],
+                        ],                            
+                    ],
+                ]);
 
-            $api = route('curso.consultar_grafico_indicadores', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]);
+                $api = route('curso.consultar_grafico_indicadores', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]);
 
-            $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
-            $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
-                ->labels(array_keys($opciones_instrumento))->load($api);
+                $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
+                    ->labels(array_keys($opciones_instrumento))->load($api);
+            }
         }
         }
         }
