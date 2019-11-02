@@ -107,4 +107,17 @@ class Evaluacion extends Model
         }
         return $indicadores_collection;
     }
+
+    public static function respuestas_del_indicador($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id){
+        $valor = DB::table('evaluaciones')
+            ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
+            ->select('evaluaciones.*', 'respuestas.*')
+            ->where('evaluaciones.curso_id',$curso_id)
+            ->where('evaluaciones.instrumento_id',$instrumento_id)
+            ->where('evaluaciones.periodo_lectivo_id',$periodo_id)
+            ->where('respuestas.categoria_id',$categoria_id)
+            ->where('respuestas.indicador_id',$indicador_id)
+            ->get(['value_string']);
+        return $valor;
+    }
 }

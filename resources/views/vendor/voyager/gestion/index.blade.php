@@ -72,8 +72,7 @@
                                                     </a>
                                                 @endif
                                                 
-
-                                                <a href="{{ route('curso.visualizar', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                                                <a href="{{ route('curso.visualizar_resultados_curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
                                                     <i class="voyager-list"></i> Ver Resultados de Evaluaciones
                                                 </a>
                                             </td>

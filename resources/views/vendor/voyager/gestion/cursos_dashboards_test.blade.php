@@ -40,12 +40,12 @@
             <section class="page-content browse container-fluid ">
                 <div class="row">
                     @if(!empty($cantidadEvaluacionesCursoCharts))
-                    <div class="chartTarget col-md-12 mix general">
+                    <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
                         {!! $cantidadEvaluacionesCursoCharts->container() !!}
                     </div>
                     @endif
                     @if(!empty($promedioPonderacionCurso))
-                    <div class="chartTarget col-md-12 mix general">
+                    <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
                         {!! $promedioPonderacionCurso->container() !!}
                     </div>
                     @endif
@@ -55,8 +55,22 @@
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
                         @if($indicador->esMedible())
-                            <div class="chartTarget col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
+                            <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
                                 {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
+                            </div>
+                        @else
+                            <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} general">
+                                <div class="tabla" style="background:white;">
+                                    <div class="indicador_title" ><div>Respuestas del indicador: {{$indicador->nombre}}<br>Del Instrumento: {{$instrumento->nombre}}<br>En el periodo lectivo: {{$periodo->nombre}}</div></div>
+                                    <div class="indicador_subtitle" ><div>Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.</div></div>
+                                    <table id="Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}" class="table table-hover table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th style="color: #333333;font-size: 18px;fill: #333333;">{{$indicador->getNombre()}}</th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
                             </div>
                         @endif
                     @endforeach
@@ -143,7 +157,22 @@
     <link rel="stylesheet" href="/content-filter/css/reset.css"> <!-- CSS reset -->
 	<link rel="stylesheet" href="/content-filter/css/style.css"> <!-- Resource style -->
     <style>
-
+        .dataTable {
+            width: 100% !important;
+        }
+        .indicador_title{
+            font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+            font-size: 18px;
+            color:#333333;font-size:18px;fill:#333333;
+            line-height:normal;
+        }
+        .indicador_subtitle{
+            font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color:#666666;fill:#666666;
+            line-height:normal;
+            margin-bottom: 10px;
+        }
     </style>
 @stop
 
@@ -162,18 +191,6 @@
     <script src="/content-filter/js/jquery.mixitup.min.js"></script>
     <script src="/content-filter/js/main.js"></script> <!-- Resource jQuery -->
 
-    
-    
-    
-
-    <script>
-        $(document).ready(function () {
-            
-            var table = $('.data_table').DataTable(
-            );
-    
-        });
-    </script>
 
     @if(!empty($cantidadEvaluacionesCursoCharts))
     {!! $cantidadEvaluacionesCursoCharts->script() !!}
@@ -188,10 +205,24 @@
     @foreach($categoria->indicadores as $indicador_index=>$indicador)
         @if($indicador->esMedible())
             {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
+        @else
+        <script>
+            $(document).ready(function () {
+                var table = $('#Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}').DataTable({
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": "{{ route('curso.consultar_tabla_indicador', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]) }}",
+                        "columns": [
+                            {data: 'value_string', name: 'value_string'}
+                        ]
+                    });
+            });
+        </script>
         @endif
     @endforeach
     @endforeach
     @endforeach
     @endforeach
+
     
 @stop

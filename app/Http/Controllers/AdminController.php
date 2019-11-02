@@ -12,10 +12,10 @@ use App\Categoria;
 use App\Indicador;
 use App\Invitacion;
 use App\Charts\indicadoresChart;
-use Illuminate\Support\Facades\DB;
+//use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-
+use Yajra\Datatables\Datatables;
 
 class AdminController extends Controller
 {
@@ -416,7 +416,29 @@ class AdminController extends Controller
 
         return $chart->api();
     }
+    public function consultar_tabla_indicador($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id){//Crea datatable de indicadores noMedibles Text, textarea
+        $result = collect();
 
+        if(!isset($curso_id) || !isset($periodo_id) || !isset($instrumento_id) || !isset($categoria_id) || !isset($indicador_id)){
+            return $result;
+        }
+        $curso          = Curso::find($curso_id);
+        $instrumento    = Instrumento::find($instrumento_id);
+        $periodo        = PeriodoLectivo::find($periodo_id);
+        $categoria      = Categoria::find($categoria_id);
+        $indicador      = Indicador::find($indicador_id);
+
+        if(empty($categoria) || empty($indicador) || empty($periodo) || empty($instrumento) || empty($curso)){
+            return $result;
+        }
+        //$opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+        
+        $respuestas = Evaluacion::respuestas_del_indicador($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id);
+
+        return Datatables::of($respuestas)->make(true);;
+        
+        
+    }
     public function consultar_grafico_generales($curso_id, $tipo){//Crea la data de los dashboards consultados dinamicamente fetch() JS
         if(!isset($curso_id) || !isset($tipo)){
             return json_encode (json_decode ("{}"));
@@ -471,7 +493,36 @@ class AdminController extends Controller
         return $chart->api();
 
     }
-
+    public function script_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador){
+        $script = "$('#Indicador_".$indicador->id."').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'ajax': '". route('curso.consultar_tabla_indicador', 
+                ['curso' => $curso->id, 
+                'periodo' => $periodo->id, 
+                'instrumento' => $instrumento->id, 
+                'categoria' => $categoria->id, 
+                'indicador' => $indicador->id]) ."',
+            'columns': [
+                {data: 'value_string', name: 'value_string'}
+            ]
+        });
+        ";
+        return $script;
+    }
+    public function html_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador){
+        $script = "<div class='chartTarget col-md-6 mix Periodo_".$periodo->id." Instrumento_".$instrumento->id." Categoria_".$categoria->id." Indicador_".$indicador->id." general'>
+            <div class='indicador_title' style='color: #333333;font-size: 18px;fill: #333333;'>".$indicador->getNombre()."</div>
+            <table id='Indicador_".$indicador->id."' class='table table-hover table-condensed'>
+                <thead>
+                <tr>
+                    <th>".$indicador->getNombre()."</th>
+                </tr>
+                </thead>
+            </table>
+        </div>";
+        return $script;
+    }
     public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
         $curso = Curso::find($curso_id);
         
@@ -500,6 +551,8 @@ class AdminController extends Controller
         //Chart2. Ponderacion de la evaluacion del eva
         $cantidadEvaluacionesCursoCharts = [];
         $promedioPonderacionCurso = [];
+        $script_tabla_indicador = "";
+        $html_tabla_indicador = "";
         foreach($periodos_collection as $periodo_index=>$periodo){
         foreach($instrumentos_collection as $instrumento_index=>$instrumento){
         foreach($instrumento->categorias as $categoria_index=>$categoria){
@@ -538,7 +591,11 @@ class AdminController extends Controller
                 $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
                     ->labels(array_keys($opciones_instrumento))->load($api);
+            }else{
+                $script_tabla_indicador .= $this->script_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador);
+                $html_tabla_indicador .= $this->html_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador);
             }
+
         }
         }   
         }
@@ -612,7 +669,7 @@ class AdminController extends Controller
         $api = route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->id]);
         $promedioPonderacionCurso->load($api);
 
-
+        
         return view('vendor.voyager.gestion.cursos_dashboards_test',
         compact(
             'curso',
@@ -622,7 +679,9 @@ class AdminController extends Controller
             'indicadores_collection',
             'indicadores_collection_charts',
             'cantidadEvaluacionesCursoCharts',
-            'promedioPonderacionCurso'
+            'promedioPonderacionCurso',
+            'html_tabla_indicador',
+            'script_tabla_indicador'
         ));
 
     }
