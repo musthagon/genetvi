@@ -94,9 +94,26 @@
                                                         @endif
                                                     @else
                                                         @if(!$invitacion->instrumento->anonimo)
-                                                            <a href="#" title="Ver evaluación" class="btn btn-sm btn-warning" style="margin-right: 5px;">
-                                                                <i class="voyager-eye"></i> Ver evaluación
-                                                            </a>
+                                                            <form class="form-edit-add" 
+                                                                action="{{ route('curso.visualizar_resultados_curso.respuesta_publica', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->id]) }}" 
+                                                                method="POST">
+
+                                                                <!-- CSRF TOKEN -->
+                                                                {{ csrf_field() }}
+                                                                <select id="periodos_lectivos" class=" form-control select2" name="periodo_lectivo" required>
+                                                                    <option value="{{$invitacion->periodo_lectivo_id}}" selected>{{$invitacion->periodo_lectivo_id}}</option>
+                                                                </select>
+                                                                <select id="instrumentos" class=" form-control select2" name="instrumento" required>
+                                                                    <option value="{{$invitacion->instrumento_id}}" selected>{{$invitacion->instrumento_id}}</option>
+                                                                </select>
+                                                                <select id="search_users2" class=" form-control select2" name="user" required>
+                                                                    <option value="{{$invitacion->cvucv_user_id}}" selected>{{$invitacion->cvucv_user_id}}</option>
+                                                                </select>
+
+                                                                <button type="submit" class="btn btn-sm btn-warning">
+                                                                    <i class="voyager-eye"></i> Ver evaluación
+                                                                </button>
+                                                            </form>
                                                         @else
                                                             <div class="completada">Evaluación anónima realizada satisfactoriamente</div>
                                                         @endif
