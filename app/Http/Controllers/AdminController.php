@@ -16,6 +16,7 @@ use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Yajra\Datatables\Datatables;
+use Nahid\JsonQ\Jsonq;
 
 class AdminController extends Controller
 {
@@ -652,6 +653,8 @@ class AdminController extends Controller
 
     }
     public function visualizar_resultados_curso_respuesta_publica($categoria_id, $curso_id, Request $request){
+        
+
         $curso = Curso::find($curso_id);
 
         if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user)){
@@ -1418,6 +1421,18 @@ class AdminController extends Controller
 
         $response = $this->send_curl('POST', $endpoint, $params);
 
+        //Busqueda en el response por el valor del select2
+        if(isset($request->lastname)){
+            $json = new Jsonq();
+            $response = $json->json(json_encode($response));
+            $response = $json
+            //->where('fullname', 'contains', $request->lastname)
+            ->orWhere('fullname', 'contains', $request->lastname)
+            ->orWhere('email', 'contains', $request->lastname)
+            ->orWhere('username', 'contains', $request->lastname)
+            ->get();
+        }
+        
         //Construimos la paginación
         if(isset($response) && isset($request->page)){
             $page = $request->page;
