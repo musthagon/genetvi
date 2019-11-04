@@ -649,3 +649,20 @@ xcustom form elements
     display: none;
   }
 }
+
+.dataTable {
+  width: 100% !important;
+}
+.indicador_title{
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  color:#333333;font-size:18px;fill:#333333;
+  line-height:normal;
+}
+.indicador_subtitle{
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  color:#666666;fill:#666666;
+  line-height:normal;
+  margin-bottom: 10px;
+}

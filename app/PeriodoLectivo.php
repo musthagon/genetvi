@@ -15,4 +15,10 @@ class PeriodoLectivo extends Model
 
     protected $fillable = ['id', 'nombre', 'descripcion', 'opciones'];
 
+    public function getNombre(){
+        return $this->nombre;
+    }
+    public function getDescripcion(){
+        return $this->descripcion;
+    }
 }

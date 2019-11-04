@@ -493,37 +493,7 @@ class AdminController extends Controller
         return $chart->api();
 
     }
-    public function script_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador){
-        $script = "$('#Indicador_".$indicador->id."').DataTable({
-            'processing': true,
-            'serverSide': true,
-            'ajax': '". route('curso.consultar_tabla_indicador', 
-                ['curso' => $curso->id, 
-                'periodo' => $periodo->id, 
-                'instrumento' => $instrumento->id, 
-                'categoria' => $categoria->id, 
-                'indicador' => $indicador->id]) ."',
-            'columns': [
-                {data: 'value_string', name: 'value_string'}
-            ]
-        });
-        ";
-        return $script;
-    }
-    public function html_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador){
-        $script = "<div class='chartTarget col-md-6 mix Periodo_".$periodo->id." Instrumento_".$instrumento->id." Categoria_".$categoria->id." Indicador_".$indicador->id." general'>
-            <div class='indicador_title' style='color: #333333;font-size: 18px;fill: #333333;'>".$indicador->getNombre()."</div>
-            <table id='Indicador_".$indicador->id."' class='table table-hover table-condensed'>
-                <thead>
-                <tr>
-                    <th>".$indicador->getNombre()."</th>
-                </tr>
-                </thead>
-            </table>
-        </div>";
-        return $script;
-    }
-    public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
+    public function visualizar_resultados_curso($categoria_id, $curso_id){//Crea la vista del dashboard/graficos del curso
         $curso = Curso::find($curso_id);
         
         if(empty($curso)){
@@ -535,6 +505,8 @@ class AdminController extends Controller
 
         //instrumentos con los cuales han evaluado este curso
         Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
+        //instrumentos con los cuales han evaluado este curso2
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
         
         //periodos lectivos con los cuales han evaluado este curso
         $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
@@ -551,8 +523,6 @@ class AdminController extends Controller
         //Chart2. Ponderacion de la evaluacion del eva
         $cantidadEvaluacionesCursoCharts = [];
         $promedioPonderacionCurso = [];
-        $script_tabla_indicador = "";
-        $html_tabla_indicador = "";
         foreach($periodos_collection as $periodo_index=>$periodo){
         foreach($instrumentos_collection as $instrumento_index=>$instrumento){
         foreach($instrumento->categorias as $categoria_index=>$categoria){
@@ -591,9 +561,6 @@ class AdminController extends Controller
                 $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
                     ->labels(array_keys($opciones_instrumento))->load($api);
-            }else{
-                $script_tabla_indicador .= $this->script_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador);
-                $html_tabla_indicador .= $this->html_tabla_indicador($curso, $periodo, $instrumento, $categoria, $indicador);
             }
 
         }
@@ -675,18 +642,69 @@ class AdminController extends Controller
             'curso',
             'periodos_collection',
             'instrumentos_collection',
+            'instrumentos_collection2',
             'categorias_collection',
             'indicadores_collection',
             'indicadores_collection_charts',
             'cantidadEvaluacionesCursoCharts',
-            'promedioPonderacionCurso',
-            'html_tabla_indicador',
-            'script_tabla_indicador'
+            'promedioPonderacionCurso'
         ));
 
     }
+    public function visualizar_resultados_curso_respuesta_publica($categoria_id, $curso_id, Request $request){
+        $curso = Curso::find($curso_id);
 
-    public function visualizar_curso($id){        
+        if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user)){
+            return redirect()->back()->with(['message' => "Faltan campos obligatorios", 'alert-type' => 'error']);
+        }
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+        if(!$curso->es_categoria_del_curso($categoria_id)){
+            return redirect()->back()->with(['message' => "La dependencia del curso es incorrecta", 'alert-type' => 'error']);
+        }
+
+        
+        $periodo_lectivo_id = $request->periodo_lectivo;
+        $instrumento_id     = $request->instrumento;
+        $usuario_id         = $request->user;
+
+        $periodo_lectivo = PeriodoLectivo::find($periodo_lectivo_id);
+        $instrumento = Instrumento::find($instrumento_id);
+
+        if(empty($periodo_lectivo)){
+            return redirect()->back()->with(['message' => "El periodo lectivo no existe", 'alert-type' => 'error']);
+        }
+
+        if(empty($instrumento)){
+            return redirect()->back()->with(['message' => "El instrumento no existe", 'alert-type' => 'error']);
+        }
+
+        $evaluacion = Evaluacion::buscar_evaluacion($curso->id, $periodo_lectivo_id, $instrumento_id, $usuario_id);
+        if(empty($evaluacion)){
+            return redirect()->back()->with(['message' => "Error, este usuario no ha evaluado este curso", 'alert-type' => 'error']);
+        }
+        //instrumentos con los cuales han evaluado este curso2
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
+        
+        //periodos lectivos con los cuales han evaluado este curso
+        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
+
+        $usuario = $this->cvucv_get_profile($usuario_id );
+
+        return view('vendor.voyager.gestion.cursos_evaluaciones_publicas',
+        compact(
+            'curso',
+            'periodos_collection',
+            'instrumentos_collection2',
+            'evaluacion',
+            'usuario',
+            'periodo_lectivo',
+            'instrumento'
+        ));
+    }
+    /*public function visualizar_curso($id){        
         
         $curso = Curso::find($id);
         
@@ -784,16 +802,6 @@ class AdminController extends Controller
                     ->where('curso_id',$curso->id)
                     ->avg('percentil_eva');
 
-                    //Revisores del instrumento en el periodo lectivo
-                    /*$revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)
-                    ->where('curso_id',$curso->id)
-                    ->get();
-                    
-                    /*foreach($revisores as $revisorIndex => $revisor){
-                        $usuario = User::find($revisor->usuario_id);
-                        $listadoParticipantesRevisores [$periodo_index][$instrumento_index][$revisorIndex] = $usuario;
-                    }*/
                     
                 }
             }
@@ -893,7 +901,7 @@ class AdminController extends Controller
             'cantidadEvaluacionesCursoCharts',
             'promedioPonderacionCurso'
         ));
-    }
+    }*/
     
     /*
     * Para gestionar la evaluacion
@@ -985,8 +993,8 @@ class AdminController extends Controller
 
         return redirect()->back()->with(['message' => "Evaluación cerrada", 'alert-type' => 'warning']);
     }
-    public function estatus_evaluacion_curso($id){
-        $curso = Curso::find($id);
+    public function estatus_evaluacion_curso($categoria_id, $curso_id){
+        $curso = Curso::find($curso_id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
@@ -1263,7 +1271,27 @@ class AdminController extends Controller
         
         return $response;
     }
+    /**
+     * Perfil de usuario en el Campus
+     *
+     */
+    public function cvucv_get_profile($cvucv_user_id)
+    {
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN");
 
+        $params = [
+            'wsfunction'            => 'core_user_get_users_by_field',
+            'wstoken'               => $wstoken,
+            'moodlewsrestformat'    => 'json',
+            'field'                 => 'id',
+            'values[0]'             => $cvucv_user_id,
+        ];
+
+        $response = $this->send_curl('GET', $endpoint, $params);
+        
+        return $response[0];
+    }
     /**
      * Consulta los usuarios del Campus Virtual y configura la paginación
      *
@@ -1329,6 +1357,78 @@ class AdminController extends Controller
             $count = count($response['users']);
 
             $users = array_slice($response['users'],$offset,$pagination);
+
+            $endCount = $offset + $pagination;
+            $morePages = $count > $endCount;
+
+            $results = array(
+                "results" => $users,
+                "pagination" => array(
+                    "more" => $morePages
+                )
+            );
+
+            return response()->json($results);
+        }
+
+        return $response;
+    
+    }
+    /**
+     * Consulta los usuarios del Campus Virtual por IDS y configura la paginación
+     *
+     */
+    public function campus_users_by_ids(Request $request){
+
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+
+        if(!isset($request->curso_id) || !isset($request->periodo_lectivo_id)  || !isset($request->instrumento_id)){
+            return [];
+        }
+        
+        $curso           = Curso::find($request->curso_id);
+        $periodo_lectivo = $request->periodo_lectivo_id;
+        $instrumento     = $request->instrumento_id;
+
+        if(empty($curso)){
+            return [];
+        }
+        
+        //instrumentos con los cuales han evaluado este curso
+        //Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos, 1);
+
+        $params = [
+            'wsfunction'            => 'core_user_get_users_by_field',
+            'wstoken'               => $wstoken,
+            'moodlewsrestformat'    => 'json',
+            'field'                 => "id",
+        ];
+        $cant_usuarios = 0;
+
+        $usuarios = Evaluacion::usuarios_evaluadores_del_curso($curso->id, $periodo_lectivo, $instrumento);
+        foreach($usuarios as $usuario){
+            $params['values['.$cant_usuarios.']'] = $usuario->cvucv_user_id;
+            $cant_usuarios++;
+        }
+
+        if ($cant_usuarios <= 0){
+            return [];
+        }
+
+        $response = $this->send_curl('POST', $endpoint, $params);
+
+        //Construimos la paginación
+        if(isset($response) && isset($request->page)){
+            $page = $request->page;
+            $pagination = 20;
+
+            $offset = ($page - 1) * $pagination;
+
+            //$response;
+            $count = count($response);
+
+            $users = array_slice($response,$offset,$pagination);
 
             $endCount = $offset + $pagination;
             $morePages = $count > $endCount;

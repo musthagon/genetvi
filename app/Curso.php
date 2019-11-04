@@ -44,6 +44,9 @@ class Curso extends Model
     public function categoria(){
         return $this->belongsTo('App\CategoriaDeCurso','cvucv_category_id','id');
     }
+    public function es_categoria_del_curso($categoria_id){
+        return ($this->categoria->id == $categoria_id);
+    }
 
     public function instrumentos_disponibles_usuario($user_id, $curso_id){
 

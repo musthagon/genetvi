@@ -11,6 +11,7 @@ use App\PeriodoLectivo;
 use App\Categoria;
 use App\Indicador;
 use App\Invitacion;
+use App\Respuesta;
 
 class Evaluacion extends Model
 {
@@ -35,7 +36,7 @@ class Evaluacion extends Model
         return $this->belongsTo('App\User','usuario_id','id');
     }
 
-    public function respuestas(){
+    public function respuestas_evaluacion(){
         return $this->hasMany('App\Respuesta','evaluacion_id','id');
     }
 
@@ -68,16 +69,46 @@ class Evaluacion extends Model
         }
         return $periodos_collection;
     }
-    public static function instrumentos_de_evaluacion_del_curso($id, &$instrumentos_collection, &$nombreInstrumentos){
+    public static function usuarios_evaluadores_del_curso($curso_id, $periodo_lectivo_id, $instrumento_id){
+        return Evaluacion::where('instrumento_id', $instrumento_id)
+                            ->where('curso_id', $curso_id)
+                            ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->get(['cvucv_user_id']);
+    }
+    public static function evaluacion_de_usuario($curso_id, $periodo_lectivo_id, $instrumento_id){
+        return Evaluacion::where('instrumento_id', $instrumento_id)
+                            ->where('curso_id', $curso_id)
+                            ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->get(['cvucv_user_id']);
+    }
+    public static function buscar_evaluacion($curso_id, $periodo_lectivo_id, $instrumento_id, $usuario_id){
+        return Evaluacion::where('instrumento_id', $instrumento_id)
+                            ->where('curso_id', $curso_id)
+                            ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->where('cvucv_user_id', $usuario_id)
+                            ->first();
+    }
+    public static function instrumentos_de_evaluacion_del_curso($id, &$instrumentos_collection, &$nombreInstrumentos, $anonimo = 0){
         $instrumentos_curso = Evaluacion::where('curso_id', $id)->distinct('instrumento_id')->get(['instrumento_id']);
         $instrumentos_collection = [];
         $nombreInstrumentos = [];
         foreach($instrumentos_curso as $instrumento_index=>$instrumento){
             $actual = Instrumento::find($instrumento->instrumento_id);
-            $nombreInstrumentos[$instrumento_index] = $actual->nombre;
-            array_push($instrumentos_collection, $actual);
+            if(empty($actual)){
+                continue;
+            }
+
+            if ($anonimo == 0){
+                $nombreInstrumentos[$instrumento_index] = $actual->getNombre();
+                array_push($instrumentos_collection, $actual);
+            }elseif(!$actual->getAnonimo()){
+                $nombreInstrumentos[$instrumento_index] = $actual->getNombre();
+                array_push($instrumentos_collection, $actual);
+            }
+            
         }
     }
+
     public static function categorias_de_evaluacion_del_curso($id){
         $categorias_collection = [];
         $categoriasDisponibles = DB::table('evaluaciones')

@@ -15,5 +15,11 @@ class Respuesta extends Model
 
     protected $fillable = ['id','value_string','value_request','value_percentil','indicador_nombre','indicador_id','categoria_id','evaluacion_id'];
 
+    public function evaluacion(){
+        return $this->belongsTo('App\Evaluacion','evaluacion_id','id');
+    }
+    public function categoria(){
+        return $this->belongsTo('App\Categoria','categoria_id','id');
+    }
 
 }

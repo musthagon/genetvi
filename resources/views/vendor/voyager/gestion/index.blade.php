@@ -60,7 +60,7 @@
                                             
                                             <td class="no-sort no-click" id="bread-actions">
                                                 @if($curso->evaluacionProgreso() == true)
-                                                    <a href="{{ route('curso_estatus_evaluacion_curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                    <a href="{{ route('curso_estatus_evaluacion_curso', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
                                                         <i class="voyager-eye"></i> Ver Estatus de Evaluación
                                                     </a>
                                                     <a href="{{ route('curso_cerrar_evaluacion_curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-danger" style="margin-right: 5px;">
@@ -72,7 +72,7 @@
                                                     </a>
                                                 @endif
                                                 
-                                                <a href="{{ route('curso.visualizar_resultados_curso', ['id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                                                <a href="{{ route('curso.visualizar_resultados_curso', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
                                                     <i class="voyager-list"></i> Ver Resultados de Evaluaciones
                                                 </a>
                                             </td>

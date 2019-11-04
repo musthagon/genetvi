@@ -64,9 +64,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::put('gestion/{id}/gestionar_evaluacion/edit', 'AdminController@gestionar_evaluacion_categoria_edit')->name('gestion.evaluacion_categoria_edit');
 
     //Cursos dashboards
-    Route::get('gestion/curso/{id}', 'AdminController@visualizar_curso')->name('curso.visualizar');
+    /*Route::get('gestion/curso/{id}', 'AdminController@visualizar_curso')->name('curso.visualizar');*/
     
-    Route::get('gestion/visualizar_resultados_curso/{curso_id}', 'AdminController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');
+    Route::get('gestion/{categoria_id}/curso_{curso_id}/', 'AdminController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');
+    Route::post('gestion/{categoria_id}/curso_{curso_id}/respuesta', 'AdminController@visualizar_resultados_curso_respuesta_publica')->name('curso.visualizar_resultados_curso.respuesta_publica');
     Route::get('gestion/curso/{id}/consultar_grafico/', 'AdminController@consultar_grafico')->name('curso.consultar_grafico');
     Route::get('gestion/curso/{curso_id}/consultar_grafico_indicadores/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
     Route::get('gestion/curso/{curso_id}/consultar_tabla_indicador/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');
@@ -77,8 +78,7 @@ Route::group(['prefix' => 'admin'], function () {
     //Evaluación de cursos
     Route::get('gestion/curso/{id}/iniciar_evaluacion/', 'AdminController@iniciar_evaluacion_curso')->name('curso_iniciar_evaluacion_curso');
     Route::post('gestion/curso/{id}/finalizar_evaluacion/', 'AdminController@cerrar_evaluacion_curso')->name('curso_cerrar_evaluacion_curso');
-    Route::get('gestion/curso/{id}/estatus_evaluacion/', 'AdminController@estatus_evaluacion_curso')->name('curso_estatus_evaluacion_curso');
-
+    Route::get('gestion/{categoria_id}/curso_{curso_id}/estatus_evaluacion/', 'AdminController@estatus_evaluacion_curso')->name('curso_estatus_evaluacion_curso');
     Route::post('gestion/curso/{id}/estatus_evaluacion/invitar_evaluacion', 'AdminController@invitar_evaluacion_curso')->name('curso_invitar_evaluacion_curso');
 
     Route::get('gestion/curso/{id}/enviar_recordatorio/{invitacion}', 'AdminController@enviar_recordatorio')->name('curso_enviar_recordatorio');
@@ -86,5 +86,6 @@ Route::group(['prefix' => 'admin'], function () {
 
     //Get users ajax
     Route::get('campus_users', 'AdminController@campus_users')->name('campus_users');
+    Route::get('campus_users_by_ids', 'AdminController@campus_users_by_ids')->name('campus_users_by_ids');
  });
 
