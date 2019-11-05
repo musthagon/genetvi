@@ -15,6 +15,14 @@
         .select2{
             width: 100% !important;
         }
+        .has-error .select2-selection{
+            /*border: 1px solid #a94442;
+            border-radius: 4px;*/
+            border-color:rgb(185, 74, 72) !important;
+        }
+        .error{
+            color:rgb(185, 74, 72) ;
+        }
     </style>
 @stop
 
@@ -128,12 +136,12 @@
                                         <tr> 
                                             <th>
                                                 <div class="th-flex">
-                                                    a
+                                                    Total
                                                 </div>
                                             </th> 
                                             <th>
                                                 <div id="total">
-                                                    b
+                                                    0
                                                 </div>
                                             </th>
                                             <th></th>
@@ -227,7 +235,12 @@
         }
         function actualizarTotal(){
             var sum = consultarTotalValoresPorcentuales();
-            $('#total').text(sum); 
+            $('#total').text(sum);
+            if (sum != 100){
+                $('#total').addClass('error');
+            }else{
+                $('#total').removeClass('error');
+            }
         }
         function distribuirValorPorcentual(){
             //$('.valor_porcentual').val(100/(i-1)); 
@@ -256,6 +269,23 @@
             });
             actualizarTotal();
         }
+        function validarCategorias(){
+            $('.select2_categorias').each(function(){
+                    var value = $(this).val();
+                    var id = $(this).attr("id");   
+                    var exist = false;
+                    $('.select2_categorias').each(function(){
+                        if($(this).val() == value && $(this).attr("id") != id){
+                            exist = true;
+                        }
+                    });
+                    if(exist){
+                        $(this).parent().addClass('has-error');
+                    }else{
+                        $(this).parent().removeClass('has-error');
+                    }
+                });
+        }
 
         $('body').on('DOMNodeInserted', 'select', function () {
             $(this).select2();
@@ -269,8 +299,8 @@
                 i++;
                 var element = '';
                 element += '<tr id="row'+i+'">';
-                element +=      '<td>';
-                element +=          '<select id="select'+i+'" class="form-control select2" name="categorias_list[]">';
+                element +=      '<td class="form-group">';
+                element +=          '<select id="select'+i+'" class="form-control select2 select2_categorias" name="categorias_list[]">';
                 @foreach($categorias as $categoria)
                     element +=              '<option value="{{$categoria->id}}">{{$categoria->nombre}}</option>';
                 @endforeach
@@ -280,10 +310,10 @@
                 element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list" type="number" name="valores_porcentuales[]" placeholder="Valor porcentual" min="0" max="100"/>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block">B</button>';
+                element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove">X</button>';
+                element +=          '<button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
                 element +=      '</td>';
                 element += '</tr>';
                 //Agregamos en la penultima fila
@@ -292,7 +322,7 @@
                 $('#select'+i).select2();
                 //Distribuimos
                 distribuirValorPorcentual();
-
+                validarCategorias();
                 //$('.valor_porcentual').attr('disabled', 'disabled');
             });  
             $(document).on('click', '.btn_remove', function(){  
@@ -319,6 +349,10 @@
             });  
             $(document).on('change', '.valor_porcentual', function() {
                 actualizarTotal();
+            });
+            $(document).on('change', '.select2_categorias', function() {
+
+                validarCategorias();
             });
             $(document).on('keyup', '.valor_porcentual', function() {
                 var inputValue = $(this).val();
