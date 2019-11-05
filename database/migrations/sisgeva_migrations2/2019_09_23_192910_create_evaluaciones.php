@@ -15,13 +15,13 @@ class CreateEvaluaciones extends Migration
     {
         Schema::create('evaluaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->boolean('anonimo')->default(true);
             $table->longText('respuestas')->nullable();
             $table->float('percentil_eva', 8, 2)->unsigned()->nullable();
             $table->bigInteger('instrumento_id')->unsigned();
             $table->bigInteger('curso_id')->unsigned();
             $table->bigInteger('periodo_lectivo_id')->unsigned();
             $table->bigInteger('cvucv_user_id')->unsigned();
-            $table->integer('usuario_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }

@@ -67,7 +67,7 @@ Route::group(['prefix' => 'admin'], function () {
     /*Route::get('gestion/curso/{id}', 'AdminController@visualizar_curso')->name('curso.visualizar');*/
     
     Route::get('gestion/{categoria_id}/curso_{curso_id}/', 'AdminController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');
-    Route::post('gestion/{categoria_id}/curso_{curso_id}/respuesta', 'AdminController@visualizar_resultados_curso_respuesta_publica')->name('curso.visualizar_resultados_curso.respuesta_publica');
+    Route::get('gestion/{categoria_id}/curso_{curso_id}/respuesta', 'AdminController@visualizar_resultados_curso_respuesta_publica')->name('curso.visualizar_resultados_curso.respuesta_publica');
     Route::get('gestion/curso/{id}/consultar_grafico/', 'AdminController@consultar_grafico')->name('curso.consultar_grafico');
     Route::get('gestion/curso/{curso_id}/consultar_grafico_indicadores/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
     Route::get('gestion/curso/{curso_id}/consultar_tabla_indicador/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');

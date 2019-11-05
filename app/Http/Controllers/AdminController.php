@@ -684,6 +684,10 @@ class AdminController extends Controller
             return redirect()->back()->with(['message' => "El instrumento no existe", 'alert-type' => 'error']);
         }
 
+        if($instrumento->getAnonimo()){
+            return redirect()->back()->with(['message' => "Las respuestas de este instrumento son anónimas", 'alert-type' => 'error']);
+        }
+
         $evaluacion = Evaluacion::buscar_evaluacion($curso->id, $periodo_lectivo_id, $instrumento_id, $usuario_id);
         if(empty($evaluacion)){
             return redirect()->back()->with(['message' => "Error, este usuario no ha evaluado este curso", 'alert-type' => 'error']);

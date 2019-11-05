@@ -7,6 +7,15 @@
 
 @section('css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <style>
+        .th-flex{
+            display: flex;
+            justify-content: space-between;
+        }
+        .select2{
+            width: 100% !important;
+        }
+    </style>
 @stop
 
 @section('page_title', __('voyager::generic.'.($edit ? 'edit' : 'add')).' '.$dataType->getTranslatedAttribute('display_name_singular'))
@@ -90,6 +99,52 @@
                                 </div>
                             @endforeach
 
+                            <div class="form-group">  
+                                <label class="control-label" for="name">Categorías del instrumento</label>
+                                <div class="table-responsive">  
+                                    <table class="table table-bordered" id="dynamic_field">  
+                                        <tr> 
+                                            <th>
+                                                <div class="th-flex">
+                                                    <label class="control-label" for="name">Asociar categorías</label>
+                                                    <a id="add" class="btn btn-success btn-add-new">
+                                                        <i class="voyager-plus"></i>
+                                                        <span>Agregar</span>
+                                                    </a>
+                                                </div>
+                                            </th> 
+                                            <th>
+                                                <div class="th-flex">
+                                                    <label class="control-label" for="name">Distribuir ponderación</label>
+                                                    <a id="balancear_valor_porcentual" class="btn btn-info btn-add-new">
+                                                        <i class="voyager-resize-small"></i>
+                                                        <span>Distribuir</span>
+                                                    </a>
+                                                </div>
+                                            </th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        <tr> 
+                                            <th>
+                                                <div class="th-flex">
+                                                    a
+                                                </div>
+                                            </th> 
+                                            <th>
+                                                <div id="total">
+                                                    b
+                                                </div>
+                                            </th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </table>  
+                                </div>   
+                            </div>  
+                              
+
+
                         </div><!-- panel-body -->
 
                         <div class="panel-footer">
@@ -142,6 +197,9 @@
     <script>
         var params = {};
         var $file;
+        var i=1;
+        var max = 100;
+        var min = 0;
 
         function deleteHandler(tag, isMulti) {
           return function() {
@@ -160,8 +218,128 @@
             $('#confirm_delete_modal').modal('show');
           };
         }
+        function consultarTotalValoresPorcentuales(){
+            var sum = 0;
+            $('.valor_porcentual').each(function(){
+                sum += parseFloat(this.value);
+            });
+            return sum;
+        }
+        function actualizarTotal(){
+            var sum = consultarTotalValoresPorcentuales();
+            $('#total').text(sum); 
+        }
+        function distribuirValorPorcentual(){
+            //$('.valor_porcentual').val(100/(i-1)); 
+            var sumaDesactivados = 0;
+            var cantidadActivos = 0;
+            var total = 100;
+            $('.valor_porcentual').each(function(){
+                if ( $(this).attr('disabled') ) {
+                    sumaDesactivados += parseFloat(this.value);
+                } else {
+                    cantidadActivos++;
+                }
+            });
+
+            var distribucion = total - sumaDesactivados;
+            if(cantidadActivos == 0){
+                distribucion = 0;
+            }else{
+                distribucion = distribucion/cantidadActivos;
+            }
+
+            $('.valor_porcentual').each(function(){
+                if ( !$(this).attr('disabled') ) {
+                    $(this).val(distribucion);
+                } 
+            });
+            actualizarTotal();
+        }
+
+        $('body').on('DOMNodeInserted', 'select', function () {
+            $(this).select2();
+        });
 
         $('document').ready(function () {
+            
+            //Agregar categorias
+            
+            $('#add').click(function(){  
+                i++;
+                var element = '';
+                element += '<tr id="row'+i+'">';
+                element +=      '<td>';
+                element +=          '<select id="select'+i+'" class="form-control select2" name="categorias_list[]">';
+                @foreach($categorias as $categoria)
+                    element +=              '<option value="{{$categoria->id}}">{{$categoria->nombre}}</option>';
+                @endforeach
+                element +=          '</select>';
+                element +=      '</td>';
+                element +=      '<td>';
+                element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list" type="number" name="valores_porcentuales[]" placeholder="Valor porcentual" min="0" max="100"/>';
+                element +=      '</td>';
+                element +=      '<td>';
+                element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block">B</button>';
+                element +=      '</td>';
+                element +=      '<td>';
+                element +=          '<button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove">X</button>';
+                element +=      '</td>';
+                element += '</tr>';
+                //Agregamos en la penultima fila
+                $('#dynamic_field tr:last').before(element);
+                //Instanciamos select
+                $('#select'+i).select2();
+                //Distribuimos
+                distribuirValorPorcentual();
+
+                //$('.valor_porcentual').attr('disabled', 'disabled');
+            });  
+            $(document).on('click', '.btn_remove', function(){  
+                i--;
+                var button_id = $(this).attr("id");   
+                $('#row'+button_id+'').remove();  
+                distribuirValorPorcentual();
+            });  
+
+            $(document).on('click', '.btn_block', function(){  
+                var button_id = $(this).attr("id");   
+                //$('#valor_porcentual'+button_id).attr('disabled', 'disabled'); //Disable
+                //$('#valor_porcentual'+button_id).removeAttr('disabled'); //Enable 
+
+                //$('#valor_porcentual'+button_id).prop( "disabled", true ); //Disable
+                //$('#valor_porcentual'+button_id).prop( "disabled", false ); //Enable
+
+                $('#valor_porcentual'+button_id).prop( "disabled", function( i, val ) {
+                    return !val;
+                });
+            }); 
+            $(document).on('click', '#balancear_valor_porcentual', function(){  
+                distribuirValorPorcentual();
+            });  
+            $(document).on('change', '.valor_porcentual', function() {
+                actualizarTotal();
+            });
+            $(document).on('keyup', '.valor_porcentual', function() {
+                var inputValue = $(this).val();
+                if(inputValue > max){
+                    $(this).val(max);
+                }else if(inputValue < min){
+                    $(this).val(min);
+                }else if(inputValue == ''){
+                    $(this).val(min);
+                }
+                
+            });
+            /*$('input').keyup(function(){
+                var inputValue = $(this).val();
+                if(inputValue > max){
+                    $(this).val(max);
+                }else if(inputValue < min){
+                    $(this).val(min);
+                }
+            });*/
+
             $('.toggleswitch').bootstrapToggle();
 
             //Init datepicker for date fields if data-datepicker attribute defined

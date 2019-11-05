@@ -15,6 +15,7 @@ class CreateCategoriasInstrumentos extends Migration
     {
         Schema::create('categorias_instrumentos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->float('valor_porcentual', 8, 2)->unsigned();
             $table->bigInteger('categoria_id')->unsigned();
             $table->bigInteger('instrumento_id')->unsigned();
             $table->timestamps();
