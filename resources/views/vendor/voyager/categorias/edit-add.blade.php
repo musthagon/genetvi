@@ -244,7 +244,7 @@
             var cantidadActivos = 0;
             var total = 100;
             $('.valor_porcentual').each(function(){
-                if ( $(this).attr('disabled') ) {
+                if ( $(this).attr('readOnly') ) {
                     sumaDesactivados += parseFloat(this.value);
                 } else {
                     cantidadActivos++;
@@ -259,7 +259,7 @@
             }
 
             $('.valor_porcentual').each(function(){
-                if ( !$(this).attr('disabled') ) {
+                if ( !$(this).attr('readOnly') ) {
                     $(this).val(distribucion);
                 } 
             });
@@ -296,16 +296,21 @@
                     element += '<tr id="row'+index+'">';
                     element +=      '<td class="form-group">';
                     element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
+                    @php $optionSelected=false; @endphp
                     @foreach($indicadores as $indicador)
-                        element +=              '<option target="'+index+'" class="opcion_indicador @if(!$indicador->esMedible()) block_opcion @endif" value="{{$indicador->id}}" @if($indicador->id == $indicadorAsociada->id){{ 'selected="selected"' }}@endif >{{$indicador->nombre}}</option>';
+                        element +=              '<option target="'+index+'" class="opcion_indicador @if(!$indicador->esMedible()) block_opcion @endif" value="{{$indicador->id}}" @if($indicador->id == $indicadorAsociada->id){{'selected="selected"' }}@endif >{{$indicador->nombre}}</option>';
+
+                        @php if($indicador->id == $indicadorAsociada->id && !$indicador->esMedible()) {$optionSelected=true;} @endphp
+
+
                     @endforeach
                     element +=          '</select>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" step="any" value="{{$indicadorAsociada->pivot->valor_porcentual}}"/>';
+                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" step="any" value="{{$indicadorAsociada->pivot->valor_porcentual}}" @if($optionSelected) readOnly @endif/>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<button type="button" name="block" target="'+index+'" id="btn_block'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
+                    element +=          '<button type="button" name="block" target="'+index+'" id="btn_block'+index+'" class="btn btn-info btn_block" @if($optionSelected) disabled @endif><i class="voyager-lock"></i>Bloquear</button>';
                     element +=      '</td>';
                     element +=      '<td>';
                     element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
@@ -314,11 +319,12 @@
 
                     //Agregamos en la penultima fila
                     $('#dynamic_field tr:last').before(element);
+                    
                     //Instanciamos select
                     $('#select'+index).select2();
-                    //Distribuimos
-                    distribuirValorPorcentual();
+                        
                     validarCategorias();
+                    actualizarTotal();
 
                 @endforeach
                 return index;
@@ -377,7 +383,7 @@
                 //$('#valor_porcentual'+button_id).prop( "disabled", true ); //Disable
                 //$('#valor_porcentual'+button_id).prop( "disabled", false ); //Enable
 
-                $('#valor_porcentual'+button_id).prop( "disabled", function( i, val ) {
+                $('#valor_porcentual'+button_id).prop( "readOnly", function( i, val ) {
                     return !val;
                 });
             }); 
@@ -400,7 +406,7 @@
 
                 if(isBlock){
                     inputTarget.value = 0; 
-                    inputTarget.disabled = true; 
+                    inputTarget.readOnly = true;
                     buttonTarget.disabled = true;
                     distribuirValorPorcentual();
                 }else if(buttonTarget.disabled){

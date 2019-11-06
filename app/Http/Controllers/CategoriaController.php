@@ -87,7 +87,6 @@ class CategoriaController extends VoyagerBaseController
     // POST BR(E)AD
     public function update(Request $request, $id)
     {
-
         $slug = $this->getSlug($request);
 
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
@@ -141,7 +140,7 @@ class CategoriaController extends VoyagerBaseController
                 }
                 $total += (int)$valores_porcentuales[$indicadorIndex];
             }
-            if($total != 100){
+            if($total != 100 && $total != 0){
                 return redirect()->back()->with([
                     'message'    => 'Error, la suma de los valores porcentuales de los indicadores debe ser 100%',
                     'alert-type' => 'error',
