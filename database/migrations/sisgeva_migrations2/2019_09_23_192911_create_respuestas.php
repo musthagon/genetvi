@@ -15,7 +15,7 @@ class CreateRespuestas extends Migration
     {
         Schema::create('respuestas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('value_string')->nullable();
+            $table->longText('value_string')->nullable();
             $table->float('value_percentil', 8, 2)->nullable();
             $table->longText('indicador_nombre')->nullable();
             $table->bigInteger('indicador_id')->unsigned();

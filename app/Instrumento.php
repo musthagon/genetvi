@@ -15,7 +15,7 @@ class Instrumento extends Model
     protected $table = 'instrumentos';
 
     public function categorias(){
-        return $this->belongsToMany('App\Categoria','categorias_instrumentos','instrumento_id','categoria_id')->using('App\CategoriaInstrumento');
+        return $this->belongsToMany('App\Categoria','categorias_instrumentos','instrumento_id','categoria_id')->using('App\CategoriaInstrumento')->withPivot('valor_porcentual');
     }
 
     public function categoriasOrdenadas(){

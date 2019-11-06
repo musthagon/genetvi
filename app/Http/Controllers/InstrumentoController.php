@@ -235,6 +235,7 @@ class InstrumentoController extends VoyagerBaseController
 
     public function edit(Request $request, $id)
     {
+        
         $slug = $this->getSlug($request);
 
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
@@ -274,18 +275,24 @@ class InstrumentoController extends VoyagerBaseController
             $view = "voyager::$slug.edit-add";
         }
 
+
+        //Agregamos las categorias al instrumento
+        $categoriasAsociadas = $dataTypeContent->categorias;
+
         $categorias = Categoria::all();
 
         return Voyager::view($view, compact(
             'dataType', 
             'dataTypeContent', 
             'isModelTranslatable', 
-            'categorias'));
+            'categorias',
+            'categoriasAsociadas'));
     }
 
     // POST BR(E)AD
     public function update(Request $request, $id)
     {
+
         $slug = $this->getSlug($request);
 
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
@@ -310,6 +317,50 @@ class InstrumentoController extends VoyagerBaseController
         $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id)->validate();
         $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
 
+        //La descripción es requerida
+        if(!isset($request->descripcion)){
+            return redirect()->back()->with([
+                'message'    => 'Error, el campo descripción del instrumento es requerido',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        //Agregamos categorias
+        $instrumento = $data;
+        $instrumento->categorias()->detach();
+        if(isset($request->categorias_list)){
+            $categorias             = $request->categorias_list[0];
+            $valores_porcentuales   = $request->categorias_list[1];
+            $total = 0;
+            //Verificamos que no esten repetidas las categorías
+            //Verificamos que la suma total de los valores porcentuales de las categorías sea 100%
+
+            foreach($categorias as $categoriaIndex => $categoria){
+
+                foreach($categorias as $categoriaIndex2 => $categoria2){
+                    if(($categoriaIndex != $categoriaIndex2) && $categoria == $categoria2){
+                        return redirect()->back()->with([
+                            'message'    => 'Error, las categorías no pueden estar repetidas',
+                            'alert-type' => 'error',
+                        ]);
+                    }    
+                }
+                $total += (int)$valores_porcentuales[$categoriaIndex];
+            }
+            if($total != 100){
+                return redirect()->back()->with([
+                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100%',
+                    'alert-type' => 'error',
+                ]);
+            }
+            
+
+            foreach($categorias as $categoriaIndex => $categoria){
+                $instrumento->categorias()->attach($categoria, ['valor_porcentual' => (int)$valores_porcentuales[$categoriaIndex]]);
+            }
+
+        }
+        
         event(new BreadDataUpdated($dataType, $data));
 
         return redirect()
@@ -362,7 +413,14 @@ class InstrumentoController extends VoyagerBaseController
             $view = "voyager::$slug.edit-add";
         }
 
-        return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable'));
+        //Agregamos las categorias al instrumento
+        $categorias = Categoria::all();
+
+        return Voyager::view($view, compact(
+            'dataType', 
+            'dataTypeContent', 
+            'isModelTranslatable',
+            'categorias'));
     }
 
     /**
@@ -384,6 +442,50 @@ class InstrumentoController extends VoyagerBaseController
         // Validate fields with ajax
         $val = $this->validateBread($request->all(), $dataType->addRows)->validate();
         $data = $this->insertUpdateData($request, $slug, $dataType->addRows, new $dataType->model_name());
+
+        //La descripción es requerida
+        if(!isset($request->descripcion)){
+            return redirect()->back()->with([
+                'message'    => 'Error, el campo descripción del instrumento es requerido',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        //Agregamos categorias
+        $instrumento = $data;
+        $instrumento->categorias()->detach();
+        if(isset($request->categorias_list)){
+            $categorias             = $request->categorias_list[0];
+            $valores_porcentuales   = $request->categorias_list[1];
+            $total = 0;
+            //Verificamos que no esten repetidas las categorías
+            //Verificamos que la suma total de los valores porcentuales de las categorías sea 100%
+
+            foreach($categorias as $categoriaIndex => $categoria){
+
+                foreach($categorias as $categoriaIndex2 => $categoria2){
+                    if(($categoriaIndex != $categoriaIndex2) && $categoria == $categoria2){
+                        return redirect()->back()->with([
+                            'message'    => 'Error, las categorías no pueden estar repetidas',
+                            'alert-type' => 'error',
+                        ]);
+                    }    
+                }
+                $total += (int)$valores_porcentuales[$categoriaIndex];
+            }
+            if($total != 100){
+                return redirect()->back()->with([
+                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100%',
+                    'alert-type' => 'error',
+                ]);
+            }
+            
+
+            foreach($categorias as $categoriaIndex => $categoria){
+                $instrumento->categorias()->attach($categoria, ['valor_porcentual' => (int)$valores_porcentuales[$categoriaIndex]]);
+            }
+
+        }
 
         event(new BreadDataAdded($dataType, $data));
 

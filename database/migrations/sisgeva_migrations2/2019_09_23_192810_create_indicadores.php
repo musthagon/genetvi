@@ -16,6 +16,7 @@ class CreateIndicadores extends Migration
         Schema::create('indicadores', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('nombre');
+            $table->longText('descripcion')->nullable();
             $table->string('tipo')->default("likert");
             $table->boolean('requerido')->default(true);
             $table->longText('opciones')->nullable();

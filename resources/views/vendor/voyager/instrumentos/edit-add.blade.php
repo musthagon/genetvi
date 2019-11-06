@@ -11,9 +11,21 @@
         .th-flex{
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
-        .select2{
+        tr .select2{
             width: 100% !important;
+        }
+        tr .select2-selection--single {
+            height: 100% !important;
+        }
+        tr .select2-selection__rendered{
+            word-wrap: break-word !important;
+            text-overflow: inherit !important;
+            white-space: normal !important;
+        }
+        .max-height{
+            height:100%;
         }
         .has-error .select2-selection{
             /*border: 1px solid #a94442;
@@ -110,7 +122,7 @@
                             <div class="form-group">  
                                 <label class="control-label" for="name">Categorías del instrumento</label>
                                 <div class="table-responsive">  
-                                    <table class="table table-bordered" id="dynamic_field">  
+                                    <table class="table table-bordered max-height" id="dynamic_field">  
                                         <tr> 
                                             <th>
                                                 <div class="th-flex">
@@ -209,23 +221,7 @@
         var max = 100;
         var min = 0;
 
-        function deleteHandler(tag, isMulti) {
-          return function() {
-            $file = $(this).siblings(tag);
-
-            params = {
-                slug:   '{{ $dataType->slug }}',
-                filename:  $file.data('file-name'),
-                id:     $file.data('id'),
-                field:  $file.parent().data('field-name'),
-                multi: isMulti,
-                _token: '{{ csrf_token() }}'
-            }
-
-            $('.confirm_delete_name').text(params.filename);
-            $('#confirm_delete_modal').modal('show');
-          };
-        }
+        //Función para calcular la suma de las categorías
         function consultarTotalValoresPorcentuales(){
             var sum = 0;
             $('.valor_porcentual').each(function(){
@@ -233,6 +229,7 @@
             });
             return sum;
         }
+        //Función para  actualiar la suma de las categorías
         function actualizarTotal(){
             var sum = consultarTotalValoresPorcentuales();
             $('#total').text(sum);
@@ -242,6 +239,7 @@
                 $('#total').removeClass('error');
             }
         }
+        //Función para distribuir valor porcentual de las categorias
         function distribuirValorPorcentual(){
             //$('.valor_porcentual').val(100/(i-1)); 
             var sumaDesactivados = 0;
@@ -269,6 +267,7 @@
             });
             actualizarTotal();
         }
+        //Función para validar que las categorías no esten repetidas
         function validarCategorias(){
             $('.select2_categorias').each(function(){
                     var value = $(this).val();
@@ -287,27 +286,58 @@
                 });
         }
 
-        $('body').on('DOMNodeInserted', 'select', function () {
-            $(this).select2();
-        });
+        function actualizarCategoriasAsociadas(){
+            @if(!isset($categoriasAsociadas) )
+                return false;
+            @else
+                @foreach($categoriasAsociadas as $categoriaAsociada)
+                    i++;
+                    var element = '';
+                    element += '<tr id="row'+i+'">';
+                    element +=      '<td class="form-group">';
+                    element +=          '<select id="select'+i+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
+                    @foreach($categorias as $categoria)
+                        element +=              '<option value="{{$categoria->id}}" @if($categoria->id == $categoriaAsociada->id){{ 'selected="selected"' }}@endif >{{$categoria->nombre}}</option>';
+                    @endforeach
+                    element +=          '</select>';
+                    element +=      '</td>';
+                    element +=      '<td>';
+                    element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" value="{{$categoriaAsociada->pivot->valor_porcentual}}"/>';
+                    element +=      '</td>';
+                    element +=      '<td>';
+                    element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
+                    element +=      '</td>';
+                    element +=      '<td>';
+                    element +=          '<button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
+                    element +=      '</td>';
+                    element += '</tr>';
+                    //Agregamos en la penultima fila
+                    $('#dynamic_field tr:last').before(element);
+                    //Instanciamos select
+                    $('#select'+i).select2();
+                    //Distribuimos
+                    distribuirValorPorcentual();
+                    validarCategorias();
+                @endforeach
+            @endif
+        }
 
         $('document').ready(function () {
-            
-            //Agregar categorias
-            
+            actualizarCategoriasAsociadas();
+            //Agregar categorias al click
             $('#add').click(function(){  
                 i++;
                 var element = '';
                 element += '<tr id="row'+i+'">';
                 element +=      '<td class="form-group">';
-                element +=          '<select id="select'+i+'" class="form-control select2 select2_categorias" name="categorias_list[]">';
+                element +=          '<select id="select'+i+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
                 @foreach($categorias as $categoria)
                     element +=              '<option value="{{$categoria->id}}">{{$categoria->nombre}}</option>';
                 @endforeach
                 element +=          '</select>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list" type="number" name="valores_porcentuales[]" placeholder="Valor porcentual" min="0" max="100"/>';
+                element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100"/>';
                 element +=      '</td>';
                 element +=      '<td>';
                 element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
@@ -323,15 +353,16 @@
                 //Distribuimos
                 distribuirValorPorcentual();
                 validarCategorias();
-                //$('.valor_porcentual').attr('disabled', 'disabled');
             });  
+            //Remover categorias al click
             $(document).on('click', '.btn_remove', function(){  
                 i--;
                 var button_id = $(this).attr("id");   
                 $('#row'+button_id+'').remove();  
                 distribuirValorPorcentual();
+                validarCategorias()
             });  
-
+            //Bloquear balanceo de valor porcentual para categoría actual
             $(document).on('click', '.btn_block', function(){  
                 var button_id = $(this).attr("id");   
                 //$('#valor_porcentual'+button_id).attr('disabled', 'disabled'); //Disable
@@ -344,16 +375,19 @@
                     return !val;
                 });
             }); 
+            //Distribuir valor porcentual en click
             $(document).on('click', '#balancear_valor_porcentual', function(){  
                 distribuirValorPorcentual();
             });  
+            //Actualizar suma de valores porcentuales
             $(document).on('change', '.valor_porcentual', function() {
                 actualizarTotal();
             });
+            //Validar categorías repetidas
             $(document).on('change', '.select2_categorias', function() {
-
                 validarCategorias();
             });
+            //Bloquear ingreso de valores distintos de entre 0-100
             $(document).on('keyup', '.valor_porcentual', function() {
                 var inputValue = $(this).val();
                 if(inputValue > max){
@@ -365,14 +399,7 @@
                 }
                 
             });
-            /*$('input').keyup(function(){
-                var inputValue = $(this).val();
-                if(inputValue > max){
-                    $(this).val(max);
-                }else if(inputValue < min){
-                    $(this).val(min);
-                }
-            });*/
+
 
             $('.toggleswitch').bootstrapToggle();
 
@@ -415,6 +442,55 @@
                 $('#confirm_delete_modal').modal('hide');
             });
             $('[data-toggle="tooltip"]').tooltip();
+
+
+            //JS Para activar las opciones en formato JSON
+            // Create an ace editor instance
+	        var ace_editor_element = document.getElementsByClassName("ace_editor");
+
+            // For each ace editor element on the page
+            for(var i = 0; i < ace_editor_element.length; i++)
+            {
+
+                // Create an ace editor instance
+                var ace_editor = ace.edit(ace_editor_element[i].id);
+
+                // Get the corresponding text area associated with the ace editor
+                var ace_editor_textarea = document.getElementById(ace_editor_element[i].id + '_textarea');
+
+                if(ace_editor_element[i].getAttribute('data-theme')){
+                    ace_editor.setTheme("ace/theme/" + ace_editor_element[i].getAttribute('data-theme'));
+                }
+
+                //if(ace_editor_element[i].getAttribute('data-language')){
+                    ace_editor.getSession().setMode("ace/mode/json");
+                //}
+                
+                ace_editor.on('change', function(event, el) {
+                    ace_editor_id = el.container.id;
+                    ace_editor_textarea = document.getElementById(ace_editor_id + '_textarea');
+                    ace_editor_instance = ace.edit(ace_editor_id);
+                    ace_editor_textarea.value = ace_editor_instance.getValue();
+                });
+            }
         });
+
+        function deleteHandler(tag, isMulti) {
+          return function() {
+            $file = $(this).siblings(tag);
+
+            params = {
+                slug:   '{{ $dataType->slug }}',
+                filename:  $file.data('file-name'),
+                id:     $file.data('id'),
+                field:  $file.parent().data('field-name'),
+                multi: isMulti,
+                _token: '{{ csrf_token() }}'
+            }
+
+            $('.confirm_delete_name').text(params.filename);
+            $('#confirm_delete_modal').modal('show');
+          };
+        }
     </script>
 @stop
