@@ -301,7 +301,7 @@
                     element +=          '</select>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" value="{{$categoriaAsociada->pivot->valor_porcentual}}"/>';
+                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" step="any" value="{{$categoriaAsociada->pivot->valor_porcentual}}"/>';
                     element +=      '</td>';
                     element +=      '<td>';
                     element +=          '<button type="button" name="block" id="'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
@@ -337,7 +337,7 @@
                 element +=          '</select>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100"/>';
+                element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" step="any"/>';
                 element +=      '</td>';
                 element +=      '<td>';
                 element +=          '<button type="button" name="block" id="'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';

@@ -289,28 +289,29 @@
                 return 1;
             @else
                 var index = 1;
-                @foreach($indicadoresAsociados as $categoriaAsociada)
+                @foreach($indicadoresAsociados as $indicadorAsociada)
                     
                     index++;
                     var element = '';
                     element += '<tr id="row'+index+'">';
                     element +=      '<td class="form-group">';
                     element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
-                    @foreach($indicadores as $categoria)
-                        element +=              '<option value="{{$categoria->id}}" @if($categoria->id == $categoriaAsociada->id){{ 'selected="selected"' }}@endif >{{$categoria->nombre}}</option>';
+                    @foreach($indicadores as $indicador)
+                        element +=              '<option target="'+index+'" class="opcion_indicador @if(!$indicador->esMedible()) block_opcion @endif" value="{{$indicador->id}}" @if($indicador->id == $indicadorAsociada->id){{ 'selected="selected"' }}@endif >{{$indicador->nombre}}</option>';
                     @endforeach
                     element +=          '</select>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" value="{{$categoriaAsociada->pivot->valor_porcentual}}"/>';
+                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" step="any" value="{{$indicadorAsociada->pivot->valor_porcentual}}"/>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<button type="button" name="block" id="'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
+                    element +=          '<button type="button" name="block" target="'+index+'" id="btn_block'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<button type="button" name="remove" id="'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
+                    element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
                     element +=      '</td>';
                     element += '</tr>';
+
                     //Agregamos en la penultima fila
                     $('#dynamic_field tr:last').before(element);
                     //Instanciamos select
@@ -334,19 +335,19 @@
                 element += '<tr id="row'+index+'">';
                 element +=      '<td class="form-group">';
                 element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
-                @foreach($indicadores as $categoria)
-                    element +=              '<option value="{{$categoria->id}}">{{$categoria->nombre}}</option>';
+                @foreach($indicadores as $indicador)
+                    element +=              '<option target="'+index+'" class="opcion_indicador @if(!$indicador->esMedible()) block_opcion @endif" value="{{$indicador->id}}">{{$indicador->nombre}}</option>';
                 @endforeach
                 element +=          '</select>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100"/>';
+                element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" step="any"/>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<button type="button" name="block" id="'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
+                element +=          '<button type="button" name="block" target="'+index+'" id="btn_block'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<button type="button" name="remove" id="'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
+                element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
                 element +=      '</td>';
                 element += '</tr>';
                 //Agregamos en la penultima fila
@@ -360,14 +361,16 @@
             //Remover categorias al click
             $(document).on('click', '.btn_remove', function(){  
                 //i--;
-                var button_id = $(this).attr("id");   
+                var button_id = $(this).attr("target");   
                 $('#row'+button_id+'').remove();  
                 distribuirValorPorcentual();
                 validarCategorias()
             });  
             //Bloquear balanceo de valor porcentual para categoría actual
             $(document).on('click', '.btn_block', function(){  
-                var button_id = $(this).attr("id");   
+                var button_id = $(this).attr("target");
+                //var buttonTarget = document.getElementById("btn_block"+button_id);  
+
                 //$('#valor_porcentual'+button_id).attr('disabled', 'disabled'); //Disable
                 //$('#valor_porcentual'+button_id).removeAttr('disabled'); //Enable 
 
@@ -388,6 +391,22 @@
             });
             //Validar categorías repetidas
             $(document).on('change', '.select2_categorias', function() {
+                var optionSelected = $("option:selected", this);
+                var opctionSelectedClasses = optionSelected.attr('class');
+                var isBlock         = opctionSelectedClasses.includes("block_opcion");
+                var idTarget        = optionSelected.attr('target')
+                var inputTarget     = document.getElementById("valor_porcentual"+idTarget);
+                var buttonTarget    = document.getElementById("btn_block"+idTarget); 
+
+                if(isBlock){
+                    inputTarget.value = 0; 
+                    inputTarget.disabled = true; 
+                    buttonTarget.disabled = true;
+                    distribuirValorPorcentual();
+                }else if(buttonTarget.disabled){
+                        buttonTarget.disabled = false;
+                }
+                    
                 validarCategorias();
             });
             //Bloquear ingreso de valores distintos de entre 0-100
