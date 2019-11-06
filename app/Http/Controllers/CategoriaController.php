@@ -265,9 +265,9 @@ class CategoriaController extends VoyagerBaseController
                 }
                 $total += (int)$valores_porcentuales[$indicadorIndex];
             }
-            if($total != 100){
+            if($total != 100 && $total != 0){
                 return redirect()->back()->with([
-                    'message'    => 'Error, la suma de los valores porcentuales de los indicadores debe ser 100%',
+                    'message'    => 'Error, la suma de los valores porcentuales de los indicadores debe ser 100% o 0%',
                     'alert-type' => 'error',
                 ]);
             }

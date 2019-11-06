@@ -366,7 +366,6 @@
             });  
             //Remover categorias al click
             $(document).on('click', '.btn_remove', function(){  
-                //i--;
                 var button_id = $(this).attr("target");   
                 $('#row'+button_id+'').remove();  
                 distribuirValorPorcentual();
@@ -375,13 +374,6 @@
             //Bloquear balanceo de valor porcentual para categoría actual
             $(document).on('click', '.btn_block', function(){  
                 var button_id = $(this).attr("target");
-                //var buttonTarget = document.getElementById("btn_block"+button_id);  
-
-                //$('#valor_porcentual'+button_id).attr('disabled', 'disabled'); //Disable
-                //$('#valor_porcentual'+button_id).removeAttr('disabled'); //Enable 
-
-                //$('#valor_porcentual'+button_id).prop( "disabled", true ); //Disable
-                //$('#valor_porcentual'+button_id).prop( "disabled", false ); //Enable
 
                 $('#valor_porcentual'+button_id).prop( "readOnly", function( i, val ) {
                     return !val;

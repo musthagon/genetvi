@@ -45,6 +45,17 @@ class Categoria extends Model
         return $cantidad;
               
     }
+    public function esMedible(){
+
+        foreach($this->indicadores as $indicador){
+            if($indicador->esMedible() && $indicador->pivot->valor_porcentual != 0){
+                return true;
+            }
+        }
+    
+        return false;
+              
+    }
 
     public function getNombre(){
         return $this->nombre;

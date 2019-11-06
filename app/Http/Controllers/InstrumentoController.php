@@ -292,7 +292,6 @@ class InstrumentoController extends VoyagerBaseController
     // POST BR(E)AD
     public function update(Request $request, $id)
     {
-
         $slug = $this->getSlug($request);
 
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
@@ -346,9 +345,9 @@ class InstrumentoController extends VoyagerBaseController
                 }
                 $total += (int)$valores_porcentuales[$categoriaIndex];
             }
-            if($total != 100){
+            if($total != 100 && $total != 0){
                 return redirect()->back()->with([
-                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100%',
+                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100% o 0%',
                     'alert-type' => 'error',
                 ]);
             }
@@ -471,9 +470,9 @@ class InstrumentoController extends VoyagerBaseController
                 }
                 $total += (int)$valores_porcentuales[$categoriaIndex];
             }
-            if($total != 100){
+            if($total != 100 && $total != 0){
                 return redirect()->back()->with([
-                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100%',
+                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100% o 0%',
                     'alert-type' => 'error',
                 ]);
             }
