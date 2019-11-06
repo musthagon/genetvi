@@ -163,8 +163,6 @@
                                 </div>   
                             </div>  
                               
-
-
                         </div><!-- panel-body -->
 
                         <div class="panel-footer">
@@ -217,7 +215,7 @@
     <script>
         var params = {};
         var $file;
-        var i=1;
+        var index=1;
         var max = 100;
         var min = 0;
 
@@ -288,75 +286,76 @@
 
         function actualizarCategoriasAsociadas(){
             @if(!isset($categoriasAsociadas) )
-                return false;
+                return 1;
             @else
+                var index = 1;
                 @foreach($categoriasAsociadas as $categoriaAsociada)
-                    i++;
+                    index++;
                     var element = '';
-                    element += '<tr id="row'+i+'">';
+                    element += '<tr id="row'+index+'">';
                     element +=      '<td class="form-group">';
-                    element +=          '<select id="select'+i+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
+                    element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
                     @foreach($categorias as $categoria)
                         element +=              '<option value="{{$categoria->id}}" @if($categoria->id == $categoriaAsociada->id){{ 'selected="selected"' }}@endif >{{$categoria->nombre}}</option>';
                     @endforeach
                     element +=          '</select>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" value="{{$categoriaAsociada->pivot->valor_porcentual}}"/>';
+                    element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100" value="{{$categoriaAsociada->pivot->valor_porcentual}}"/>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
+                    element +=          '<button type="button" name="block" id="'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
+                    element +=          '<button type="button" name="remove" id="'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
                     element +=      '</td>';
                     element += '</tr>';
                     //Agregamos en la penultima fila
                     $('#dynamic_field tr:last').before(element);
                     //Instanciamos select
-                    $('#select'+i).select2();
+                    $('#select'+index).select2();
                     //Distribuimos
                     distribuirValorPorcentual();
                     validarCategorias();
                 @endforeach
+                return index;
             @endif
         }
 
         $('document').ready(function () {
-            actualizarCategoriasAsociadas();
+            index = actualizarCategoriasAsociadas();
             //Agregar categorias al click
             $('#add').click(function(){  
-                i++;
+                index++;
                 var element = '';
-                element += '<tr id="row'+i+'">';
+                element += '<tr id="row'+index+'">';
                 element +=      '<td class="form-group">';
-                element +=          '<select id="select'+i+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
+                element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
                 @foreach($categorias as $categoria)
                     element +=              '<option value="{{$categoria->id}}">{{$categoria->nombre}}</option>';
                 @endforeach
                 element +=          '</select>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="valor_porcentual'+i+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100"/>';
+                element +=          '<input id="valor_porcentual'+index+'" class="valor_porcentual form-control name_list max-height" type="number" name="categorias_list[1][]" placeholder="Valor porcentual" min="0" max="100"/>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<button type="button" name="block" id="'+i+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
+                element +=          '<button type="button" name="block" id="'+index+'" class="btn btn-info btn_block"><i class="voyager-lock"></i>Bloquear</button>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
+                element +=          '<button type="button" name="remove" id="'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
                 element +=      '</td>';
                 element += '</tr>';
                 //Agregamos en la penultima fila
                 $('#dynamic_field tr:last').before(element);
                 //Instanciamos select
-                $('#select'+i).select2();
+                $('#select'+index).select2();
                 //Distribuimos
                 distribuirValorPorcentual();
                 validarCategorias();
             });  
             //Remover categorias al click
             $(document).on('click', '.btn_remove', function(){  
-                i--;
                 var button_id = $(this).attr("id");   
                 $('#row'+button_id+'').remove();  
                 distribuirValorPorcentual();

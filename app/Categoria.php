@@ -15,7 +15,7 @@ class Categoria extends Model
     protected $fillable = ['id','nombre','nombre_corto','descripcion','indicadores_medibles','opciones','orden'];
     
     public function indicadores(){
-        return $this->belongsToMany('App\Indicador','categorias_indicadores','categoria_id','indicador_id')->using('App\CategoriaIndicador');
+        return $this->belongsToMany('App\Indicador','categorias_indicadores','categoria_id','indicador_id')->using('App\CategoriaIndicador')->withPivot('valor_porcentual');
     }
 
     public function indicadoresOrdenados(){

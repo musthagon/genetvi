@@ -327,7 +327,6 @@ class InstrumentoController extends VoyagerBaseController
 
         //Agregamos categorias
         $instrumento = $data;
-        $instrumento->categorias()->detach();
         if(isset($request->categorias_list)){
             $categorias             = $request->categorias_list[0];
             $valores_porcentuales   = $request->categorias_list[1];
@@ -354,7 +353,7 @@ class InstrumentoController extends VoyagerBaseController
                 ]);
             }
             
-
+            $instrumento->categorias()->detach();
             foreach($categorias as $categoriaIndex => $categoria){
                 $instrumento->categorias()->attach($categoria, ['valor_porcentual' => (int)$valores_porcentuales[$categoriaIndex]]);
             }
@@ -453,7 +452,6 @@ class InstrumentoController extends VoyagerBaseController
 
         //Agregamos categorias
         $instrumento = $data;
-        $instrumento->categorias()->detach();
         if(isset($request->categorias_list)){
             $categorias             = $request->categorias_list[0];
             $valores_porcentuales   = $request->categorias_list[1];
@@ -480,7 +478,7 @@ class InstrumentoController extends VoyagerBaseController
                 ]);
             }
             
-
+            $instrumento->categorias()->detach();
             foreach($categorias as $categoriaIndex => $categoria){
                 $instrumento->categorias()->attach($categoria, ['valor_porcentual' => (int)$valores_porcentuales[$categoriaIndex]]);
             }
