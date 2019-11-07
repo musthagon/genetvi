@@ -158,7 +158,7 @@ class HomeController extends Controller
                         }
 
                         //7. Verificamos la cantidad de intentos de evaluacion del instrumento
-                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->id, $categoria_raiz->periodo_lectivo) >= 1){
+                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->cvucv_user_id, $categoria_raiz->periodo_lectivo) >= 1){
                             return redirect()->route('home')->with(['message' => "Error, ha excedido la cantidad máxima de intentos para evaluar este curso", 'alert-type' => 'error']);
                         }
 
@@ -222,7 +222,7 @@ class HomeController extends Controller
                         }
                         
                         //7. Verificamos la cantidad de intentos de evaluacion del instrumento
-                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->id, $categoria_raiz->periodo_lectivo) >= 1){
+                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->cvucv_user_id, $categoria_raiz->periodo_lectivo) >= 1){
                             return redirect()->route('home')->with(['message' => "Error, ha excedido la cantidad máxima de intentos para evaluar este curso", 'alert-type' => 'error']);
                         }
 
