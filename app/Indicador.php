@@ -30,7 +30,7 @@ class Indicador extends Model
         return $this->tipo;
     }
 
-    public function requerido(){
+    public function getRequerido(){
         return $this->requerido;
     }
 

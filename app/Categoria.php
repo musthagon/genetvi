@@ -68,7 +68,7 @@ class Categoria extends Model
     public function existenIndicadoresObligatorios(){
         $indicadores = $this->indicadores;
         foreach($indicadores as $indicador){
-            if($indicador->requerido()){
+            if($indicador->getRequerido()){
                 return true;
             }
         }

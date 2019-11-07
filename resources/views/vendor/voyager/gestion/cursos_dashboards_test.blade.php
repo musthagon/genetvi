@@ -11,10 +11,7 @@
         <div class="container-fluid">
             <form class="form-edit-add" 
                 action="{{ route('curso.visualizar_resultados_curso.respuesta_publica', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->id]) }}" 
-                method="POST">
-
-                <!-- CSRF TOKEN -->
-                {{ csrf_field() }}
+                method="GET">
 
                 <div class="form-group  col-sm-6 col-md-3 ">
                     <label class="control-label" for="name">Periodo Lectivo</label>

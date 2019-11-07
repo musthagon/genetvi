@@ -64,7 +64,7 @@
                       <div class="field-title">
                         {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
 
-                        @if($indicador->requerido())
+                        @if($indicador->getRequerido())
                           <span class="obligatorio">*</span>
                         @endif
                       <div>  
@@ -123,7 +123,7 @@
                   rules: {
                     @foreach($instrumento->categorias as $categoria)
                     @foreach($categoria->indicadores as $indicador)
-                      @if($indicador->requerido())
+                      @if($indicador->getRequerido())
                         '{{$indicador->id}}@if($indicador->multipleField())[]@endif' : {required :true},
                       @endif
                     @endforeach
