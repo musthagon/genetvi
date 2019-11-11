@@ -43,7 +43,7 @@ class Evaluacion extends Model
     public static function cantidad_evaluaciones_realizadas ($instrumento_id, $curso_id, $user_id, $categoria_raiz_periodo_lectivo){
         $intentos = Evaluacion::where('instrumento_id', $instrumento_id)
                             ->where('curso_id', $curso_id)
-                            ->where('usuario_id', $user_id)
+                            ->where('cvucv_user_id', $user_id)
                             ->where('periodo_lectivo_id', $categoria_raiz_periodo_lectivo)->count();
         return $intentos;
     } 
