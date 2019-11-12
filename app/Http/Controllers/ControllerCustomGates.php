@@ -36,10 +36,10 @@ class ControllerCustomGates extends Controller
                             'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e', 'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'o', 'ñ'=>'n', 'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o',
                             'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'þ'=>'b', 'ÿ'=>'y', '- '=>'' );
         
+        //Eliminamos caracteres especiales del nombre de la categoría
         $string = strtr( $string, $unwanted_array );
         $string = (str_replace(' ', '_', strtolower($string)));
         
-
         if(!($user->roles->permisos->where('key',$permiso.$string)->isEmpty())){
             return true;
         }else{

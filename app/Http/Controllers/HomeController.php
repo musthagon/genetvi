@@ -40,24 +40,21 @@ class HomeController extends Controller
         
         $user = Auth::user();
 
-        $cursosEstudiante   = collect();
-        $cursosDocente      = collect();
+        $cursosDocente   = collect();
 
-        $matriculaciones= CursoParticipante::where('cvucv_user_id', $user->cvucv_id)->get();
+        $matriculaciones = CursoParticipante::where('cvucv_user_id', $user->getCVUCV_USER_ID())->get();
 
         foreach($matriculaciones as $matriculacion){
-            $curso = Curso::find($matriculacion->cvucv_curso_id);
+            $curso = Curso::find($matriculacion->getCVUCV_CURSO_ID());
             if(!empty($curso)){
-                if($matriculacion->cvucv_rol_id == 5){
-                    $cursosEstudiante [] = $curso;
-                }else{
+                if($matriculacion->cvucv_rol_id != 5){
                     $cursosDocente [] = $curso;
                 }
                 
             }
         }
                 
-        return view('user.panel', compact('cursosEstudiante','cursosDocente'));
+        return view('user.panel', compact('cursosDocente'));
     }
 
     /**

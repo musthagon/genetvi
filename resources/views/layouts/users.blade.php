@@ -12,6 +12,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <meta name="csrf-token" content="{{ csrf_token() }}"/>
+
+  <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+
   <link rel="stylesheet" href="/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
@@ -44,9 +49,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Logo -->
     <a href="{{ route('home') }}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>{{ setting('site.title') }}</b></span>
+      <span class="logo-mini"><b><img src="/img/LogoGENETVI_rombo.png" ></b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>{{ setting('site.title') }}</b></span>
+      <span class="logo-lg"><b><img src="/img/LogoGENETVI_HORIZONTAL_200px_50px.png" ></b></span>
     </a>
 
     <!-- Header Navbar -->
@@ -164,10 +169,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <footer class="main-footer">
     <!-- To the right -->
     <div class="pull-right hidden-xs">
-      Anything you want
+    <span class="logo-lg"><b><img src="/img/LogoGENETVI_HORIZONTAL2_200px_50px.png" ></b></span>
     </div>
     <!-- Default to the left -->
-    <strong>©2019 <a href="https://campusvirtual.ucv.ve/">SEDUCV</a>.</strong>
+    <strong><a href="https://campusvirtual.ucv.ve/moodle/mod/page/view.php?id=13">SEDUCV</a> 2019.</strong>
+
+    <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br />Este obra está bajo una <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">licencia de Creative Commons Reconocimiento 4.0 Internacional</a>.
+    
   </footer>
 
 </div>

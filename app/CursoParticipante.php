@@ -19,14 +19,18 @@ class CursoParticipante extends Model
         return $this->hasMany('App\Curso','categoria_id','id');
     }
 
+    public function usuario(){
+        return $this->belongsTo('App\User','user_id','id');
+    }
+
     public static function estaMatriculado($cvucv_id,$curso_id){
         return CursoParticipante::where('cvucv_user_id', $cvucv_id)
         ->where('cvucv_curso_id', $curso_id)
         ->first();
     }
 
-    public function usuario(){
-        return $this->belongsTo('App\User','user_id','id');
+    public function getCVUCV_CURSO_ID(){
+        return $this->cvucv_curso_id;
     }
 
 }

@@ -34,4 +34,8 @@ class User extends \TCG\Voyager\Models\User
     public function roles(){
         return $this->belongsTo('App\Role','role_id','id');
     }
+
+    public function getCVUCV_USER_ID(){
+        return $this->cvucv_id;
+    }
 }

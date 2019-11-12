@@ -27,7 +27,7 @@
 <section class="content">
   <div class="row">
 
-  @if( $cursosEstudiante->isEmpty() && $cursosDocente->isEmpty())
+  @if( $cursosDocente->isEmpty())
       <div class="col-md-12">
         <div class="box box-default">
           <div class="box-header with-border">
@@ -47,72 +47,7 @@
         </div>
         <!-- /.box -->
       </div>
-    @endif
-
-    @if(!($cursosEstudiante->isEmpty()))
-    <div class="col-xs-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Mis Cursos</h3>
-        </div>
-        <!-- /.box-header -->
-        <div class="box-body">
-
-          <table id="cursos-data-table" class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($cursosEstudiante as $curso)
-                <tr>
-                  <td>
-                      <a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->id}}" target="_blank"> 
-                        {{$curso->cvucv_fullname}} 
-                        
-                      </a>
-                  </td>
-                  <td class="course_summary">
-                    {!!$curso->cvucv_summary!!}
-                  </td>
-                  
-                  <td class="course_acciones">
-                    @if( !empty($curso->categoria)) 
-                      @if( !empty($curso->categoria->categoria_raiz)) 
-                        @if( !($curso->categoria->categoria_raiz->instrumentos_habilitados)->isEmpty())
-                          @if( !($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id))->isEmpty() )
-                            @foreach($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id) as $instrumento)
-                            <a class="course_acciones_item" href="{{ route('evaluacion', ['curso' => $curso, 'instrumento' => $instrumento]) }}" title="Evaluar" class="" >
-                              <button class=" btn-sm btn-success" style="margin-right: 5px;">
-                                <i class="voyager-list"></i> Evaluar {{$instrumento->nombre}}
-                              </button>
-                              
-                            </a>
-                            @endforeach
-                          @else
-                            Curso Evaluado
-                          @endif
-
-                        @else
-                          No hay evaluación disponible
-                        @endif           
-                      @endif
-                    @endif
-                    
-                    
-                  </td>
-                </tr>
-              @endforeach
-                  
-          </table>
-
-        </div><!-- /.box-body -->
-      </div><!-- /.box -->
-    </div>
-    @endif
+  @endif
 
     @if(!($cursosDocente->isEmpty()))
     <div class="col-xs-12">
@@ -142,29 +77,7 @@
                         <button class="btn-sm btn-primary" style="margin-right: 5px;">
                           <i class="voyager-list"></i> Ver 
                         </button>
-                    
-                    
-                    </a>
-                    @if( !empty($curso->categoria)) 
-                    @if( !empty($curso->categoria->categoria_raiz)) 
-                    @if( !empty($curso->categoria->categoria_raiz->instrumentos_habilitados))
-                    @if(!empty ($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id)))
-                      @foreach($curso->instrumentos_disponibles_usuario(Auth::user()->id, $curso->id) as $instrumento)
-                     
-
-                      <a class="course_acciones_item" href="{{ route('evaluacion', ['curso' => $curso, 'instrumento' => $instrumento]) }}" title="Evaluar" >
-                        <button class=" btn-sm btn-success" style="margin-right: 5px;">
-                          <i class="voyager-list"></i> Evaluar {{$instrumento->nombre}}
-                        </button>
-                        
-                      </a>
-                      @endforeach
-                      @endif
-                    @endif
-                    @endif
-                    @endif
-                    
-                    
+                    </a>                  
                   </td>
                 </tr>
               @endforeach
