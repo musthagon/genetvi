@@ -50,7 +50,7 @@
     @endif
 
     <!-- CUSTOM GENETVI CSS -->
-    <link rel="stylesheet" type="text/css" href="css/voyager/styles.css">
+    <link rel="stylesheet" type="text/css" href="/css/voyager/styles.css">
 
     @yield('head')
 </head>

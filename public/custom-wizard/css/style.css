@@ -59,7 +59,7 @@ body {
   font-family: 'Roboto Slab';
   margin: 0px;
 
-  background-image: linear-gradient(180deg,rgba(33, 132, 190, 0.5) 0%,rgba(255,255,255,0.86) 100%),url("/login_template/images/ucv-mural1.jpg");
+  background-image: linear-gradient(180deg,rgba(33, 132, 190, 0.5) 0%,rgba(255,255,255,0.86) 100%),url("/img/ucv-mural1.jpg");
 
   background-repeat: no-repeat;
   background-size: cover;

@@ -1,0 +1,117 @@
+body.login .login-sidebar{
+    height: 100vh;
+    overflow: auto;
+}
+body.login .login-container, body.login .login-sidebar:after{
+    position: initial;
+    margin-top: 0px;
+    padding: 0 30px;
+}
+body.login .login-container .login_title{
+    padding: 4px 0;
+    color: #4285F4;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+body.login .login-button{
+    outline: none;
+    background: #4285F4;
+    width: 100%;
+    border: 0;
+    border-radius: 4px;
+    padding: 12px 20px;
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    line-height: inherit;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+
+.instrucciones{
+    color: #22a7f0;
+    cursor: pointer;
+    border-bottom: 1px dotted #22a7f0;
+}
+
+
+
+.modal-window {
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.25);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+}
+
+.modal-window > div {
+    width: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+    padding: 2em;
+    background: #ffffff;
+}
+.modal-window header {
+    font-weight: bold;
+}
+.modal-window h1 {
+    font-size: 150%;
+    margin: 0 0 15px;
+}
+.modal-window div:not(:last-of-type) {
+    margin-bottom: 15px;
+}
+.modal-body {
+    max-height: calc(100vh - 110px);
+    max-width: 90%;
+    overflow-y: auto;
+}
+/*Activa y desactiva el modal*/
+.modal-window:target {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+/*Modal close dentro del DIV*/
+.modal-close2 {
+    color: red;
+    font-weight: bold;
+    line-height: 50px;
+    font-size: 18px;
+    position: absolute;
+    right: 15px;
+    text-align: center;
+    top: 0;
+    width: 70px;
+    text-decoration: none;
+}
+
+.modal-close2:hover {
+    color: black;
+}
+.modal-close {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #ffffff;
+    opacity: 0.3;
+    transition: opacity 200ms;
+  }
+.modal-close:hover {
+    /*opacity: 0.1;*/
+}

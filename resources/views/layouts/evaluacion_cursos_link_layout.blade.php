@@ -7,6 +7,13 @@
 	  <meta name="author" content="colorlib.com">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
+    @if($admin_favicon == '')
+        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+    @else
+        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+    @endif
+
     <title>Evaluación de @isset($curso) {{$curso->getNombre()}} @else Curso @endif</title>
 
     <!-- Font Icon -->

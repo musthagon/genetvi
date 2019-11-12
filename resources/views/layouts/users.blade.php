@@ -23,9 +23,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Ionicons -->
   <link rel="stylesheet" href="/adminlte/bower_components/Ionicons/css/ionicons.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="/adminlte/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="/adminlte/css/AdminLTE.css">
 
-  <link rel="stylesheet" href="/adminlte/css/skins/skin-blue.min.css">
+  <link rel="stylesheet" href="/adminlte/css/skins/skin-blue-GENETVI.css">
   
   <!-- Google Font -->
   <link rel="stylesheet"
@@ -130,7 +130,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <div class="pull-left info">
           <p>{{ Auth::user()->name }}</p>
           <!-- Status -->
-          <i class="fa fa-circle text-success"></i> Online
         </div>
       </div>
 

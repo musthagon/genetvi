@@ -117,7 +117,7 @@
 <script>
     var btn = document.querySelector('button[type="submit"]');
     var form = document.forms[0];
-    var email = document.querySelector('[name="email"]');
+    var email = document.querySelector('[name="cvucv_username"]');
     var password = document.querySelector('[name="password"]');
     btn.addEventListener('click', function(ev){
         if (form.checkValidity()) {
