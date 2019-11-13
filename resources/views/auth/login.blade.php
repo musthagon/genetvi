@@ -9,18 +9,15 @@
     <title>Admin - {{ Voyager::setting("admin.title") }}</title>
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
     <!-- Favicon -->
-    <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
-    @if($admin_favicon == '')
-        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
-    @else
-        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
-    @endif
 
-    <link rel="stylesheet" href="/css/voyager/login_style.css">
+    <link rel="shortcut icon" href="{{asset('img/LogoGENETVI_rombo.png')}}" type="image/png">
+
+
+    <link rel="stylesheet" href="{{asset('css/voyager/login_style.css')}}">
 
     <style>
         body {
-            background-image:url('{{ Voyager::image( Voyager::setting("admin.bg_image"), voyager_asset("images/bg.jpg") ) }}');
+            background-image:url('{{asset("img/ucv-mural1.jpg")}}');
             background-color: {{ Voyager::setting("admin.bg_color", "#FFFFFF" ) }};
         }
         body.login .login-sidebar {
@@ -53,12 +50,8 @@
             <div class="clearfix">
                 <div class="col-sm-12 col-md-10 col-md-offset-2">
                     <div class="logo-title-container">
-                        <?php $admin_logo_img = Voyager::setting('admin.icon_image', ''); ?>
-                        @if($admin_logo_img == '')
-                        <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{ voyager_asset('images/logo-icon-light.png') }}" alt="Logo Icon">
-                        @else
-                        <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{ Voyager::image($admin_logo_img) }}" alt="Logo Icon">
-                        @endif
+                        <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{asset('img/LogoGENETVI_rombo.png')}}" alt="Logo Icon">
+
                         <div class="copy animated fadeIn">
                             <h1>{{ Voyager::setting('admin.title', 'Voyager') }}</h1>
                             <p>{{ Voyager::setting('admin.description', __('voyager::login.welcome')) }}</p>
@@ -72,10 +65,10 @@
             <div class="login-body">
 
                 <div class="side-body padding-top">
-                    <div style="background: #689df6; background-size:cover; background-image: url(http://localhost:8000/storage/settings/October2019/3CQ6DqmOi5jSyz9C3bc5.jpg); background-position: center center;position:absolute; top:0; left:0; width:100%; height:300px;"></div>
+                    <div style="background: #689df6; background-size:cover; background-image: url('{{asset('img/ucv-mural1.jpg')}}'); background-position: center center;position:absolute; top:0; left:0; width:100%; height:300px;"></div>
                     <div style="height:160px; display:block; width:100%"></div>
                     <div style="position:relative; z-index:9; text-align:center; margin-top: -48px;">
-                        <img src="/img/LogoGENETVi.png" class="avatar" style="border-radius:50%; width:200px; height:200px;" alt="GENETVI">
+                        <img src="{{asset('img/LogoGENETVI.png')}}" class="avatar" style="border-radius:50%; width:200px; height:200px;" alt="GENETVI">
                         <div class="text-muted">Aplicación Web para la Gestión de la Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la UCV</div>
                         <p></p>
                     </div>
@@ -157,8 +150,6 @@
         </div> <!-- .login-sidebar -->
     </div> <!-- .row -->
 </div> <!-- .container-fluid -->
-<!-- jQuery 3 -->
-<script src="/adminlte/bower_components/jquery/dist/jquery.min.js"></script>
 <script>
     var btn = document.querySelector('button[type="submit"]');
     var form = document.forms[0];
@@ -189,45 +180,6 @@
     password.addEventListener('focusout', function(e){
        document.getElementById('passwordGroup').classList.remove("focused");
     });
-
-    /*$(window).on('click', function(event){
-        if(event.target.id == 'open_modal'){
-            $('#open_modal').css({display: "none"});
-        }
-    });*/
-
-
-    // Get the modal
-   /* var modal = document.getElementById("my_modal");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("open_modal");
-
-    // Get the <span> element that closes the modal
-    var span = document.getElementById("close_modal"); 
-
-    // When the user clicks the button, open the modal 
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    /*$(window).on('click', function(event){
-        if(event.target.id == 'my_modal'){
-            $('#my_modal').css({display: "none"});
-        }
-    });*/
 
 </script>
 </body>
