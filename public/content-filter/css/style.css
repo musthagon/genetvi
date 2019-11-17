@@ -1,37 +1,5 @@
 /* -------------------------------- 
 
-Primary style
-
--------------------------------- */
-*, *::after, *::before {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 62.5%;
-}
-
-html * {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  font-size: 1.6rem;
-  font-family: "Open Sans", sans-serif;
-  color: #331d35;
-  background-color: #e7e7e7;
-}
-
-a {
-  color: #41307c;
-  text-decoration: none;
-}
-
-/* -------------------------------- 
-
 Main Components 
 
 -------------------------------- */
@@ -217,7 +185,7 @@ xtab-filter
     color: #9a9a9a;
     text-transform: uppercase;
     font-weight: 700;
-    font-size: 1.3rem;
+    /*font-size: 1.3rem;*/
   }
   .no-touch .cd-tab-filter a:hover {
     color: #41307c;
@@ -373,7 +341,7 @@ xfilter
   line-height: 50px;
   width: 60px;
   color: #ffffff;
-  font-size: 1.3rem;
+  /*font-size: 1.3rem;*/
   text-align: center;
   background: #37296a;
   opacity: 0;
@@ -430,7 +398,7 @@ xfilter
     text-indent: 0;
     color: #9a9a9a;
     text-transform: uppercase;
-    font-size: 1.3rem;
+    /*font-size: 1.3rem;*/
     font-weight: 700;
     padding-left: 24px;
     background-position: left center;
@@ -462,7 +430,7 @@ xcustom form elements
   color: #9a9a9a;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: inherit;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -530,7 +498,7 @@ xcustom form elements
   border-color: transparent;
   background-color: #e6e6e6;
   /* prevent jump - ios devices */
-  font-size: 1.6rem !important;
+  /*font-size: 1.6rem !important;*/
 }
 .cd-filter-block input[type='search']::-webkit-search-cancel-button {
   display: none;
@@ -559,7 +527,7 @@ xcustom form elements
 }
 .cd-filter-block select {
   cursor: pointer;
-  font-size: 1.4rem;
+  /*font-size: 1.4rem;*/
 }
 .cd-filter-block select::-ms-expand {
   display: none;
@@ -585,7 +553,7 @@ xcustom form elements
 .cd-filter-block .checkbox-label,
 .cd-filter-block .radio-label {
   padding-left: 24px;
-  font-size: 1.4rem;
+  /*font-size: 1.4rem;*/
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -655,13 +623,13 @@ xcustom form elements
 }
 .indicador_title{
   font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
-  font-size: 18px;
+  /*font-size: 18px;*/
   color:#333333;font-size:18px;fill:#333333;
   line-height:normal;
 }
 .indicador_subtitle{
   font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
-  font-size: 12px;
+  /*font-size: 12px;*/
   color:#666666;fill:#666666;
   line-height:normal;
   margin-bottom: 10px;

@@ -75,7 +75,7 @@
                   </td>
                   <td class='responses'>
                   
-                    @include('user.formfields.'.$indicador->getTipo())
+                    @include('public.formfields.'.$indicador->getTipo())
                                 
                   </td>
                 </tr>

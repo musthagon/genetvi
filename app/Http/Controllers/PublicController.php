@@ -48,7 +48,7 @@ class PublicController extends Controller
         //Actualizamos el estatus de la invitacion
         $invitacion->actualizar_estatus_leida();
         
-        return view('user.evaluacion_cursos_link', compact('invitacion','curso', 'instrumento','periodo'));
+        return view('public.evaluacion_cursos_link', compact('invitacion','curso', 'instrumento','periodo'));
                 
     }
     public function evaluacion_procesar($invitacion_id,Request $request){
@@ -315,6 +315,6 @@ class PublicController extends Controller
             $message    = "La página que buscas, ya no se encuentra disponible.";
             $alert_type = "Error"; 
         }
-        return view('user.evaluacion_cursos_link', compact('message','alert_type'));
+        return view('public.evaluacion_cursos_link', compact('message','alert_type'));
     }
 }

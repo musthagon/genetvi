@@ -31,7 +31,7 @@ Route::get('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'Home
 Route::post('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}/procesar', 'HomeController@evaluacion_procesar')->name('evaluacion_procesar');
 
 //Cursos dashboards
-Route::get('/home/curso/{id}', 'HomeController@visualizar_curso')->name('curso');
+Route::get('/home/curso/{id}', 'HomeController@visualizar_resultados_curso')->name('curso');
 
 //Public evaluacion
 Route::get('/evaluar_curso/id/{token}', 'PublicController@evaluacion')->name('evaluacion_link');

@@ -57,260 +57,12 @@ class HomeController extends Controller
         return view('user.panel', compact('cursosDocente'));
     }
 
-    /**
-     * Para procesar la evaluación de los instrumentos
-     *
-     * 
-     */
-    public function evaluacion($id_curso, $id_instrumento){
-        $curso          = Curso::find($id_curso);
-        $instrumento    = Instrumento::find($id_instrumento);
-        $user           = Auth::user();
-
-        //1. Verificamos que el curso y el instrumento existan
-        if (!empty($curso) && !empty($instrumento)){ 
-
-            //2. Verificamos que el usuario este matriculado en este curso
-            if(empty(CursoParticipante::estaMatriculado($user->cvucv_id,$curso->id))){
-                return redirect()->route('home')->with(['message' => "Error, no estas matriculado a este curso", 'alert-type' => 'error']);
-            }
-            
-            //3. Verificamos que el instrumento sea valido
-            if(!$instrumento->esValido()){
-                return redirect()->route('home')->with(['message' => "Error, no puede evaluar en este momento", 'alert-type' => 'error']);
-            }
-
-            $categoria_raiz             = $curso->categoria->categoria_raiz;
-            $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
-            //4. Verificamos que la categoria del curso tenga instrumentos habilitados para evaluar
-            if(!empty($instrumentos_habilitados)){
-                foreach($instrumentos_habilitados as $actual){
-                    
-                    //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
-                    if($actual->id == $instrumento->id){
-                        
-                        //6. Verificamos que el instrumento va dirigido al presente rol
-                        $rolUsuarioCurso = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-                                ->where('cvucv_curso_id',$id_curso)
-                                ->first()->cvucv_rol_id;
-
-                        $instrumento_dirigido_usuario = $actual->instrumentoDirigidoaRol($rolUsuarioCurso);
-
-                        if(!$instrumento_dirigido_usuario){
-                            return redirect()->route('home')->with(['message' => "Error, no puede evaluar este curso", 'alert-type' => 'error']);
-                        }
-
-                        //7. Verificamos la cantidad de intentos de evaluacion del instrumento
-                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->cvucv_username, $categoria_raiz->periodo_lectivo) >= 1){
-                            return redirect()->route('home')->with(['message' => "Error, ha excedido la cantidad máxima de intentos para evaluar este curso", 'alert-type' => 'error']);
-                        }
-
-                        return view('user.evaluacion_cursos', compact('instrumento','curso'));
-                    }
-                }
-                
-            }
-        }
-        
-        return redirect()->route('home')->with(['message' => "Error, no se puede evaluar este curso", 'alert-type' => 'error']);
-        
-    }
-
-    public function evaluacion2($id_curso, $id_instrumento){
-        $curso          = Curso::find($id_curso);
-        $instrumento    = Instrumento::find($id_instrumento);
-        $user           = Auth::user();
-
-        //1. Verificamos que el curso y el instrumento existan
-        if (!empty($curso) && !empty($instrumento)){ 
-
-            //2. Verificamos que el usuario este matriculado en este curso
-            if(empty(CursoParticipante::estaMatriculado($user->cvucv_id,$curso->id))){
-                return redirect()->route('home')->with(['message' => "Error, no estas matriculado a este curso", 'alert-type' => 'error']);
-            }
-            
-            //3. Verificamos que el instrumento sea valido
-            if(!$instrumento->esValido()){
-                return redirect()->route('home')->with(['message' => "Error, no puede evaluar en este momento", 'alert-type' => 'error']);
-            }
-
-            $categoria_raiz             = $curso->categoria->categoria_raiz;
-            $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
-            //4. Verificamos que la categoria del curso tenga instrumentos habilitados para evaluar
-            if(!empty($instrumentos_habilitados)){
-                foreach($instrumentos_habilitados as $actual){
-                    
-                    //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
-                    if($actual->id == $instrumento->id){
-                        
-                        //6. Verificamos que el instrumento va dirigido al presente rol
-                        $rolUsuarioCurso = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-                                ->where('cvucv_curso_id',$id_curso)
-                                ->first()->cvucv_rol_id;
-
-                        $instrumento_dirigido_usuario = $actual->instrumentoDirigidoaRol($rolUsuarioCurso);
-
-                        if(!$instrumento_dirigido_usuario){
-                            return redirect()->route('home')->with(['message' => "Error, no puede evaluar este curso", 'alert-type' => 'error']);
-                        }
-
-                        //7. Verificamos la cantidad de intentos de evaluacion del instrumento
-                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->cvucv_username, $categoria_raiz->periodo_lectivo) >= 1){
-                            return redirect()->route('home')->with(['message' => "Error, ha excedido la cantidad máxima de intentos para evaluar este curso", 'alert-type' => 'error']);
-                        }
-
-                        return view('user.evaluacion_cursos_link', compact('instrumento','curso'));
-                    }
-                }
-                
-            }
-        }
-        
-        return redirect()->route('home')->with(['message' => "Error, no se puede evaluar este curso", 'alert-type' => 'error']);
-        
-    }
-    public function evaluacion_procesar($id_curso, $id_instrumento,Request $request){
-        $curso          = Curso::find($id_curso);
-        $instrumento    = Instrumento::find($id_instrumento);
-        $user           = Auth::user();
-        
-        //1. Verificamos que el curso y el instrumento existan
-        if (!empty($curso) && !empty($instrumento)){ 
-
-            //Verificamos que los campos del request no esten vacíos
-            foreach($instrumento->categorias as $categorias){
-                foreach($categorias->indicadores as $indicador){
-                    if(!isset($request->{($indicador->id)} )){  
-                        return redirect()->back()->withInput()->with(['message' => "Debe completar el campo: ".$indicador->nombre, 'alert-type' => 'error']);
-                    }
-
-                }
-            }
-
-            //2. Verificamos que el usuario este matriculado en este curso
-            if(empty(CursoParticipante::estaMatriculado($user->cvucv_id,$curso->id))){
-                return redirect()->route('home')->with(['message' => "Error, no estas matriculado a este curso", 'alert-type' => 'error']);
-            }
-
-            //3. Verificamos que el instrumento sea valido
-            if(!$instrumento->esValido()){
-                return redirect()->route('home')->with(['message' => "Error, no puede evaluar en este momento", 'alert-type' => 'error']);
-            }
-
-            $categoria_raiz             = $curso->categoria->categoria_raiz;
-            $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
-
-            //4. Verificamos que la categoria del curso tenga instrumentos habilitados para evaluar
-            if(!empty($instrumentos_habilitados)){
-                foreach($instrumentos_habilitados as $actual){
-
-                    //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
-                    if($actual->id == $instrumento->id){
-                        
-                        //6. Verificamos que el instrumento va dirigido al presente rol
-                        $rolUsuarioCurso = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-                                ->where('cvucv_curso_id',$id_curso)
-                                ->first()->cvucv_rol_id;
-
-                        $instrumento_dirigido_usuario = $actual->instrumentoDirigidoaRol($rolUsuarioCurso);
-
-                        if(!$instrumento_dirigido_usuario){
-                            return redirect()->route('home')->with(['message' => "Error, no puede evaluar este curso", 'alert-type' => 'error']);
-                        }
-                        
-                        //7. Verificamos la cantidad de intentos de evaluacion del instrumento
-                        if (Evaluacion::cantidad_evaluaciones_realizadas($instrumento->id, $curso->id, $user->cvucv_username, $categoria_raiz->periodo_lectivo) >= 1){
-                            return redirect()->route('home')->with(['message' => "Error, ha excedido la cantidad máxima de intentos para evaluar este curso", 'alert-type' => 'error']);
-                        }
-
-                        //Procesamos las respuestas
-                        $respuestas = array();
-                        $i = 0;
-                        //Es para calcular el valor numerico de la evaluación 
-                        $percentil_value_categoria = $instrumento->percentilValue();
-                        $percentil_total_eva = 0;
-                        $percentil_value_opciones = 2; //Opciones (Siempre y a veces) el Nunca, es 0
-                        foreach($instrumento->categorias as $categoria){
-                            $categoria_field = array();
-                            $j = 0;
-                            $percentil_value_indicadores = $percentil_value_categoria/$categoria->percentilValue();
-                            foreach($categoria->indicadores as $indicador){
-                                if(isset($request->{($indicador->id)} )){
-                                    
-                                    $value_string = "Nunca";
-                                    $value_percentil_request = 0;
-                                    switch ($request->{($indicador->id)}) {
-                                        case "2":
-                                            $value_string = "Siempre";
-                                            $value_percentil_request = 2;
-                                        break;
-                                        case "1":
-                                            $value_string = "A veces";
-                                            $value_percentil_request = 1;
-                                        break;
-                                    }
-                                    $percentil_indicador_actual =($percentil_value_indicadores/$percentil_value_opciones) * $value_percentil_request;
-                                    $percentil_total_eva = $percentil_total_eva + $percentil_indicador_actual;
-
-                                    $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
-                                    $categoria_field[$j]['value_string']    = $value_string;
-                                    $categoria_field[$j]['value_request']   = $request->{($indicador->id)};
-                                    $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
-                                    $categoria_field[$j]['indicador_id']    = $indicador->id;
-                                    $categoria_field[$j]['categoria_id']    = $categoria->id;
-
-                                    $j++;
-                                }
-                            }
-                            $respuestas[$i] = $categoria_field;
-                            $i++;
-                        }
-                        $respuestas_save = json_encode($respuestas);
-
-                        //Guardamos la evaluacion realizada
-                        $evaluacion = new Evaluacion;
-
-                        $evaluacion->respuestas          = $respuestas_save;
-                        $evaluacion->percentil_eva       = $percentil_total_eva;
-                        $evaluacion->instrumento_id      = $instrumento->id;
-                        $evaluacion->curso_id            = $curso->id;
-                        $evaluacion->usuario_id          = $user->id;
-                        $evaluacion->periodo_lectivo_id  = $categoria_raiz->periodo_lectivo;
-
-                        $evaluacion->save();
-
-                        foreach($respuestas as $respuesta){
-                            foreach($respuesta as $campos){
-                                $respuesta = new Respuesta;
-
-                                $respuesta->value_string     = $campos['value_string'];
-                                $respuesta->value_request    = $campos['value_request'];
-                                $respuesta->value_percentil  = $campos['value_percentil'];
-                                $respuesta->indicador_nombre = $campos['indicador_nombre'] ;
-                                $respuesta->indicador_id     = $campos['indicador_id'];
-                                $respuesta->categoria_id     = $campos['categoria_id'] ;
-                                $respuesta->evaluacion_id    = $evaluacion->id;
-                                
-                                $respuesta->save();
-                            }
-                        }
-
-                        return redirect()->route('home')->with(['message' => "Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", 'alert-type' => 'success']);
-                    }
-                }
-                
-            }
-        }
-        
-        return redirect()->route('home')->with(['message' => "Error, no se puede evaluar este curso", 'alert-type' => 'error']);
-    }
-
     /*
     * Para visualizar los dashboards de la evaluacion de los cursos
     * Y lo relacionado a ese curso
     *
     */
-    public function visualizar_curso($id){        
+    /*public function visualizar_curso($id){        
         
         $curso = Curso::find($id);
         
@@ -427,17 +179,6 @@ class HomeController extends Controller
                     ->where('instrumento_id',$instrumento->id)
                     ->where('curso_id',$curso->id)
                     ->avg('percentil_eva');
-
-                    //Revisores del instrumento en el periodo lectivo
-                    /*$revisores = Evaluacion::where('periodo_lectivo_id',$periodo->id)
-                    ->where('instrumento_id',$instrumento->id)
-                    ->where('curso_id',$curso->id)
-                    ->get();
-                    
-                    foreach($revisores as $revisorIndex => $revisor){
-                        $usuario = User::find($revisor->usuario_id);
-                        $listadoParticipantesRevisores [$periodo_index][$instrumento_index][$revisorIndex] = $usuario;
-                    }*/
                     
                 }
             }
@@ -562,7 +303,176 @@ class HomeController extends Controller
             'cantidadEvaluacionesCursoCharts',
             'promedioPonderacionCurso'
         ));
+    }*/
+
+
+    public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
+        $curso = Curso::find($curso_id);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+
+        //Tiene permitido acceder?
+        $user = Auth::user();
+        $estaMatriculadoDocente = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
+        ->where('cvucv_curso_id',$curso->id)
+        ->where('cvucv_rol_id','!=',5)
+        ->first();        
+        if(empty($estaMatriculadoDocente) ){
+            return redirect('/home')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+
+        //instrumentos con los cuales han evaluado este curso
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
+        //instrumentos con los cuales han evaluado este curso2
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
+        
+        //periodos lectivos con los cuales han evaluado este curso
+        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
+
+        //categorias con los cuales han evaluado este curso
+        $categorias_collection      = Evaluacion::categorias_de_evaluacion_del_curso($curso->id);
+        
+        //indicadores con los cuales han evaluado este curso
+        $indicadores_collection     = Evaluacion::indicadores_de_evaluacion_del_curso($curso->id);
+
+        $indicadores_collection_charts = [];
+
+        //Chart1. Cantidad personas que han evaluado el eva
+        //Chart2. Ponderacion de la evaluacion del eva
+        $cantidadEvaluacionesCursoCharts = [];
+        $promedioPonderacionCurso = [];
+        foreach($periodos_collection as $periodo_index=>$periodo){
+        foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+        foreach($instrumento->categorias as $categoria_index=>$categoria){
+        foreach($categoria->indicadores as $indicador_index=>$indicador){
+
+            if($indicador->esMedible()){
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
+
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] ->options([
+                    "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                    'title'=>[
+                        'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
+                                    Del Instrumento: '.$instrumento->nombre.'<br>
+                                    En el periodo lectivo: '.$periodo->nombre
+                    ],
+                    'subtitle'=>[
+                        'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+                    ],
+                    'tooltip'=> [
+                        'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    ],
+                    'plotOptions'=> [
+                        'pie'=> [
+                            'allowPointSelect'=> true,
+                            'cursor'=> 'pointer',
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                                'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
+                            ],
+                        ],                            
+                    ],
+                ]);
+
+                $api = route('curso.consultar_grafico_indicadores', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]);
+
+                $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
+                    ->labels(array_keys($opciones_instrumento))->load($api);
+            }
+
+        }
+        }   
+        }
+        }
+
+        $cantidadEvaluacionesCursoCharts= new indicadoresChart;
+        $cantidadEvaluacionesCursoCharts->labels($nombreInstrumentos);
+        $cantidadEvaluacionesCursoCharts->options([
+            'title'=>[
+                'text' => 'Cantidad de Evaluaciones de '.$curso->cvucv_fullname
+            ],
+            'subtitle'=>[
+                'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+            ],
+            'tooltip'=> [
+                'valueSuffix'=> ' personas'
+            ],
+            'plotOptions'=> [
+                'bar'=> [
+                    'dataLabels'=> [
+                        'enabled'=> true,
+                    ],
+                ],                            
+            ],
+            'yAxis'=> [
+                'min'=> 0,
+                'title'=> [
+                    'text'=> 'Cantidad personas que evaluaron',
+                    'align'=> 'high'
+                ],
+                'labels'=> [
+                    'overflow'=> 'justify'
+                ]
+            ],
+        ]);
+
+        $api = route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->id]);
+        $cantidadEvaluacionesCursoCharts->load($api);
+
+        $promedioPonderacionCurso = new indicadoresChart;
+        $promedioPonderacionCurso->labels($nombreInstrumentos);        
+        $promedioPonderacionCurso->options([
+            'title'=>[
+                'text' => 'Promedio de la Ponderacion de '.$curso->cvucv_fullname
+            ],
+            'subtitle'=>[
+                'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+            ],
+            'tooltip'=> [
+                'valueSuffix'=> ' %'
+            ],
+            'plotOptions'=> [
+                'bar'=> [
+                    'dataLabels'=> [
+                        'enabled'=> true,
+                    ],
+                ],                            
+            ],
+            'yAxis'=> [
+                'min'=> 0,
+                'title'=> [
+                    'text'=> 'Promedio ponderacion del curso',
+                    'align'=> 'high'
+                ],
+                'labels'=> [
+                    'overflow'=> 'justify'
+                ]
+            ],
+        ]);
+        
+        $api = route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->id]);
+        $promedioPonderacionCurso->load($api);
+
+        
+        return view('user.cursos_dashboards_test',
+        compact(
+            'curso',
+            'periodos_collection',
+            'instrumentos_collection',
+            'instrumentos_collection2',
+            'categorias_collection',
+            'indicadores_collection',
+            'indicadores_collection_charts',
+            'cantidadEvaluacionesCursoCharts',
+            'promedioPonderacionCurso'
+        ));
+
     }
+
+
 
     public function sync_user_courses(&$cursosEstudiante, &$cursosDocente ){
         $user = Auth::user();

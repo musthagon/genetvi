@@ -15,28 +15,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
-  <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+  <link rel="shortcut icon" href="{{asset('img/LogoGENETVI_rombo.png')}}  " type="image/png">
 
-  <link rel="stylesheet" href="/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{asset('adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css')}} ">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{{asset('adminlte/bower_components/font-awesome/css/font-awesome.min.css')}}">
   <!-- Ionicons -->
-  <link rel="stylesheet" href="/adminlte/bower_components/Ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="{{asset('adminlte/bower_components/Ionicons/css/ionicons.min.css')}}">
   <!-- Theme style -->
-  <link rel="stylesheet" href="/adminlte/css/AdminLTE.css">
-
-  <link rel="stylesheet" href="/adminlte/css/skins/skin-blue-GENETVI.css">
+  <link rel="stylesheet" href="{{asset('adminlte/css/AdminLTE.css')}}">
+  <link rel="stylesheet" href="{{asset('adminlte/css/skins/skin-blue-GENETVI.css')}}">
   
   <!-- Google Font -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  <link rel="stylesheet" href="{{asset('adminlte/fonts/fonts.css')}}">
+
+  <!-- Pace loader -->
+  <link href="{{asset('pace_loader/themes/loading_bar.css')}}" rel="stylesheet" />
+  <script src="{{asset('pace_loader/pace.min.js')}}"></script>
+  
+  <!-- Datatable -->
+  <link rel="stylesheet" href="{{asset('adminlte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}">
 
   <!-- Toastr style -->
-  <link rel="stylesheet" href="/toastr/css/toastr.min.css">
+  <link rel="stylesheet" href="{{asset('toastr/css/toastr.min.css')}}">
+
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{{asset('adminlte/bower_components/select2/dist/css/select2.min.css')}}">
 
   @yield('css')
 
-  <link rel="stylesheet" href="/css/general.css">
+  <link rel="stylesheet" href="{{asset('css/general.css')}}">
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -184,13 +192,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- REQUIRED JS SCRIPTS -->
 
 <!-- jQuery 3 -->
-<script src="/adminlte/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="{{asset('adminlte/bower_components/jquery/dist/jquery.min.js')}}"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="{{asset('adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+<!-- Select2 -->
+<script src="{{asset('adminlte/bower_components/select2/dist/js/select2.js')}}"></script>
 <!-- AdminLTE App -->
-<script src="/adminlte/js/adminlte.min.js"></script>
+<script src="{{asset('adminlte/js/adminlte.min.js')}}"></script>
+
+<!-- DataTables -->
+<script src="{{asset('adminlte/bower_components/datatables.net/js/jquery.dataTables.min.js')}}"></script>
+<script src="{{asset('adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js')}}"></script>
+
 <!-- Toastr style -->
-<script src="/toastr/js/toastr.min.js"></script>
+<script src="{{asset('toastr/js/toastr.min.js')}}"></script>
 <script>
     $(function (){
       toastr.options = {
@@ -238,7 +253,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       searchPseudoElements: true
    }
 </script>
-<script src="/js/general.js"></script>
+<script src="{{asset('js/general.js')}}"></script>
 
 @yield('javascript')
 @stack('javascript')

@@ -172,6 +172,7 @@
 
 
 @section('css')
+   
     <link rel="stylesheet" href="/css/user_list.css">
     <style>
 
@@ -180,6 +181,7 @@
 @stop
 
 @section('javascript')
+    
 
     <script>
         // CSRF Token
