@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\Http\Controllers\ControllerCustomGates;
+use Illuminate\Routing\Router;
+use Illuminate\Contracts\Events\Dispatcher;
+use App\Http\Middleware\VoyagerAdminMiddleware;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -22,12 +24,13 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Router $router, Dispatcher $event)
     {
         $this->registerPolicies();
 
         //Custom Sisgeva Gates
         Gate::define('checkCategoryPermissionSisgeva', 'App\Http\Controllers\ControllerCustomGates@checkCategoryPermissionSisgeva');
 
+        $router->aliasMiddleware('admin.user', VoyagerAdminMiddleware::class);
     }
 }

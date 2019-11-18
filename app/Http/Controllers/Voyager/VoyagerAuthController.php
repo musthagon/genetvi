@@ -4,10 +4,18 @@ namespace App\Http\Controllers\Voyager;
 
 use TCG\Voyager\Http\Controllers\VoyagerAuthController as BaseVoyagerAuthController;
 use Illuminate\Http\Request;
+use TCG\Voyager\Facades\Voyager;
 
 class VoyagerAuthController extends BaseVoyagerAuthController
 {
-    
+    public function login()
+    {
+        if ($this->guard()->user()) {
+            return redirect()->route('voyager.dashboard');
+        }
+        return Voyager::view('voyager::login');
+    }
+
     public function postLogin(Request $request)
     {   
         //$this->validateLogin($request);

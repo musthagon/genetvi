@@ -5,14 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Instrumento;
 use App\Curso;
-use App\CategoriaDeCurso;
-use App\CursoParticipante;
 use App\Evaluacion;
 use App\Respuesta;
-use App\PeriodoLectivo;
-use App\Categoria;
-use App\Indicador;
-use App\User;
 use App\Invitacion;
 
 
