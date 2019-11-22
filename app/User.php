@@ -38,4 +38,26 @@ class User extends \TCG\Voyager\Models\User
     public function getCVUCV_USER_ID(){
         return $this->cvucv_id;
     }
+
+    public static function username(){
+        return 'cvucv_username';
+    }
+    public static function password(){
+        return 'password';
+    }
+
+    public static function create(array $data)
+    {
+        return User::create([
+            'name'              => $data['name'],
+            'email'             => $data['email'],
+            'password'          => bcrypt($data['password']),
+            'avatar'            => $data['avatar'],
+            'cvucv_username'    => $data['cvucv_username'],
+            'cvucv_id'          => $data['cvucv_id'],
+            'cvucv_lastname'    => $data['cvucv_lastname'],
+            'cvucv_suspended'   => $data['cvucv_suspended'],
+            'cvucv_token'       => $data['cvucv_token'],
+        ]);
+    }
 }

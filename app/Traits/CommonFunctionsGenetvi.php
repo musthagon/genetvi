@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Nahid\JsonQ\Jsonq;
 use App\Curso;
 use App\Evaluacion;
+use App\CursoParticipante;
+use Illuminate\Support\Facades\Auth;
 
 trait CommonFunctionsGenetvi
 {
@@ -25,6 +27,25 @@ trait CommonFunctionsGenetvi
 
         return $content;
     }
+
+
+    public function cvucv_autenticacion(Request $request)
+    {
+        $endpoint = env("CVUCV_GET_USER_TOKEN","https://campusvirtual.ucv.ve/moodle/login/token.php");
+        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE","moodle_mobile_app");
+
+        $params = [
+            'service'  => $service,
+            'username' => $request->cvucv_username,
+            'password' => $request->password
+        ];
+
+        $response = $this->send_curl('POST', $endpoint, $params);
+        
+        return $response;
+    }
+
+
     /**
      * Obtiene los cursos de una categoria o
      * Obtiene los cursos por un campo
@@ -311,5 +332,61 @@ trait CommonFunctionsGenetvi
 
         return $response;
     
+    }
+
+    /**
+     * Sincroniza todos los cursos del usuario logeado
+     *
+     */
+    public function sync_user_courses(){
+        $user = Auth::user();
+        //Consultamos los cursos del usuario
+        $cursos_cvucv = $this->cvucv_get_users_courses($user->cvucv_id);
+        
+        if(!empty($cursos_cvucv)){
+            foreach($cursos_cvucv as $data){
+                $curso = Curso::find($data['id']);
+                //1. Verificamos que existan los cursos
+                //Si no existe, hay que crearlo
+                if(empty($curso)){
+                    $curso = new Curso;
+                    $curso->id                  = $data['id'];
+                    $curso->cvucv_shortname     = $data['shortname'];
+                    $curso->cvucv_category_id   = $data['category'];
+                    $curso->cvucv_fullname      = $data['fullname'];
+                    $curso->cvucv_displayname   = $data['displayname'];
+                    $curso->cvucv_summary       = $data['summary'];
+                    $curso->cvucv_visible       = $data['visible'];
+                    $curso->cvucv_link          = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/course/view.php?id=".$data['id'];
+                    $curso->save();
+                }
+                //2. Verificamos que este matriculado en ese curso -> Solicitamos los participantes del curso
+                $participantes_curso = $this->cvucv_get_participantes_curso($data['id']);
+                foreach($participantes_curso as $participante){
+                
+                    //Buscamos el usuario actual
+                    if($user->cvucv_id == $participante['id']){
+                        $matriculacion = CursoParticipante::where('cvucv_user_id', $participante['id'])
+                            ->where('cvucv_curso_id', $data['id'])
+                            ->first();
+                        //Si no esta, hay que matricularlo
+                        if(empty($matriculacion)){
+                            $matriculacion                 = new CursoParticipante;
+                            $matriculacion->user_id        = $user->id;
+                            $matriculacion->cvucv_user_id  = $participante['id'];
+                            $matriculacion->cvucv_curso_id = $data['id'];
+                            $matriculacion->user_sync      = true;
+                        }
+                        if(isset($participante['roles']) && !empty($participante['roles'])){
+                            $matriculacion->cvucv_rol_id = $participante['roles'][0]['roleid'];
+                        }      
+                        /*$matriculacion->curso_sync   = true;*/
+                        $matriculacion->save();
+                        break;
+                    }
+                }                     
+            }
+            
+        }
     }
 }

@@ -11,8 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Auth\Events\Registered;
 
+use App\Traits\CommonFunctionsGenetvi; 
+
 class LoginController extends Controller
 {
+    use CommonFunctionsGenetvi;
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -85,9 +88,9 @@ class LoginController extends Controller
 
         //Si está registrado en el CVUCV, usaremos su token para puder usar los servicios $response['token']
         if (isset($response['error'])){
-            return back()->withErrors(['cvucv_username' => $response['error']]);
+            return back()->withErrors([$this->username() => $response['error']]);
         }elseif (!isset($response['token'])){
-            return back()->withErrors(['cvucv_username' => 'Error inesperado. (cod=001) ']);
+            return back()->withErrors([$this->username() => 'Error inesperado. (cod=001) ']);
         }
 
         if ($this->attemptLogin($request)) {
@@ -98,7 +101,7 @@ class LoginController extends Controller
         // Puede siginificar dos cosas: Que la clave la cambio en el otro sistema, o simplemente no esta registrado en nuestro sistema
         
         //1. Consultamos si el username existe, y actualizariamos su clave
-        $obj_user = User::where('cvucv_username',$request->cvucv_username) -> first();
+        $obj_user = User::where($this->username(),$request->{($this->username())})->first();
 
         if($obj_user != null){
             $obj_user->password = bcrypt($request->password);
@@ -113,12 +116,12 @@ class LoginController extends Controller
         $new_profile = $this->cvucv_get_profile($request, $response['token']);
 
         if (empty($new_profile)){
-            return back()->withErrors(['cvucv_username' => 'Error inesperado. (cod=002) ']);
+            return back()->withErrors([$this->username() => 'Error inesperado. (cod=002) ']);
         }
 
         $params = [
             '_token'            => $request->token,
-            'cvucv_username'    => $new_profile['username'],
+            $this->username()   => $new_profile['username'],
             'cvucv_id'          => $new_profile['id'],
             'cvucv_lastname'    => $new_profile['lastname'],
             'cvucv_suspended'   => $new_profile['suspended'],
@@ -129,7 +132,7 @@ class LoginController extends Controller
             'avatar'            => $new_profile['profileimageurl']
         ];
 
-        event(new Registered($user = $this->create($params)));
+        event(new Registered($user = User::create($params)));
 
         $this->guard()->login($user);
 
@@ -149,7 +152,7 @@ class LoginController extends Controller
     {
         $this->validate($request, [
             $this->username() => 'required|string',
-            'password' => 'required|string',
+            $this->password() => 'required|string',
         ]);
     }
 
@@ -228,7 +231,11 @@ class LoginController extends Controller
      */
     public function username()
     {
-        return 'cvucv_username';
+        return User::username();
+    }
+    public function password()
+    {
+        return User::password();
     }
 
     /**
@@ -256,179 +263,5 @@ class LoginController extends Controller
         return Auth::guard();
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name'              => $data['name'],
-            'email'             => $data['email'],
-            'password'          => bcrypt($data['password']),
-            'avatar'            => $data['avatar'],
-            'cvucv_username'    => $data['cvucv_username'],
-            'cvucv_id'          => $data['cvucv_id'],
-            'cvucv_lastname'    => $data['cvucv_lastname'],
-            'cvucv_suspended'   => $data['cvucv_suspended'],
-            'cvucv_token'       => $data['cvucv_token'],
-        ]);
-    }
-
-    public function sync_user_courses(){
-        $user = Auth::user();
-
-        //Consultamos los cursos del usuario
-        $cursos_cvucv = $this->cvucv_get_users_courses($user->cvucv_id);
-        
-        if(!empty($cursos_cvucv)){
-
-
-            foreach($cursos_cvucv as $data){
-
-                $curso = Curso::find($data['id']);
-
-                //1. Verificamos que existan los cursos
-                //Si no existe, hay que crearlo
-                if(empty($curso)){
-
-                    $curso = new Curso;
-
-                    $curso->id                  = $data['id'];
-                    $curso->cvucv_shortname     = $data['shortname'];
-                    $curso->cvucv_category_id   = $data['category'];
-                    $curso->cvucv_fullname      = $data['fullname'];
-                    $curso->cvucv_displayname   = $data['displayname'];
-                    $curso->cvucv_summary       = $data['summary'];
-                    $curso->cvucv_visible       = $data['visible'];
-                    $curso->cvucv_link          = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/course/view.php?id=".$data['id'];
-
-                    $curso->save();
-                }
-
-                //2. Verificamos que este matriculado en ese curso -> Solicitamos los participantes del curso
-                $participantes_curso = $this->cvucv_get_participantes_curso($data['id']);
-
-                foreach($participantes_curso as $participante){
-                
-                    //Buscamos el usuario actual
-                    if($user->cvucv_id == $participante['id']){
-                        $matriculacion = CursoParticipante::where('cvucv_user_id', $participante['id'])
-                            ->where('cvucv_curso_id', $data['id'])
-                            ->first();
-                        //Si no esta, hay que matricularlo
-                        if(empty($matriculacion)){
-                            $matriculacion                 = new CursoParticipante;
-
-                            $matriculacion->user_id        = $user->id;
-                            $matriculacion->cvucv_user_id  = $participante['id'];
-                            $matriculacion->cvucv_curso_id = $data['id'];
-                            $matriculacion->user_sync      = true;
-                        }
-                        if(isset($participante['roles']) && !empty($participante['roles'])){
-                            $matriculacion->cvucv_rol_id = $participante['roles'][0]['roleid'];
-                        }      
-                        /*$matriculacion->curso_sync   = true;*/
-                        $matriculacion->save();
-
-                        break;
-                    }
-                }                     
-            }
-            
-        }
-    }
-
-    /**
-     * CURL generíco usando GuzzleHTTP
-     *
-     */
-    public function send_curl($request_type, $endpoint, $params){
-
-        $client   = new \GuzzleHttp\Client();
-
-        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
-
-        //$statusCode = $response->getStatusCode();
-
-        $content    = json_decode($response->getBody(), true);
-
-        return $content;
-    }
-
-    public function cvucv_autenticacion(Request $request)
-    {
-        $endpoint = env("CVUCV_GET_USER_TOKEN","https://campusvirtual.ucv.ve/moodle/login/token.php");
-        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE","moodle_mobile_app");
-
-        $params = [
-            'service'  => $service,
-            'username' => $request->cvucv_username,
-            'password' => $request->password
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
-
-    public function cvucv_get_profile(Request $request, $token)
-    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_user_get_users_by_field',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'field'                 => 'username',
-            'values[0]'             => $request->cvucv_username,
-        ];
-
-        $response = $this->send_curl('GET', $endpoint, $params);
-        
-        return $response[0];
-    }
-
-    /**
-     * Obtiene los cursos en los que está matriculado un usuario
-     *
-     */
-    public function cvucv_get_users_courses($user_id){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_enrol_get_users_courses',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'userid'                => $user_id
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
-
-    /**
-     * Obtiene los participantes de un curso
-     *
-     */
-    public function cvucv_get_participantes_curso($course_id){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_enrol_get_enrolled_users',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'courseid'              => $course_id
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
+    
 }

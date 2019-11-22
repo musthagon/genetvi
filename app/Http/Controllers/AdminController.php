@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Yajra\Datatables\Datatables;
 
-use App\Traits\CommonFunctionsGenetvi; // <-- you'll need this line...
+use App\Traits\CommonFunctionsGenetvi; 
 
 
 class AdminController extends Controller
@@ -29,7 +29,6 @@ class AdminController extends Controller
      */
     public function __construct(){
         //Voyager admin middleware
-        //$this->middleware('auth');
         $this->middleware('admin.user');
     }   
 
