@@ -37,6 +37,9 @@ body.login .login-button{
     border-bottom: 1px dotted #22a7f0;
 }
 
+#instrucciones, #instrucciones .subcontent, #instrucciones p{
+    color: black;
+}
 
 
 .modal-window {

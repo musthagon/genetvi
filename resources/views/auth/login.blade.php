@@ -99,12 +99,12 @@
                         <div class="form-group" id="rememberMeGroup">
                             <div class="controls">
                                 <input type="checkbox" name="remember" id="remember" value="1"><label for="remember" class="remember-me-text">Recordar</label>
-                                <a class="instrucciones pull-right" href="#open_modal">
+                                <a class="instrucciones pull-right" href="#instrucciones">
                                     <span class="voyager-question"></span>
                                     Instrucciones de acceso
                                     
                                 </a>
-                                <div id="open_modal" class="modal-window">
+                                <div id="instrucciones" class="modal-window">
                                     <a href="#" title="Close" class="modal-close">  <span class="voyager-x"></span></a>
                                     <div class="modal-body">
                                         <a href="#" title="Close" class="modal-close2">  <span class="voyager-x"></span>Cerrar</a>
