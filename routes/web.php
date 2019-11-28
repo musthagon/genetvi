@@ -4,12 +4,10 @@ use TCG\Voyager\Facades\Voyager;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Rutas publicas para usuarios sin logearse
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| Las rutas publicas son para autenticación o para realizar la evaluación
 |
 */
 // Authentication Routes...
@@ -19,17 +17,25 @@ Route::post('login',    'Auth\LoginController@login');
 Route::post('logout',   'Auth\LoginController@logout')->name('logout');
 Route::post('/logout',  'Auth\LoginController@logout')->name('logout');
 
-// User Routes
-Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}', 'HomeController@evaluacion')->name('evaluacion');
-Route::post('/home/evaluar/cursos/{id_curso}/instrumento/{id_instrumento}/procesar', 'HomeController@evaluacion_procesar')->name('evaluacion_procesar');
-
-//Cursos dashboards
-Route::get('/home/curso/{id}', 'HomeController@visualizar_resultados_curso')->name('curso');
-
 //Public evaluacion
 Route::get('/evaluar_curso/id/{token}', 'PublicController@evaluacion')->name('evaluacion_link');
 Route::post('/evaluar_curso/procesar/{invitacion}', 'PublicController@evaluacion_procesar')->name('evaluacion_link_procesar');
+
+/*
+|--------------------------------------------------------------------------
+| Rutas para usuarios autenticados
+|--------------------------------------------------------------------------
+|
+| Generalmente los profesores son los que tendran acceso a ver la mayoría de los contenidos
+|
+*/
+
+// User Routes
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/mis_cursos', 'HomeController@cursos')->name('mis_cursos');
+
+//Cursos dashboards
+Route::get('/mis_cursos/visualizar_{id}', 'HomeController@visualizar_resultados_curso')->name('curso');
 
 /*
 |--------------------------------------------------------------------------

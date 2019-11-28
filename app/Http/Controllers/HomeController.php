@@ -40,10 +40,25 @@ class HomeController extends Controller
     public function index(){   
         
         $user = Auth::user();
+        
+        //Evaluaciones de curso pendiente
+        /*
+        bg-green
+        bg-aqua
+        bg-yellow
+        bg-red
+        */
+
+        return view('user.principal', compact('cursosDocente'));
+    }
+
+    public function cursos(){   
+        
+        $user = Auth::user();
 
         $cursosDocente = CursoParticipante::cursosDocente($user->getCVUCV_USER_ID());
                 
-        return view('user.panel', compact('cursosDocente'));
+        return view('user.mis_cursos', compact('cursosDocente'));
     }
 
     /*
@@ -66,7 +81,7 @@ class HomeController extends Controller
         ->where('cvucv_rol_id','!=',5)
         ->first();        
         if(empty($estaMatriculadoDocente) ){
-            return redirect('/home')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+            return redirect('/mis_cursos')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
         }
 
         //periodos lectivos con los cuales han evaluado este curso
@@ -295,7 +310,7 @@ class HomeController extends Controller
     }*/
 
 
-    /*public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
+    public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
         $curso = Curso::find($curso_id);
         
         if(empty($curso)){
@@ -309,7 +324,7 @@ class HomeController extends Controller
         ->where('cvucv_rol_id','!=',5)
         ->first();        
         if(empty($estaMatriculadoDocente) ){
-            return redirect('/home')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+            return redirect('/mis_cursos')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
         }
 
         //instrumentos con los cuales han evaluado este curso
@@ -459,7 +474,7 @@ class HomeController extends Controller
             'promedioPonderacionCurso'
         ));
 
-    }*/
+    }
 
     /*public function sync_user_courses(&$cursosEstudiante, &$cursosDocente ){
         $user = Auth::user();
