@@ -22,4 +22,5 @@ class CursoParticipanteRol extends Model
     public function cursos(){
         return $this->hasMany('App\Curso','categoria_id','id');
     }
+
 }

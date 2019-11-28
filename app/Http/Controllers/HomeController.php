@@ -14,12 +14,13 @@ use App\Categoria;
 use App\Indicador;
 use App\User;
 use App\Charts\indicadoresChart;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+
+use App\Traits\CommonFunctionsGenetvi; 
 
 class HomeController extends Controller
 {
+    use CommonFunctionsGenetvi;
     /**
      * Create a new controller instance.
      *
@@ -40,19 +41,7 @@ class HomeController extends Controller
         
         $user = Auth::user();
 
-        $cursosDocente   = collect();
-
-        $matriculaciones = CursoParticipante::where('cvucv_user_id', $user->getCVUCV_USER_ID())->get();
-
-        foreach($matriculaciones as $matriculacion){
-            $curso = Curso::find($matriculacion->getCVUCV_CURSO_ID());
-            if(!empty($curso)){
-                if($matriculacion->cvucv_rol_id != 5){
-                    $cursosDocente [] = $curso;
-                }
-                
-            }
-        }
+        $cursosDocente = CursoParticipante::cursosDocente($user->getCVUCV_USER_ID());
                 
         return view('user.panel', compact('cursosDocente'));
     }
@@ -306,7 +295,7 @@ class HomeController extends Controller
     }*/
 
 
-    public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
+    /*public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
         $curso = Curso::find($curso_id);
         
         if(empty($curso)){
@@ -470,11 +459,9 @@ class HomeController extends Controller
             'promedioPonderacionCurso'
         ));
 
-    }
+    }*/
 
-
-
-    public function sync_user_courses(&$cursosEstudiante, &$cursosDocente ){
+    /*public function sync_user_courses(&$cursosEstudiante, &$cursosDocente ){
         $user = Auth::user();
 
         //Consultamos los cursos del usuario
@@ -535,7 +522,7 @@ class HomeController extends Controller
                                 $cursosDocente->push($curso);
                             }   
                         }      
-                        /*$matriculacion->curso_sync   = true;*/
+                        //$matriculacion->curso_sync   = true;
                         $matriculacion->save();
 
                         break;
@@ -544,100 +531,6 @@ class HomeController extends Controller
             }
             
         }
-    }
-    /**
-     * CURL generíco usando GuzzleHTTP
-     *
-     */
-    public function send_curl($request_type, $endpoint, $params){
+    }*/
 
-        $client   = new \GuzzleHttp\Client();
-
-        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
-
-        $statusCode = $response->getStatusCode();
-
-        $content    = json_decode($response->getBody(), true);
-
-        return $content;
-    }
-    /**
-     * Obtiene los cursos de una categoria o
-     * Obtiene los cursos por un campo
-     */
-    public function cvucv_get_category_courses($field,$value){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_course_get_courses_by_field',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'field'                 => $field,
-            'value'                 => $value
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response['courses'];
-    }
-    /**
-     * Obtiene los cursos en los que está matriculado un usuario
-     *
-     */
-    public function cvucv_get_users_courses($user_id){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_enrol_get_users_courses',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'userid'                => $user_id
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
-    /**
-     * Obtiene los participantes de un curso
-     *
-     */
-    public function cvucv_get_participantes_curso($course_id){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_enrol_get_enrolled_users',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'courseid'              => $course_id
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
-    /**
-     * Obtiene las categorias de los cursos
-     *
-     */
-    public function cvucv_get_courses_categories($key = 'id', $value, $subcategories = 0){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_course_get_categories',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'criteria[0][key]'      => $key,
-            'criteria[0][value]'    => $value,
-            'addsubcategories'      => $subcategories
-        ];
-
-        $response = $this->send_curl('POST', $endpoint, $params);
-        
-        return $response;
-    }
 }
