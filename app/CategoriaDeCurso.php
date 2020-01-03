@@ -17,7 +17,7 @@ class CategoriaDeCurso extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id', 'cvucv_category_parent_id', 'cvucv_category_super_parent_id', 'cvucv_name', 'cvucv_description','cvucv_coursecount', 'cvucv_visible', 'cvucv_depth','cvucv_path', 'cvucv_link','periodo_lectivo'];
+    protected $fillable = ['id', 'cvucv_category_parent_id', 'cvucv_category_super_parent_id', 'cvucv_name', 'cvucv_description','cvucv_coursecount', 'cvucv_visible', 'cvucv_depth','cvucv_path', 'cvucv_link','periodo_lectivo_id'];
 
     public static function create($id, $parent, $name, $description, $coursecount, $visible, $depth, $path)    {
         $new = new self();
@@ -58,7 +58,7 @@ class CategoriaDeCurso extends Model
     }
 
     public function periodo_lectivo_actual()    {
-        return $this->belongsTo('App\PeriodoLectivo','periodo_lectivo','id');
+        return $this->belongsTo('App\PeriodoLectivo','periodo_lectivo_id','id');
     }
 
 }

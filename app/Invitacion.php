@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\CommonFunctionsGenetvi; 
+
 class Invitacion extends Model
 {
     protected $table = 'invitaciones';
@@ -54,42 +56,19 @@ class Invitacion extends Model
         $this->save();
     }
 
-    /**
-     * CURL generíco usando GuzzleHTTP
-     *
-     */
-    public function send_curl($request_type, $endpoint, $params){
-
-        $client   = new \GuzzleHttp\Client();
-
-        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
-
-        //$statusCode = $response->getStatusCode();
-
-        $content    = json_decode($response->getBody(), true);
-
-        return $content;
-    }
-
-    public function cvucv_get_profile($cvucv_user_id)
-    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
-
-        $params = [
-            'wsfunction'            => 'core_user_get_users_by_field',
-            'wstoken'               => $wstoken,
-            'moodlewsrestformat'    => 'json',
-            'field'                 => 'id',
-            'values[0]'             => $cvucv_user_id,
-        ];
-
-        $response = $this->send_curl('GET', $endpoint, $params);
-        
-        return $response[0];
-    }
-
     public function getID(){
         return $this->id;
+    }
+    public function getToken(){
+        return $this->token;
+    }
+    public static function generateToken(){
+        do {
+            //generate a random string using Laravel's str_random helper
+            $token = str_random(191);
+        } //verificamos que el token no exista
+        while (Invitacion::where('token', $token)->first());
+
+        return $token;
     }
 }

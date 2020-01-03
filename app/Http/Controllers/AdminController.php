@@ -756,12 +756,10 @@ class AdminController extends Controller
                             $instrumento_dirigido_usuario = $instrumento->instrumentoDirigidoaRol($rolUsuarioCurso);
 
                             if($instrumento_dirigido_usuario){
-                                do {
-                                    //generate a random string using Laravel's str_random helper
-                                    $token = str_random();
-                                } //verificamos que el token no exista
-                                while (Invitacion::where('token', $token)->first());
-        
+                                
+                                
+                                $token = Invitacion::generateToken();
+
                                 //se crea la invitacion
                                 $invite = Invitacion::create([
                                     'token'                 => $token,

@@ -24,7 +24,7 @@ class CreateCategoriasCursos extends Migration
             $table->integer('cvucv_coursecount')->nullable();
             $table->integer('cvucv_depth')->nullable();   
             $table->boolean('cvucv_visible')->default(true);
-            $table->bigInteger('periodo_lectivo')->unsigned()->nullable();        
+            $table->bigInteger('periodo_lectivo_id')->unsigned()->nullable();       
             $table->timestamps();
 
             $table->primary('id');

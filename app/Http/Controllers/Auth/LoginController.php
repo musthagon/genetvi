@@ -124,8 +124,9 @@ class LoginController extends Controller
             $this->username()   => $new_profile['username'],
             'cvucv_id'          => $new_profile['id'],
             'cvucv_lastname'    => $new_profile['lastname'],
+            'cvucv_firstname'   => $new_profile['firstname'],
             'cvucv_suspended'   => $new_profile['suspended'],
-            'cvucv_token'       => $response['token'],
+            /*'cvucv_token'       => $response['token'],*/
             'email'             => $new_profile['email'],
             'name'              => $new_profile['firstname'],
             'password'          => $request->password,

@@ -56,8 +56,9 @@ class User extends \TCG\Voyager\Models\User
             'cvucv_username'    => $data['cvucv_username'],
             'cvucv_id'          => $data['cvucv_id'],
             'cvucv_lastname'    => $data['cvucv_lastname'],
+            'cvucv_firstname'   => $data['cvucv_firstname'],
             'cvucv_suspended'   => $data['cvucv_suspended'],
-            'cvucv_token'       => $data['cvucv_token'],
+            /*'cvucv_token'       => $data['cvucv_token'],*/
         ]);
     }
 }

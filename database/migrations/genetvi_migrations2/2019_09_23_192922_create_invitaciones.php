@@ -15,7 +15,7 @@ class CreateInvitaciones extends Migration
     {
         Schema::create('invitaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('token', 16)->unique();
+            $table->string('token', 191)->unique();
             $table->bigInteger('estatus_invitacion_id')->unsigned();
             $table->bigInteger('tipo_invitacion_id')->unsigned();
             $table->bigInteger('instrumento_id')->unsigned();

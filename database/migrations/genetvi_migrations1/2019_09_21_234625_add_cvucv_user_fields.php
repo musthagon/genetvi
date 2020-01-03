@@ -14,20 +14,20 @@ class AddCvucvUserFields extends Migration
     public function up()
     {
         Schema::table('users', function ($table) {
-            if (!Schema::hasColumn('users', 'cvucv_token')) {
-                $table->string('cvucv_token')->unique()->after('settings');
-            }
             if (!Schema::hasColumn('users', 'cvucv_suspended')) {
-                $table->boolean('cvucv_suspended')->after('settings')->default(false);
+                $table->boolean('cvucv_suspended')->after('settings')->nullable()->default(false);
             }
             if (!Schema::hasColumn('users', 'cvucv_lastname')) {
                 $table->string('cvucv_lastname')->nullable()->after('settings');
             }
+            if (!Schema::hasColumn('users', 'cvucv_firstname')) {
+                $table->string('cvucv_firstname')->nullable()->after('settings');
+            }
             if (!Schema::hasColumn('users', 'cvucv_username')) {
-                $table->string('cvucv_username')->unique()->after('settings');
+                $table->string('cvucv_username')->unique()->nullable()->after('settings');
             }
             if (!Schema::hasColumn('users', 'cvucv_id')) {
-                $table->bigInteger('cvucv_id')->unique()->after('settings');
+                $table->bigInteger('cvucv_id')->unique()->nullable()->after('settings');
             }
         });
     }
@@ -47,6 +47,11 @@ class AddCvucvUserFields extends Migration
         if (Schema::hasColumn('users', 'cvucv_username')) {
             Schema::table('users', function ($table) {
                 $table->dropColumn('cvucv_username');
+            });
+        }
+        if (Schema::hasColumn('users', 'cvucv_firstname')) {
+            Schema::table('users', function ($table) {
+                $table->dropColumn('cvucv_firstname');
             });
         }
         if (Schema::hasColumn('users', 'cvucv_lastname')) {
