@@ -100,10 +100,11 @@ class LoginController extends Controller
         // Si no puedo logearme con esos datos
         // Puede siginificar dos cosas: Que la clave la cambio en el otro sistema, o simplemente no esta registrado en nuestro sistema
         
-        //1. Consultamos si el username existe, y actualizariamos su clave
+        //1. Consultamos si el username existe
         $obj_user = User::where($this->username(),$request->{($this->username())})->first();
 
         if($obj_user != null){
+            //MOVER AL MODELOO
             $obj_user->password = bcrypt($request->password);
             $obj_user->save();
 
@@ -113,20 +114,19 @@ class LoginController extends Controller
         }
 
         //2. O si no, Lo registramos...
-        $new_profile = $this->cvucv_get_profile($request, $response['token']);
-
+        $new_profile = $this->cvucv_get_profile('username',$request->cvucv_username);
+        
         if (empty($new_profile)){
             return back()->withErrors([$this->username() => 'Error inesperado. (cod=002) ']);
         }
 
         $params = [
-            '_token'            => $request->token,
+            '_token'            => $request->_token,
             $this->username()   => $new_profile['username'],
             'cvucv_id'          => $new_profile['id'],
             'cvucv_lastname'    => $new_profile['lastname'],
             'cvucv_firstname'   => $new_profile['firstname'],
             'cvucv_suspended'   => $new_profile['suspended'],
-            /*'cvucv_token'       => $response['token'],*/
             'email'             => $new_profile['email'],
             'name'              => $new_profile['firstname'],
             'password'          => $request->password,
@@ -263,6 +263,7 @@ class LoginController extends Controller
     {
         return Auth::guard();
     }
+
 
     
 }

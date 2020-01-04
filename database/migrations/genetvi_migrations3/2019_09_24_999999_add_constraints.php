@@ -40,11 +40,6 @@ class AddConstraints extends Migration
             $table->foreign('evaluacion_id')->references('id')->on('evaluaciones')->onDelete('cascade');
         });
 
-        Schema::table('cursos_participantes', function ($table) {
-            $table->foreign('cvucv_curso_id')->references('id')->on('cursos')->onDelete('cascade');
-            $table->foreign('cvucv_rol_id')->references('id')->on('cursos_participantes_roles')->onDelete('cascade');
-        });
-
         Schema::table('categorias_cursos', function ($table) {
             $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos')->onDelete('cascade');
         });
@@ -120,14 +115,6 @@ class AddConstraints extends Migration
             });
         }
         
-        if (Schema::hasColumn('cursos_participantes', 'cvucv_curso_id') && 
-            Schema::hasColumn('cursos_participantes', 'cvucv_rol_id')) {
-            Schema::table('cursos_participantes', function ($table) {
-                $table->dropForeign(['cvucv_curso_id']);
-                $table->dropForeign(['cvucv_rol_id']);
-            });
-        }
-
         if (Schema::hasColumn('categorias_cursos', 'periodo_lectivo_id')) {
             Schema::table('categorias_cursos', function ($table) {
                 $table->dropForeign(['periodo_lectivo_id']);

@@ -21,7 +21,7 @@ class VoyagerAuthController extends BaseVoyagerAuthController
         //$this->validateLogin($request);
         
         $this->validate($request, [
-            'cvucv_username' => 'required', 'password' => 'required',
+            'email' => 'required', 'password' => 'required',
        ]);
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
@@ -35,7 +35,7 @@ class VoyagerAuthController extends BaseVoyagerAuthController
 
         //$credentials = $this->credentials($request);
 
-        $credentials = $request->only('cvucv_username', 'password');
+        $credentials = $request->only('email', 'password');
 
         if ($this->guard()->attempt($credentials, $request->has('remember'))) {
             return $this->sendLoginResponse($request);

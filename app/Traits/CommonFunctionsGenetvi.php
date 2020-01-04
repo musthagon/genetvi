@@ -150,7 +150,7 @@ trait CommonFunctionsGenetvi
      * Perfil de usuario en el Campus
      *
      */
-    public function cvucv_get_profile($cvucv_user_id)
+    public function cvucv_get_profile($field='id',$cvucv_user_id)
     {
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
@@ -159,14 +159,14 @@ trait CommonFunctionsGenetvi
             'wsfunction'            => 'core_user_get_users_by_field',
             'wstoken'               => $wstoken,
             'moodlewsrestformat'    => 'json',
-            'field'                 => 'id',
+            'field'                 => $field,
             'values[0]'             => $cvucv_user_id,
         ];
 
         $response = $this->send_curl('GET', $endpoint, $params);
-        
         return $response[0];
     }
+
     /**
      * Consulta los usuarios del Campus Virtual y configura la paginación
      *

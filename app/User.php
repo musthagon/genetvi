@@ -15,7 +15,7 @@ class User extends \TCG\Voyager\Models\User
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','cvucv_username','cvucv_lastname','cvucv_suspended','cvucv_token','cvucv_id','avatar'
+        'name', 'email', 'password','cvucv_username','cvucv_firstname','cvucv_lastname','cvucv_suspended','cvucv_id','avatar'
     ];
 
     /**
@@ -48,17 +48,37 @@ class User extends \TCG\Voyager\Models\User
 
     public static function create(array $data)
     {
-        return User::create([
-            'name'              => $data['name'],
-            'email'             => $data['email'],
-            'password'          => bcrypt($data['password']),
-            'avatar'            => $data['avatar'],
-            'cvucv_username'    => $data['cvucv_username'],
-            'cvucv_id'          => $data['cvucv_id'],
-            'cvucv_lastname'    => $data['cvucv_lastname'],
-            'cvucv_firstname'   => $data['cvucv_firstname'],
-            'cvucv_suspended'   => $data['cvucv_suspended'],
-            /*'cvucv_token'       => $data['cvucv_token'],*/
-        ]);
+
+        if( !isset($data['name']) || !isset($data['email']) || !isset($data['password']) ){
+            return null;
+        }
+        
+        $user = new User;
+
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->password = bcrypt($data['password']);
+
+        if( isset($data['avatar']) && isset($data['cvucv_username']) && isset($data['cvucv_id']) &&
+            isset($data['cvucv_lastname']) && isset($data['cvucv_firstname']) && isset($data['cvucv_suspended']) ){
+
+            $user->avatar = $data['avatar'];
+            $user->cvucv_username = $data['cvucv_username'];
+            $user->cvucv_id = $data['cvucv_id'];
+            $user->cvucv_lastname = $data['cvucv_lastname'];
+            $user->cvucv_firstname = $data['cvucv_firstname'];
+            $user->cvucv_suspended = $data['cvucv_suspended'];
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+
+        }
+
+        $user->save();
+
+        return $user;
+
+        
+
+        
     }
 }
