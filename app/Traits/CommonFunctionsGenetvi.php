@@ -11,24 +11,51 @@ use Illuminate\Support\Facades\Auth;
 
 trait CommonFunctionsGenetvi
 {
+    private $connection_error = 'connection_error';    
     /**
      * CURL generíco usando GuzzleHTTP
      *
      */
     public function send_curl($request_type, $endpoint, $params){
+        try {
+            $client   = new \GuzzleHttp\Client();
 
-        $client   = new \GuzzleHttp\Client();
+            $response = $client->request($request_type, $endpoint, ['query' => $params ]);
 
-        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
+            $statusCode = $response->getStatusCode();
+            if($statusCode == 200){
+                $response = json_decode($response->getBody(), true);
+            }else{
+                // The server responded with some error. You can throw back your exception
+                // to the calling function or decide to handle it here
+                throw new \Exception('Failed');
+            }
+        
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            //Catch the guzzle connection errors over here.These errors are something 
+            // like the connection failed or some other network error  
+            $error_message = $e->getMessage();
+            $error_message = "Error, no se puede conectar con el Campus Virtual";
+            $response = array($this->connection_error => $error_message);
+        }
 
-        $statusCode = $response->getStatusCode();
-
-        $content    = json_decode($response->getBody(), true);
-
-        return $content;
+        return $response;
+    }
+    /**
+     * Verifica si GuzzleHTTP generó algun error
+     *
+     */
+    public function hasError($response){
+        return isset($response[$this->connection_error]);
+    }
+    public function getErrorStatus(){
+        return $this->connection_error;
     }
 
-
+    /**
+     * Parámetros para autenticación con el Campus Virtual
+     *
+     */
     public function cvucv_autenticacion(Request $request)
     {
         $endpoint = env("CVUCV_GET_USER_TOKEN","https://campusvirtual.ucv.ve/moodle/login/token.php");

@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 
 class User extends \TCG\Voyager\Models\User
 {
@@ -57,7 +58,8 @@ class User extends \TCG\Voyager\Models\User
 
         $user->name = $data['name'];
         $user->email = $data['email'];
-        $user->password = bcrypt($data['password']);
+        //$user->password = bcrypt($data['password']);
+        $user->password = Hash::make($data['password']);
 
         if( isset($data['avatar']) && isset($data['cvucv_username']) && isset($data['cvucv_id']) &&
             isset($data['cvucv_lastname']) && isset($data['cvucv_firstname']) && isset($data['cvucv_suspended']) ){

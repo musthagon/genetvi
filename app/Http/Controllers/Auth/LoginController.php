@@ -76,14 +76,15 @@ class LoginController extends Controller
             return $this->sendLockoutResponse($request);
         }
 
-        // Para consultar los usuarios al CAMPUS VIRTUAL UCV
-        // Si existe algun error / o las credenciales no coinciden se retorna a la vista anterior (login)
         $response = $this->cvucv_autenticacion($request);
+
+        if($this->hasError($response)){
+            return back()->withErrors([$this->username() => $response[$this->getErrorStatus()]]);
+        }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
-
         $this->incrementLoginAttempts($request);
 
         //Si está registrado en el CVUCV, usaremos su token para puder usar los servicios $response['token']
