@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Auth;
 trait CommonFunctionsGenetvi
 {
     private $connection_error = 'connection_error';    
-    private $CVUCV_GET_USER_TOKEN = 'https://campusvirtual.ucv.ve/moodle/login/token.php';
-    private $CVUCV_GET_USER_TOKEN_SERVICE = 'moodle_mobile_app';
-    private $CVUCV_GET_WEBSERVICE_ENDPOINT = 'https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php';
+    private $CVUCV_GET_USER_TOKEN = '';
+    private $CVUCV_GET_USER_TOKEN_SERVICE = '';
+    private $CVUCV_GET_WEBSERVICE_ENDPOINT = '';
     private $CVUCV_ADMIN_TOKEN = '';
     private $CVUCV_ADMIN_TOKEN2 = '';
     /**
@@ -99,6 +99,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response['courses'];
     }
     /**
@@ -118,6 +122,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -137,6 +145,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -158,6 +170,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -179,6 +195,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -199,12 +219,17 @@ trait CommonFunctionsGenetvi
         ];
 
         $response = $this->send_curl('GET', $endpoint, $params);
+
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response[0];
     }
 
     /**
      * Consulta los usuarios del Campus Virtual y configura la paginación
-     *
+     * AJAX
      */
     public function campus_users(Request $request){
 
@@ -256,6 +281,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
 
+        if($this->hasError($response)){
+            return [];
+        }
+
         //Construimos la paginación
         if(isset($response['users']) && isset($request->page)){
             $page = $request->page;
@@ -286,7 +315,7 @@ trait CommonFunctionsGenetvi
     }
     /**
      * Consulta los usuarios del Campus Virtual por IDS y configura la paginación
-     *
+     * AJAX
      */
     public function campus_users_by_ids(Request $request){
 
@@ -328,6 +357,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
 
+        if($this->hasError($response)){
+            return [];
+        }
+        
         //Busqueda en el response por el valor del select2
         if(isset($request->lastname)){
             $json = new Jsonq();
