@@ -54,11 +54,11 @@ class AddConstraints extends Migration
         });
 
         Schema::table('invitaciones', function ($table) {
-            $table->foreign('instrumento_id')->references('id')->on('instrumentos');
-            $table->foreign('curso_id')->references('id')->on('cursos');
-            $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos');
-            $table->foreign('estatus_invitacion_id')->references('id')->on('estatus_invitaciones');
-            $table->foreign('tipo_invitacion_id')->references('id')->on('tipo_invitaciones');
+            $table->foreign('instrumento_id')->references('id')->on('instrumentos')->onDelete('cascade');
+            $table->foreign('curso_id')->references('id')->on('cursos')->onDelete('cascade');
+            $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos')->onDelete('cascade');
+            $table->foreign('estatus_invitacion_id')->references('id')->on('estatus_invitaciones')->onDelete('cascade');
+            $table->foreign('tipo_invitacion_id')->references('id')->on('tipo_invitaciones')->onDelete('cascade');
         });
 
     }
