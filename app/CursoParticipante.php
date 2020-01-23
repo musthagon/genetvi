@@ -15,7 +15,7 @@ class CursoParticipante extends Model
      */
     protected $table = 'cursos_participantes';
 
-    protected $fillable = ['user_id', 'cvucv_user_id', 'cvucv_curso_id', 'cvucv_rol_id', 'user_sync', 'curso_sync'];
+    protected $fillable = ['user_id', 'cvucv_user_id', 'cvucv_curso_id', 'cvucv_rol_id', 'user_sync', 'curso_sync','created_at','updated_at'];
 
     public function cursos(){
         return $this->hasMany('App\Curso','categoria_id','id');

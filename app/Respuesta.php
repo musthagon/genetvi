@@ -13,7 +13,7 @@ class Respuesta extends Model
      */
     protected $table = 'respuestas';
 
-    protected $fillable = ['id','value_string','value_request','value_percentil','indicador_nombre','indicador_id','categoria_id','evaluacion_id'];
+    protected $fillable = ['id','value_string','value_request','value_percentil','indicador_nombre','indicador_id','categoria_id','evaluacion_id','created_at','updated_at'];
 
     public function evaluacion(){
         return $this->belongsTo('App\Evaluacion','evaluacion_id','id');

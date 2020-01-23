@@ -12,4 +12,6 @@ class CategoriaInstrumento extends Pivot
      * @var string
      */
     protected $table = 'categorias_instrumentos';
+    protected $fillable = ['id','valor_porcentual','categoria_id','instrumento_id','created_at','updated_at'];
+
 }

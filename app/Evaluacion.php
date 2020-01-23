@@ -22,7 +22,7 @@ class Evaluacion extends Model
      */
     protected $table = 'evaluaciones';
 
-    protected $fillable = ['id','respuestas','instrumento_id','curso_id','usuario_id','periodo_lectivo_id','percentil_eva'];
+    protected $fillable = ['id','respuestas','instrumento_id','curso_id','usuario_id','periodo_lectivo_id','percentil_eva','created_at','updated_at'];
 
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');

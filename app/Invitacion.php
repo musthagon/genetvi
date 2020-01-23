@@ -9,7 +9,7 @@ use App\Traits\CommonFunctionsGenetvi;
 class Invitacion extends Model
 {
     protected $table = 'invitaciones';
-    protected $fillable = ['id', 'token', 'estatus_invitacion_id', 'tipo_invitacion_id', 'instrumento_id', 'curso_id', 'periodo_lectivo_id', 'cvucv_user_id', 'usuario_id','numero_invitacion'];
+    protected $fillable = ['id', 'token', 'estatus_invitacion_id', 'tipo_invitacion_id', 'instrumento_id', 'curso_id', 'periodo_lectivo_id', 'cvucv_user_id', 'usuario_id','numero_invitacion','created_at','updated_at'];
 
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');

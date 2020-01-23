@@ -19,7 +19,7 @@ class Curso extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id', 'cvucv_shortname', 'cvucv_category_id', 'cvucv_fullname', 'cvucv_displayname', 'cvucv_summary', 'cvucv_link', 'cvucv_visible', 'evaluacion_activa'];
+    protected $fillable = ['id', 'cvucv_shortname', 'cvucv_category_id', 'cvucv_fullname', 'cvucv_displayname', 'cvucv_summary', 'cvucv_link', 'cvucv_visible', 'evaluacion_activa','created_at','updated_at'];
 
     public static function existe_curso($cvucv_course_id){
         return Curso::query()

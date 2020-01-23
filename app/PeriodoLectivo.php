@@ -13,7 +13,7 @@ class PeriodoLectivo extends Model
      */
     protected $table = 'periodos_lectivos';
 
-    protected $fillable = ['id', 'nombre', 'descripcion', 'opciones'];
+    protected $fillable = ['id', 'nombre', 'descripcion', 'opciones','created_at','updated_at'];
 
     public function getNombre(){
         return $this->nombre;

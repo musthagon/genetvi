@@ -16,10 +16,11 @@ class GENETVIDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->seed('CustomRolesSisgeva');
+        $this->seed('CustomRolesGenetvi');
         $this->seed('CursosParticipantesTableSeeder');
         $this->seed('InstrumentosPredeterminados');
         $this->seed('EstatusInvitacionTableSeeder');
         $this->seed('TipoInvitacionTableSeeder');
+        $this->seed('MomentosEvaluacionTableSeeder');
     }
 }

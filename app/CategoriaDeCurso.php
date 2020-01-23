@@ -17,7 +17,7 @@ class CategoriaDeCurso extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id', 'cvucv_category_parent_id', 'cvucv_category_super_parent_id', 'cvucv_name', 'cvucv_description','cvucv_coursecount', 'cvucv_visible', 'cvucv_depth','cvucv_path', 'cvucv_link','periodo_lectivo_id'];
+    protected $fillable = ['id', 'cvucv_category_parent_id', 'cvucv_category_super_parent_id', 'cvucv_name', 'cvucv_description','cvucv_coursecount', 'cvucv_visible', 'cvucv_depth','cvucv_path', 'cvucv_link','periodo_lectivo_id','created_at','updated_at'];
 
     public static function create($id, $parent, $name, $description, $coursecount, $visible, $depth, $path)    {
         $new = new self();
