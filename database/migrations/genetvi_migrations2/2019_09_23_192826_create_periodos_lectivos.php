@@ -20,7 +20,7 @@ class CreatePeriodosLectivos extends Migration
             $table->dateTime('fecha_inicio');
             $table->dateTime('fecha_fin');
             $table->longText('opciones')->nullable();
-            $table->bigInteger('momento_evaluacion_activo_id')->unsigned();
+            $table->bigInteger('momento_evaluacion_activo_id')->nullable()->unsigned();
             $table->timestamps();
         });
     }

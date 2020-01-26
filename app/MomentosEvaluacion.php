@@ -12,7 +12,14 @@ class MomentosEvaluacion extends Model
      * @var string
      */
     protected $table = 'momentos_evaluacion';
-    protected $fillable = ['id','nombre','nombre_corto','descripcion','opciones','created_at','updated_at'];
+    protected $fillable = [
+        'id',
+        'nombre',
+        'nombre_corto',
+        'descripcion',
+        'opciones',
+        'created_at',
+        'updated_at'];
 
     public static function get_nombre_field(){
         return 'nombre';
@@ -22,6 +29,22 @@ class MomentosEvaluacion extends Model
     }
     public static function get_descripcion_field(){
         return 'descripcion';
+    }
+
+    public function getId(){
+        return $this->id;
+    }
+    public function getNombre(){
+        return $this->nombre;
+    }
+    public function getNombreCorto(){
+        return $this->nombre_corto;
+    }
+    public function getDescripcion(){
+        return $this->descripcion;
+    }
+    public function getOpciones(){
+        return $this->opciones;
     }
     
 }
