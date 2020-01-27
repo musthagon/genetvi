@@ -119,12 +119,19 @@
                                 </div>
                             @endforeach
                             
-                            <div class="form-group">  
+                            <div class="form-group col-md-12">  
                                 <label class="control-label" for="name">Momentos de evaluación</label>
                                 <div class="table-responsive">  
                                     <table class="table table-bordered max-height" id="dynamic_field">  
                                         <tr> 
-                                            <th>
+                                            <th><label class="control-label" for="name">Nombre</label></th> 
+                                            <th><label class="control-label" for="name">Fecha de Inicio</label></th>
+                                            <th><label class="control-label" for="name">Fecha de Fin</label></th>
+                                            <th><label class="control-label" for="name">Opciones</label></th>
+                                            <th></th>
+                                        </tr> 
+                                        <tr> 
+                                            <td>
                                                 <div class="th-flex">
                                                     <label class="control-label" for="name">Asociar momentos de evaluación</label>
                                                     <a id="add" class="btn btn-success btn-add-new">
@@ -132,11 +139,11 @@
                                                         <span>Agregar</span>
                                                     </a>
                                                 </div>
-                                            </th> 
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                            </td> 
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
                                         </tr>                                      
                                     </table>  
                                 </div>   
@@ -232,20 +239,20 @@
                     var element = '';
                     element += '<tr id="row'+index+'">';
                     element +=      '<td class="form-group">';
-                    element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
+                    element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="momento_evaluacion[0][]">';
                     @foreach($momentos as $momento)
                         element +=              '<option target="'+index+'" class="opcion_indicador " value="{{$momento->getId()}}" @if($momento->getId() == $momentoAsociado->getId()){{ 'selected="selected"' }}@endif >{{$momento->getNombre()}}</option>';
                     @endforeach
                     element +=          '</select>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="categorias_list[1][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_inicio())->format('Y-m-d') }}" placeholder="Fecha de inicio"/>';
+                    element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_inicio())->format('Y-m-d') }}" placeholder="Fecha de inicio"/>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="categorias_list[2][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_fin())->format('Y-m-d') }}" placeholder="Fecha de fin"/>';
+                    element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_fin())->format('Y-m-d') }}" placeholder="Fecha de fin"/>';
                     element +=      '</td>';
                     element +=      '<td>';
-                    element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="categorias_list[3][]" value="{{$momentoAsociado->pivot->get_opciones()}}" placeholder="Opciones de Configuración"/>';
+                    element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" value="{{$momentoAsociado->pivot->get_opciones()}}" placeholder="Opciones de Configuración"/>';
                     element +=      '</td>';
                     element +=      '<td>';
                     element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
@@ -275,20 +282,20 @@
                 var element = '';
                 element += '<tr id="row'+index+'">';
                 element +=      '<td class="form-group">';
-                element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="categorias_list[0][]">';
+                element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="momento_evaluacion[0][]">';
                 @foreach($momentos as $momento)
                     element +=              '<option target="'+index+'" class="opcion_indicador " value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>';
                 @endforeach
                 element +=          '</select>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="categorias_list[1][]" placeholder="Fecha de inicio"/>';
+                element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" placeholder="Fecha de inicio"/>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="categorias_list[2][]" placeholder="Fecha de fin"/>';
+                element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" placeholder="Fecha de fin"/>';
                 element +=      '</td>';
                 element +=      '<td>';
-                element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="categorias_list[3][]" placeholder="Opciones de Configuración"/>';
+                element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" placeholder="Opciones de Configuración"/>';
                 element +=      '</td>';
                 element +=      '<td>';
                 element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';

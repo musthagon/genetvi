@@ -14,6 +14,7 @@ use App\PeriodoLectivo;
 use App\PeriodoLectivoMomentoEvaluacion;
 use App\MomentoEvaluacion;
 use App\MomentosEvaluacion;
+use Illuminate\Support\Facades\Validator;
 
 class PeriodoLectivoController extends VoyagerBaseController
 {
@@ -90,6 +91,7 @@ class PeriodoLectivoController extends VoyagerBaseController
     // POST BR(E)AD
     public function update(Request $request, $id)
     {
+        
         $slug = $this->getSlug($request);
 
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
@@ -109,50 +111,78 @@ class PeriodoLectivoController extends VoyagerBaseController
 
         // Check permission
         $this->authorize('edit', $data);
-
+        
         // Validate fields with ajax
-        $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id)->validate();
+        
+        $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id);
+
+        if ($val->fails()) {
+            return redirect()->back()->withErrors($val)->with([
+                'message'    => 'Error, algunos campos son requeridos',
+                'alert-type' => 'error',
+            ]); 
+        }
+
+        $rules = [];
+
+        for ($i = 0; $i <= 2; $i++){
+            foreach($request['momento_evaluacion'][$i] as $key => $val){ 
+                $rules['momento_evaluacion.'.$i.'.'.$key] = 'required';
+            }
+        }
+        //dd($rules);    
+        $val2 = Validator::make($request->all(), $rules);
+        
+        if ($val2->fails()) {
+            return redirect()->back()->withErrors($val2)->with([
+                'message'    => 'Error, algunossssssssssss campos son requeridos',
+                'alert-type' => 'error',
+            ]); 
+        }
+        
         $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
+        
+        
 
         //La descripción es requerida
-        if(!isset($request->descripcion)){
+        /*if(!isset($request->descripcion)){
             return redirect()->back()->with([
                 'message'    => 'Error, el campo descripción del instrumento es requerido',
                 'alert-type' => 'error',
             ]);
-        }
+        }*/
 
         //Agregamos categorias
-        $instrumento = $data;
-        if(isset($request->categorias_list)){
-            $categorias             = $request->categorias_list[0];
-            $valores_porcentuales   = $request->categorias_list[1];
-            $total = 0;
+        $periodo_lectivo = $data;
+        if(isset($request->momento_evaluacion)){
+            $momentos               = $request->momento_evaluacion[0];
+            $fecha_inicio           = $request->momento_evaluacion[1];
+            $fecha_fin              = $request->momento_evaluacion[2];
+            $opciones               = $request->momento_evaluacion[3];
+
+
             //Verificamos que no esten repetidas las categorías
-            //Verificamos que la suma total de los valores porcentuales de las categorías sea 100%
+            foreach($momentos as $momentoIndex => $momento){
 
-            foreach($categorias as $categoriaIndex => $categoria){
-
-                foreach($categorias as $categoriaIndex2 => $categoria2){
+                /*foreach($categorias as $categoriaIndex2 => $categoria2){
                     if(($categoriaIndex != $categoriaIndex2) && $categoria == $categoria2){
                         return redirect()->back()->with([
                             'message'    => 'Error, las categorías no pueden estar repetidas',
                             'alert-type' => 'error',
                         ]);
                     }    
-                }
-                $total += (int)$valores_porcentuales[$categoriaIndex];
+                }*/
+                //$total += (int)$valores_porcentuales[$categoriaIndex];
             }
-            if($total != 100 && $total != 0){
-                return redirect()->back()->with([
-                    'message'    => 'Error, la suma de los valores porcentuales de las categorías debe ser 100% o 0%',
-                    'alert-type' => 'error',
-                ]);
-            }
-            
-            $instrumento->categorias()->detach();
-            foreach($categorias as $categoriaIndex => $categoria){
-                $instrumento->categorias()->attach($categoria, ['valor_porcentual' => (int)$valores_porcentuales[$categoriaIndex]]);
+
+            $periodo_lectivo->momentos_evaluacion()->detach();
+            foreach($momentos as $momentoIndex => $momento){
+                $periodo_lectivo->momentos_evaluacion()->attach($momento, [
+                    PeriodoLectivoMomentoEvaluacion::get_fecha_inicio_field() => $fecha_inicio[$momentoIndex],
+                    PeriodoLectivoMomentoEvaluacion::get_fecha_fin_field() => $fecha_fin[$momentoIndex],
+                    PeriodoLectivoMomentoEvaluacion::get_opciones_field() => $opciones[$momentoIndex] ,
+                    PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
+                    PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
             }
 
         }
@@ -249,11 +279,11 @@ class PeriodoLectivoController extends VoyagerBaseController
 
         //Agregamos categorias
         $periodo_lectivo = $data;
-        if(isset($request->categorias_list)){
-            $momentos               = $request->categorias_list[0];
-            $fecha_inicio           = $request->categorias_list[1];
-            $fecha_fin              = $request->categorias_list[2];
-            $opciones               = $request->categorias_list[3];
+        if(isset($request->momento_evaluacion)){
+            $momentos               = $request->momento_evaluacion[0];
+            $fecha_inicio           = $request->momento_evaluacion[1];
+            $fecha_fin              = $request->momento_evaluacion[2];
+            $opciones               = $request->momento_evaluacion[3];
 
 
             //Verificamos que no esten repetidas las categorías
