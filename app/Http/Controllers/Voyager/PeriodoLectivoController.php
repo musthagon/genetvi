@@ -113,7 +113,6 @@ class PeriodoLectivoController extends VoyagerBaseController
         $this->authorize('edit', $data);
         
         // Validate fields with ajax
-        
         $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id);
 
         if ($val->fails()) {
@@ -130,28 +129,17 @@ class PeriodoLectivoController extends VoyagerBaseController
                 $rules['momento_evaluacion.'.$i.'.'.$key] = 'required';
             }
         }
-        //dd($rules);    
+
         $val2 = Validator::make($request->all(), $rules);
         
         if ($val2->fails()) {
             return redirect()->back()->withErrors($val2)->with([
-                'message'    => 'Error, algunossssssssssss campos son requeridos',
+                'message'    => 'Error, algunos campos son requeridos',
                 'alert-type' => 'error',
             ]); 
         }
         
-        $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
         
-        
-
-        //La descripción es requerida
-        /*if(!isset($request->descripcion)){
-            return redirect()->back()->with([
-                'message'    => 'Error, el campo descripción del instrumento es requerido',
-                'alert-type' => 'error',
-            ]);
-        }*/
-
         //Agregamos categorias
         $periodo_lectivo = $data;
         if(isset($request->momento_evaluacion)){
@@ -162,17 +150,16 @@ class PeriodoLectivoController extends VoyagerBaseController
 
 
             //Verificamos que no esten repetidas las categorías
-            foreach($momentos as $momentoIndex => $momento){
+            foreach($momentos as $momentosIndex => $momento){
 
-                /*foreach($categorias as $categoriaIndex2 => $categoria2){
-                    if(($categoriaIndex != $categoriaIndex2) && $categoria == $categoria2){
+                foreach($momentos as $momentosIndex2 => $momento2){
+                    if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
                         return redirect()->back()->with([
-                            'message'    => 'Error, las categorías no pueden estar repetidas',
+                            'message'    => 'Error, los momentos de evaluación no pueden estar repetidos',
                             'alert-type' => 'error',
                         ]);
                     }    
-                }*/
-                //$total += (int)$valores_porcentuales[$categoriaIndex];
+                }
             }
 
             $periodo_lectivo->momentos_evaluacion()->detach();
@@ -184,8 +171,9 @@ class PeriodoLectivoController extends VoyagerBaseController
                     PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
                     PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
             }
-
         }
+
+        $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
         
         event(new BreadDataUpdated($dataType, $data));
 
@@ -269,14 +257,6 @@ class PeriodoLectivoController extends VoyagerBaseController
         $val = $this->validateBread($request->all(), $dataType->addRows)->validate();
         $data = $this->insertUpdateData($request, $slug, $dataType->addRows, new $dataType->model_name());
 
-        //La descripción es requerida
-        /*if(!isset($request->descripcion)){
-            return redirect()->back()->with([
-                'message'    => 'Error, el campo descripción del instrumento es requerido',
-                'alert-type' => 'error',
-            ]);
-        }*/
-
         //Agregamos categorias
         $periodo_lectivo = $data;
         if(isset($request->momento_evaluacion)){
@@ -287,17 +267,16 @@ class PeriodoLectivoController extends VoyagerBaseController
 
 
             //Verificamos que no esten repetidas las categorías
-            foreach($momentos as $momentoIndex => $momento){
+            foreach($momentos as $momentosIndex => $momento){
 
-                /*foreach($categorias as $categoriaIndex2 => $categoria2){
-                    if(($categoriaIndex != $categoriaIndex2) && $categoria == $categoria2){
+                foreach($momentos as $momentosIndex2 => $momento2){
+                    if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
                         return redirect()->back()->with([
-                            'message'    => 'Error, las categorías no pueden estar repetidas',
+                            'message'    => 'Error, los momentos de evaluación no pueden estar repetidos',
                             'alert-type' => 'error',
                         ]);
                     }    
-                }*/
-                //$total += (int)$valores_porcentuales[$categoriaIndex];
+                }
             }
 
             $periodo_lectivo->momentos_evaluacion()->detach();
