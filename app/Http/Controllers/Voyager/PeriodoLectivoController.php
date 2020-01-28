@@ -142,12 +142,18 @@ class PeriodoLectivoController extends VoyagerBaseController
         
         //Agregamos categorias
         $periodo_lectivo = $data;
-        if(isset($request->momento_evaluacion)){
-            $momentos               = $request->momento_evaluacion[0];
-            $fecha_inicio           = $request->momento_evaluacion[1];
-            $fecha_fin              = $request->momento_evaluacion[2];
-            $opciones               = $request->momento_evaluacion[3];
-
+        if(isset($request->momento_evaluacion) 
+        && isset($request->momento_evaluacion[0]) 
+        && isset($request->momento_evaluacion[1]) 
+        && isset($request->momento_evaluacion[2])
+        && isset($request->fecha_inicio) 
+        && ($request->fecha_fin)){
+            $momentos                     = $request->momento_evaluacion[0];
+            $fecha_inicio                 = $request->momento_evaluacion[1];
+            $fecha_fin                    = $request->momento_evaluacion[2];
+            $opciones                     = $request->momento_evaluacion[3];
+            $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
+            $periodo_lectivo_fecha_fin    = $request->fecha_fin;
 
             //Verificamos que no esten repetidas las categorías
             foreach($momentos as $momentosIndex => $momento){
@@ -162,6 +168,43 @@ class PeriodoLectivoController extends VoyagerBaseController
                 }
             }
 
+            //Verificamos la precedencia de las fechas
+            $size = count($fecha_inicio);
+            $j = 1;
+
+            //Fechas del periodo lectivo
+            if ($periodo_lectivo_fecha_inicio >= $periodo_lectivo_fecha_fin){
+                return redirect()->back()->with([
+                    'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
+                    'alert-type' => 'error',
+                ]);
+            }
+
+            //Fechas de los momentos de evaluación
+            for($i = 0; $i < $size ; $i++, $j++){
+                if($fecha_inicio[$i] >= $fecha_fin[$i]){
+                    return redirect()->back()->with([
+                        'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
+                        'alert-type' => 'error',
+                    ]);
+                }
+                if($j < $size && $fecha_fin[$i] >= $fecha_inicio[$j]){
+                    return redirect()->back()->with([
+                        'message'    => 'Error, el primer rango de fecha del momento de evaluación debe ser anterior al siguiente',
+                        'alert-type' => 'error',
+                    ]);
+                }
+                //Las fechas deben estar dentro del rango del periodo lectivo
+                if($fecha_inicio[$i] < $periodo_lectivo_fecha_inicio ||  $fecha_fin[$i] > $periodo_lectivo_fecha_fin){
+                    return redirect()->back()->with([
+                        'message'    => 'Error, la fechas del momento de evaluación deben de estar dentro del rango del periodo lectivo',
+                        'alert-type' => 'error',
+                    ]);
+                }
+
+                
+            }
+
             $periodo_lectivo->momentos_evaluacion()->detach();
             foreach($momentos as $momentoIndex => $momento){
                 $periodo_lectivo->momentos_evaluacion()->attach($momento, [
@@ -171,6 +214,11 @@ class PeriodoLectivoController extends VoyagerBaseController
                     PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
                     PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
             }
+        }else{
+            return redirect()->back()->with([
+                'message'    => 'Error, debe agregar momentos de evaluación',
+                'alert-type' => 'error',
+            ]);
         }
 
         $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
