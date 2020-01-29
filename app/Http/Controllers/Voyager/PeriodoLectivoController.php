@@ -122,6 +122,19 @@ class PeriodoLectivoController extends VoyagerBaseController
             ]); 
         }
 
+    
+        if(!isset($request->momento_evaluacion) 
+        || !isset($request->momento_evaluacion[0]) 
+        || !isset($request->momento_evaluacion[1]) 
+        || !isset($request->momento_evaluacion[2])
+        || !isset($request->fecha_inicio) 
+        || !isset($request->fecha_fin)){
+            return redirect()->back()->with([
+                    'message'    => 'Error, debe agregar momentos de evaluación',
+                    'alert-type' => 'error',
+                ]);
+        }
+
         $rules = [];
 
         for ($i = 0; $i <= 2; $i++){
@@ -138,88 +151,73 @@ class PeriodoLectivoController extends VoyagerBaseController
                 'alert-type' => 'error',
             ]); 
         }
-        
-        
-        //Agregamos categorias
-        $periodo_lectivo = $data;
-        if(isset($request->momento_evaluacion) 
-        && isset($request->momento_evaluacion[0]) 
-        && isset($request->momento_evaluacion[1]) 
-        && isset($request->momento_evaluacion[2])
-        && isset($request->fecha_inicio) 
-        && ($request->fecha_fin)){
-            $momentos                     = $request->momento_evaluacion[0];
-            $fecha_inicio                 = $request->momento_evaluacion[1];
-            $fecha_fin                    = $request->momento_evaluacion[2];
-            $opciones                     = $request->momento_evaluacion[3];
-            $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
-            $periodo_lectivo_fecha_fin    = $request->fecha_fin;
+            
+        $momentos                     = $request->momento_evaluacion[0];
+        $fecha_inicio                 = $request->momento_evaluacion[1];
+        $fecha_fin                    = $request->momento_evaluacion[2];
+        $opciones                     = $request->momento_evaluacion[3];
+        $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
+        $periodo_lectivo_fecha_fin    = $request->fecha_fin;
 
-            //Verificamos que no esten repetidas las categorías
-            foreach($momentos as $momentosIndex => $momento){
+        //Verificamos que no esten repetidas los momentos de evalución
+        foreach($momentos as $momentosIndex => $momento){
 
-                foreach($momentos as $momentosIndex2 => $momento2){
-                    if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
-                        return redirect()->back()->with([
-                            'message'    => 'Error, los momentos de evaluación no pueden estar repetidos',
-                            'alert-type' => 'error',
-                        ]);
-                    }    
-                }
+            foreach($momentos as $momentosIndex2 => $momento2){
+                if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
+                    return redirect()->back()->with([
+                        'message'    => 'Error, los momentos de evaluación no pueden estar repetidos',
+                        'alert-type' => 'error',
+                    ]);
+                }    
             }
+        }
 
-            //Verificamos la precedencia de las fechas
-            $size = count($fecha_inicio);
-            $j = 1;
+        //Verificamos la precedencia de las fechas
+        if ($periodo_lectivo_fecha_inicio >= $periodo_lectivo_fecha_fin){
+            return redirect()->back()->with([
+                'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
+                'alert-type' => 'error',
+            ]);
+        }
 
-            //Fechas del periodo lectivo
-            if ($periodo_lectivo_fecha_inicio >= $periodo_lectivo_fecha_fin){
+        //Validación de cada unas de las Fechas de los momentos de evaluación
+        $size = count($fecha_inicio);
+        $j = 1;
+        for($i = 0; $i < $size ; $i++, $j++){
+            if($fecha_inicio[$i] >= $fecha_fin[$i]){
                 return redirect()->back()->with([
                     'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
                     'alert-type' => 'error',
                 ]);
             }
-
-            //Fechas de los momentos de evaluación
-            for($i = 0; $i < $size ; $i++, $j++){
-                if($fecha_inicio[$i] >= $fecha_fin[$i]){
-                    return redirect()->back()->with([
-                        'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
-                        'alert-type' => 'error',
-                    ]);
-                }
-                if($j < $size && $fecha_fin[$i] >= $fecha_inicio[$j]){
-                    return redirect()->back()->with([
-                        'message'    => 'Error, el primer rango de fecha del momento de evaluación debe ser anterior al siguiente',
-                        'alert-type' => 'error',
-                    ]);
-                }
-                //Las fechas deben estar dentro del rango del periodo lectivo
-                if($fecha_inicio[$i] < $periodo_lectivo_fecha_inicio ||  $fecha_fin[$i] > $periodo_lectivo_fecha_fin){
-                    return redirect()->back()->with([
-                        'message'    => 'Error, la fechas del momento de evaluación deben de estar dentro del rango del periodo lectivo',
-                        'alert-type' => 'error',
-                    ]);
-                }
-
-                
+            if($j < $size && $fecha_fin[$i] >= $fecha_inicio[$j]){
+                return redirect()->back()->with([
+                    'message'    => 'Error, el primer rango de fecha del momento de evaluación debe ser anterior al siguiente',
+                    'alert-type' => 'error',
+                ]);
             }
-
-            $periodo_lectivo->momentos_evaluacion()->detach();
-            foreach($momentos as $momentoIndex => $momento){
-                $periodo_lectivo->momentos_evaluacion()->attach($momento, [
-                    PeriodoLectivoMomentoEvaluacion::get_fecha_inicio_field() => $fecha_inicio[$momentoIndex],
-                    PeriodoLectivoMomentoEvaluacion::get_fecha_fin_field() => $fecha_fin[$momentoIndex],
-                    PeriodoLectivoMomentoEvaluacion::get_opciones_field() => $opciones[$momentoIndex] ,
-                    PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
-                    PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
+            //Las fechas deben estar dentro del rango del periodo lectivo
+            if($fecha_inicio[$i] < $periodo_lectivo_fecha_inicio ||  $fecha_fin[$i] > $periodo_lectivo_fecha_fin){
+                return redirect()->back()->with([
+                    'message'    => 'Error, la fechas del momento de evaluación deben de estar dentro del rango del periodo lectivo',
+                    'alert-type' => 'error',
+                ]);
             }
-        }else{
-            return redirect()->back()->with([
-                'message'    => 'Error, debe agregar momentos de evaluación',
-                'alert-type' => 'error',
-            ]);
         }
+            
+        
+        //Asociamos los momentos de evaluación
+        $periodo_lectivo = $data;
+        $periodo_lectivo->momentos_evaluacion()->detach();
+        foreach($momentos as $momentoIndex => $momento){
+            $periodo_lectivo->momentos_evaluacion()->attach($momento, [
+                PeriodoLectivoMomentoEvaluacion::get_fecha_inicio_field() => $fecha_inicio[$momentoIndex],
+                PeriodoLectivoMomentoEvaluacion::get_fecha_fin_field() => $fecha_fin[$momentoIndex],
+                PeriodoLectivoMomentoEvaluacion::get_opciones_field() => $opciones[$momentoIndex] ,
+                PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
+                PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
+        }
+        
 
         $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
         
@@ -302,42 +300,114 @@ class PeriodoLectivoController extends VoyagerBaseController
         $this->authorize('add', app($dataType->model_name));
 
         // Validate fields with ajax
-        $val = $this->validateBread($request->all(), $dataType->addRows)->validate();
+        $val = $this->validateBread($request->all(), $dataType->addRows);
+        
+
+        if ($val->fails()) {
+            return redirect()->back()->withErrors($val)->with([
+                'message'    => 'Error, algunos campos son requeridos',
+                'alert-type' => 'error',
+            ]); 
+        }
+
+
+        if(!isset($request->momento_evaluacion) 
+        || !isset($request->momento_evaluacion[0]) 
+        || !isset($request->momento_evaluacion[1]) 
+        || !isset($request->momento_evaluacion[2])
+        || !isset($request->fecha_inicio) 
+        || !isset($request->fecha_fin)){
+            return redirect()->back()->with([
+                    'message'    => 'Error, debe agregar momentos de evaluación',
+                    'alert-type' => 'error',
+                ]);
+        }
+
+        $rules = [];
+
+        for ($i = 0; $i <= 2; $i++){
+            foreach($request['momento_evaluacion'][$i] as $key => $val){ 
+                $rules['momento_evaluacion.'.$i.'.'.$key] = 'required';
+            }
+        }
+
+        $val2 = Validator::make($request->all(), $rules);
+        
+        if ($val2->fails()) {
+            return redirect()->back()->withErrors($val2)->with([
+                'message'    => 'Error, algunos campos son requeridos',
+                'alert-type' => 'error',
+            ]); 
+        }
+
+        $momentos                     = $request->momento_evaluacion[0];
+        $fecha_inicio                 = $request->momento_evaluacion[1];
+        $fecha_fin                    = $request->momento_evaluacion[2];
+        $opciones                     = $request->momento_evaluacion[3];
+        $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
+        $periodo_lectivo_fecha_fin    = $request->fecha_fin;
+
+        //Verificamos que no esten repetidas los momentos de evalución
+        foreach($momentos as $momentosIndex => $momento){
+
+            foreach($momentos as $momentosIndex2 => $momento2){
+                if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
+                    return redirect()->back()->with([
+                        'message'    => 'Error, los momentos de evaluación no pueden estar repetidos',
+                        'alert-type' => 'error',
+                    ]);
+                }    
+            }
+        }
+
+        //Verificamos la precedencia de las fechas
+        if ($periodo_lectivo_fecha_inicio >= $periodo_lectivo_fecha_fin){
+            return redirect()->back()->with([
+                'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        //Validación de cada unas de las Fechas de los momentos de evaluación
+        $size = count($fecha_inicio);
+        $j = 1;
+        for($i = 0; $i < $size ; $i++, $j++){
+            if($fecha_inicio[$i] >= $fecha_fin[$i]){
+                return redirect()->back()->with([
+                    'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
+                    'alert-type' => 'error',
+                ]);
+            }
+            if($j < $size && $fecha_fin[$i] >= $fecha_inicio[$j]){
+                return redirect()->back()->with([
+                    'message'    => 'Error, el primer rango de fecha del momento de evaluación debe ser anterior al siguiente',
+                    'alert-type' => 'error',
+                ]);
+            }
+            //Las fechas deben estar dentro del rango del periodo lectivo
+            if($fecha_inicio[$i] < $periodo_lectivo_fecha_inicio ||  $fecha_fin[$i] > $periodo_lectivo_fecha_fin){
+                return redirect()->back()->with([
+                    'message'    => 'Error, la fechas del momento de evaluación deben de estar dentro del rango del periodo lectivo',
+                    'alert-type' => 'error',
+                ]);
+            }
+        }
+            
+        //Agregamos el periodo lectivo
         $data = $this->insertUpdateData($request, $slug, $dataType->addRows, new $dataType->model_name());
 
-        //Agregamos categorias
+        //Asociamos los momentos de evaluación
         $periodo_lectivo = $data;
-        if(isset($request->momento_evaluacion)){
-            $momentos               = $request->momento_evaluacion[0];
-            $fecha_inicio           = $request->momento_evaluacion[1];
-            $fecha_fin              = $request->momento_evaluacion[2];
-            $opciones               = $request->momento_evaluacion[3];
-
-
-            //Verificamos que no esten repetidas las categorías
-            foreach($momentos as $momentosIndex => $momento){
-
-                foreach($momentos as $momentosIndex2 => $momento2){
-                    if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
-                        return redirect()->back()->with([
-                            'message'    => 'Error, los momentos de evaluación no pueden estar repetidos',
-                            'alert-type' => 'error',
-                        ]);
-                    }    
-                }
-            }
-
-            $periodo_lectivo->momentos_evaluacion()->detach();
-            foreach($momentos as $momentoIndex => $momento){
-                $periodo_lectivo->momentos_evaluacion()->attach($momento, [
-                    PeriodoLectivoMomentoEvaluacion::get_fecha_inicio_field() => $fecha_inicio[$momentoIndex],
-                    PeriodoLectivoMomentoEvaluacion::get_fecha_fin_field() => $fecha_fin[$momentoIndex],
-                    PeriodoLectivoMomentoEvaluacion::get_opciones_field() => $opciones[$momentoIndex] ,
-                    PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
-                    PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
-            }
-
+        $periodo_lectivo->momentos_evaluacion()->detach();
+        foreach($momentos as $momentoIndex => $momento){
+            $periodo_lectivo->momentos_evaluacion()->attach($momento, [
+                PeriodoLectivoMomentoEvaluacion::get_fecha_inicio_field() => $fecha_inicio[$momentoIndex],
+                PeriodoLectivoMomentoEvaluacion::get_fecha_fin_field() => $fecha_fin[$momentoIndex],
+                PeriodoLectivoMomentoEvaluacion::get_opciones_field() => $opciones[$momentoIndex] ,
+                PeriodoLectivoMomentoEvaluacion::get_created_at_field() => \Carbon\Carbon::now() ,
+                PeriodoLectivoMomentoEvaluacion::get_updated_at_field() => \Carbon\Carbon::now() ]);
         }
+
 
         event(new BreadDataAdded($dataType, $data));
 
