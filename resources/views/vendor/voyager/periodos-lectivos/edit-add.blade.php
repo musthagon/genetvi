@@ -10,8 +10,11 @@
     <style>
         .th-flex{
             display: flex;
-            justify-content: space-between;
+
             flex-wrap: wrap;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         tr .select2{
             width: 100% !important;
@@ -27,7 +30,7 @@
         .max-height{
             height:100%;
         }
-        .has-error .select2-selection{
+        .has-error .select2-selection, .has-error{
             /*border: 1px solid #a94442;
             border-radius: 4px;*/
             border-color:rgb(185, 74, 72) !important;
@@ -125,8 +128,14 @@
                                     <table class="table table-bordered max-height" id="dynamic_field">  
                                         <tr> 
                                             <th><label class="control-label" for="name">Nombre</label></th> 
-                                            <th><label class="control-label" for="name">Fecha de Inicio</label></th>
-                                            <th><label class="control-label" for="name">Fecha de Fin</label></th>
+                                            <th>
+                                                <label class="control-label" for="name">Fecha de Inicio</label>
+                                                <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" data-html="true" title="" data-original-title="La fecha de inicio del momento de evaluación debe estar dentro del rango del período lectivo, y debe ser menor a la fecha de fin. Y si agrega otro momento de evaluación, las fechas deben ser posteriores a el anterior momento"></span>
+                                            </th>
+                                            <th>
+                                                <label class="control-label" for="name">Fecha de Fin</label>
+                                                <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" data-html="true" title="" data-original-title="La fecha de fin del momento de evaluación debe estar dentro del rango del período lectivo, y debe ser mayor a la fecha de inicio. Y si agrega otro momento de evaluación, las fechas deben ser posteriores a el anterior momento"></span>
+                                            </th>
                                             <th><label class="control-label" for="name">Opciones</label></th>
                                             <th></th>
                                         </tr> 
@@ -334,8 +343,43 @@
                 validarCategorias();
             });
             
+            //Validar precedencia de la fecah de inicio y fin del periodo lectivo
+            $('input[name ="fecha_inicio"], input[name ="fecha_fin"]').change(function() {
+                $fecha_inicio = $('input[name ="fecha_inicio"]');
+                $fecha_fin = $('input[name ="fecha_fin"]');
+                if($fecha_inicio.val() >= $fecha_fin.val()){
+                    $fecha_inicio.addClass('has-error');
+                    $fecha_fin.addClass('has-error');
+                }else{
+                    $fecha_inicio.removeClass('has-error');
+                    $fecha_fin.removeClass('has-error');
+                }
+            });
 
+            $(document).on('change', 'tr input[name*="momento_evaluacion[1]"]', function() {
+                $fecha_inicio = $(this);
+                $fecha_fin = $(this).parent().next().children();
+                if($fecha_inicio.val() >= $fecha_fin.val()){
+                    $fecha_inicio.addClass('has-error');
+                    $fecha_fin.addClass('has-error');
+                }else{
+                    $fecha_inicio.removeClass('has-error');
+                    $fecha_fin.removeClass('has-error');
+                }
 
+            });
+            $(document).on('change', 'tr input[name*="momento_evaluacion[2]"]', function() {
+                $fecha_inicio = $(this).parent().prev().children();
+                $fecha_fin = $(this);
+                if($fecha_inicio.val() >= $fecha_fin.val()){
+                    $fecha_inicio.addClass('has-error');
+                    $fecha_fin.addClass('has-error');
+                }else{
+                    $fecha_inicio.removeClass('has-error');
+                    $fecha_fin.removeClass('has-error');
+                }
+            });
+            
             $('.toggleswitch').bootstrapToggle();
 
             //Init datepicker for date fields if data-datepicker attribute defined

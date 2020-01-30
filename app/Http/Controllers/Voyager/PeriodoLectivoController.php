@@ -159,6 +159,14 @@ class PeriodoLectivoController extends VoyagerBaseController
         $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
         $periodo_lectivo_fecha_fin    = $request->fecha_fin;
 
+        //Las fechas deben ser distintas
+        if($periodo_lectivo_fecha_inicio == $periodo_lectivo_fecha_fin){
+            return redirect()->back()->with([
+                'message'    => 'Error, la fecha de inicio y la de fin del periodo lectivo deben ser distintas',
+                'alert-type' => 'error',
+            ]);
+        }
+
         //Verificamos que no esten repetidas los momentos de evalución
         foreach($momentos as $momentosIndex => $momento){
 
@@ -346,6 +354,14 @@ class PeriodoLectivoController extends VoyagerBaseController
         $opciones                     = $request->momento_evaluacion[3];
         $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
         $periodo_lectivo_fecha_fin    = $request->fecha_fin;
+
+        //Las fechas deben ser distintas
+        if($periodo_lectivo_fecha_inicio == $periodo_lectivo_fecha_fin){
+            return redirect()->back()->with([
+                'message'    => 'Error, la fecha de inicio y la de fin del periodo lectivo deben ser distintas',
+                'alert-type' => 'error',
+            ]);
+        }
 
         //Verificamos que no esten repetidas los momentos de evalución
         foreach($momentos as $momentosIndex => $momento){
