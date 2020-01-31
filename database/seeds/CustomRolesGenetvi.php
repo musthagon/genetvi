@@ -14,6 +14,55 @@ class CustomRolesGenetvi extends Seeder
     public function run()
     {
 
+        //Roles voyager
+        $role = Role::firstOrNew(['name' => 'admin']);
+        if (!$role->exists) {
+            $role->fill([
+                    'display_name' => __('voyager::seeders.roles.admin'),
+                ])->save();
+        }
+
+        $role = Role::firstOrNew(['name' => 'user']);
+        if (!$role->exists) {
+            $role->fill([
+                    'display_name' => __('voyager::seeders.roles.user'),
+                ])->save();
+        }
+        
+        //Permisos voyager
+        $keys = [
+            'browse_admin',
+            'browse_bread',
+            'browse_database',
+            'browse_media',
+            'browse_compass',
+        ];
+
+        foreach ($keys as $key) {
+            Permission::firstOrCreate([
+                'key'        => $key,
+                'table_name' => null,
+            ]);
+        }
+
+        Permission::generateFor('menus');
+
+        Permission::generateFor('roles');
+
+        Permission::generateFor('users');
+
+        Permission::generateFor('settings');
+
+        //Asociamos los permisos
+        $role = Role::where('name', 'admin')->firstOrFail();
+
+        $permissions = Permission::all();
+
+        $role->permissions()->sync(
+            $permissions->pluck('id')->all()
+        );
+
+
         //Creamos todos los Roles
         $list_dependencias=array(
             "facultad_de_arquitectura_y_urbanismo"          => "Facultad de Arquitectura y Urbanismo",
@@ -59,8 +108,6 @@ class CustomRolesGenetvi extends Seeder
             }
         }
         
-
-
         //Asignamos los Permisos para el Rol
         foreach($list_dependencias as $name=>$display_name){
             $role = Role::where('name', 'coordinador_'.$name)->firstOrFail();
@@ -89,5 +136,7 @@ class CustomRolesGenetvi extends Seeder
                 $permissions->pluck('id')->all()
             );
         }
+
+        
     }
 }
