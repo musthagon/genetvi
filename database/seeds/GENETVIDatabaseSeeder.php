@@ -28,6 +28,7 @@ class GENETVIDatabaseSeeder extends Seeder
         $this->seed('SettingsTableSeeder');
         */
 
+        $this->seed('GenetviMenuItemsTableSeeder');
 
         $this->seed('CustomRolesGenetvi');
 
