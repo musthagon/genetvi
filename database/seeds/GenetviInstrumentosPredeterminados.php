@@ -6,7 +6,7 @@ use App\Categoria;
 use App\Instrumento;
 use App\CursoParticipanteRol;
 
-class InstrumentosPredeterminados extends Seeder
+class GenetviInstrumentosPredeterminados extends Seeder
 {
     /**
      * Run the database seeds.
@@ -217,8 +217,8 @@ class InstrumentosPredeterminados extends Seeder
         }
 
         //Attacch categorias - instrumentos
-        $rol_estudiante = CursoParticipanteRol::where('id',5)->first();
-        $roles_docente = CursoParticipanteRol::where('id','!=',5)->get();
+        $rol_estudiante = CursoParticipanteRol::where('cvucv_shortname','student')->first();
+        $roles_docente = CursoParticipanteRol::where('cvucv_shortname','!=','student')->get();
 
         foreach($list_instrumentos as $nombreCorto => $instrumento){
             $instrumento = Instrumento::firstOrNew(['nombre' => $instrumento]);

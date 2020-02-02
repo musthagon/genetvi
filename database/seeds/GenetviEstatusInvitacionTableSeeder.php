@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\EstatusInvitacion;
 
-class EstatusInvitacionTableSeeder extends Seeder
+class GenetviEstatusInvitacionTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

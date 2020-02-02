@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\CursoParticipanteRol;
 
-class CursosParticipantesTableSeeder extends Seeder
+class GenetviCursosParticipantesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,7 +20,7 @@ class CursosParticipantesTableSeeder extends Seeder
                 ])->save();
         }
 
-        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '3']);
+        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '2']);
         if (!$curso_rol->exists) {
             $curso_rol->fill([
                     'cvucv_name' => 'Profesor editor',
@@ -28,7 +28,7 @@ class CursosParticipantesTableSeeder extends Seeder
                 ])->save();
         }
 
-        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '4']);
+        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '3']);
         if (!$curso_rol->exists) {
             $curso_rol->fill([
                     'cvucv_name' => 'Profesor Sin Permisos de Edición',
@@ -36,7 +36,7 @@ class CursosParticipantesTableSeeder extends Seeder
                 ])->save();
         }
 
-        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '5']);
+        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '4']);
         if (!$curso_rol->exists) {
             $curso_rol->fill([
                     'cvucv_name' => 'Estudiante',

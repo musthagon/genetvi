@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\MomentosEvaluacion;
 
-class MomentosEvaluacionTableSeeder extends Seeder
+class GenetviMomentosEvaluacionTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

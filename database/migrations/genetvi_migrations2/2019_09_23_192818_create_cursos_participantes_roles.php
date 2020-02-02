@@ -14,7 +14,7 @@ class CreateCursosParticipantesRoles extends Migration
     public function up()
     {
         Schema::create('cursos_participantes_roles', function (Blueprint $table) {
-            $table->bigInteger('id')->unsigned();
+            $table->bigIncrements('id');
             $table->string('cvucv_name');
             $table->string('cvucv_shortname');
             $table->timestamps();

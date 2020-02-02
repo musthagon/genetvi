@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\TipoInvitacion;
 
-class TipoInvitacionTableSeeder extends Seeder
+class GenetviTipoInvitacionTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

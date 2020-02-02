@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use \TCG\Voyager\Models\Permission;
 use \TCG\Voyager\Models\Role;
 
-class CustomRolesGenetvi extends Seeder
+class GenetviRolesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

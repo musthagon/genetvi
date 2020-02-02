@@ -16,29 +16,17 @@ class GENETVIDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        /*
-        $this->seed('DataTypesTableSeeder');
-        $this->seed('DataRowsTableSeeder');
-        $this->seed('MenusTableSeeder');
-        $this->seed('MenuItemsTableSeeder');
 
-        $this->seed('RolesTableSeeder');
-        $this->seed('PermissionsTableSeeder');
-        $this->seed('PermissionRoleTableSeeder');
-        $this->seed('SettingsTableSeeder');
-        */
-
+        $this->seed('GenetviDataTypesTableSeeder');
         $this->seed('GenetviMenuItemsTableSeeder');
-
-        $this->seed('CustomRolesGenetvi');
-
+        $this->seed('GenetviRolesTableSeeder');
         $this->seed('GenetviSettingsTableSeeder');
 
-        $this->seed('CursosParticipantesTableSeeder');
-        $this->seed('InstrumentosPredeterminados');
-        $this->seed('EstatusInvitacionTableSeeder');
-        $this->seed('TipoInvitacionTableSeeder');
-        $this->seed('MomentosEvaluacionTableSeeder');
+        $this->seed('GenetviCursosParticipantesTableSeeder');
+        $this->seed('GenetviInstrumentosPredeterminados');
+        $this->seed('GenetviEstatusInvitacionTableSeeder');
+        $this->seed('GenetviTipoInvitacionTableSeeder');
+        $this->seed('GenetviMomentosEvaluacionTableSeeder');
 
         
     }
