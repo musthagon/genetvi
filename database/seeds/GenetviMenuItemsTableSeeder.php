@@ -16,7 +16,7 @@ class GenetviMenuItemsTableSeeder extends Seeder
     public function run()
     {
         //Menu administrador
-        $menu = Menu::firstOrNew([
+        $menu = Menu::firstOrCreate([
             'name' => 'admin',
             'id' => 1,
         ]);
@@ -44,7 +44,7 @@ class GenetviMenuItemsTableSeeder extends Seeder
         $this->fillItem($menu->id, 'Cursos del CVUCV',  '', 'gestion.evaluaciones', '_self','voyager-hammer', '#ffff00', null, 8);  
 
         //Menu Usuario
-        $user_menu = Menu::firstOrNew([
+        $user_menu = Menu::firstOrCreate([
             'name' => 'user_menu',
             'id' => 2,
         ]);

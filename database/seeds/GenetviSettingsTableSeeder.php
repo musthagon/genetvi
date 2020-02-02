@@ -130,8 +130,6 @@ class GenetviSettingsTableSeeder extends Seeder
             ])->save();
         }
 
-
-
         //Admin
         $setting = $this->findSetting('admin.title');
         $setting->fill([
@@ -185,18 +183,6 @@ class GenetviSettingsTableSeeder extends Seeder
                 'details'      => '',
                 'type'         => 'image',
                 'order'        => 5,
-                'group'        => 'Admin',
-            ])->save();
-        }
-
-        $setting = $this->findSetting('admin.google_analytics_client_id');
-        if (!$setting->exists) {
-            $setting->fill([
-                'display_name' => __('voyager::seeders.settings.admin.google_analytics_client_id'),
-                'value'        => '',
-                'details'      => '',
-                'type'         => 'text',
-                'order'        => 6,
                 'group'        => 'Admin',
             ])->save();
         }

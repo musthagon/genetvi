@@ -15,6 +15,10 @@ class GenetviInstrumentosPredeterminados extends Seeder
      */
     public function run()
     {
+        Indicador::query()->delete();
+        Categoria::query()->delete();
+        Instrumento::query()->delete();
+
         /*$indicadores[0]=array(
             "¿Ha tenido experiencia participando en otros Entornos Virtuales de Aprendizaje en la UCV?",
             "¿Dispone de un computador?",

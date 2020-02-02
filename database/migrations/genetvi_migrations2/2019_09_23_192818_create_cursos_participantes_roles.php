@@ -19,7 +19,6 @@ class CreateCursosParticipantesRoles extends Migration
             $table->string('cvucv_shortname');
             $table->timestamps();
 
-            $table->primary('id');
         });
     }
 

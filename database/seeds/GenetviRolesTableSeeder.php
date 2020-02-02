@@ -51,18 +51,21 @@ class GenetviRolesTableSeeder extends Seeder
 
         Permission::generateFor('users');
 
-        Permission::generateFor('settings');
+        Permission::generateFor('instrumentos');
 
-        //Asociamos los permisos
-        $role = Role::where('name', 'admin')->firstOrFail();
+        Permission::generateFor('categorias');
 
-        $permissions = Permission::all();
+        Permission::generateFor('indicadores');
 
-        $role->permissions()->sync(
-            $permissions->pluck('id')->all()
-        );
+        Permission::generateFor('periodos_lectivos');
 
+        Permission::generateFor('cursos_participantes_roles');
 
+        Permission::generateFor('momentos_evaluacion');
+
+        Permission::generateFor('invitaciones');
+        
+        
         //Creamos todos los Roles
         $list_dependencias=array(
             "facultad_de_arquitectura_y_urbanismo"          => "Facultad de Arquitectura y Urbanismo",
@@ -138,5 +141,11 @@ class GenetviRolesTableSeeder extends Seeder
         }
 
         
+        //Asociamos todos los permisos al admin
+        $role = Role::where('name', 'admin')->firstOrFail();
+        $permissions = Permission::all();
+        $role->permissions()->sync(
+            $permissions->pluck('id')->all()
+        );
     }
 }
