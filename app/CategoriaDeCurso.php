@@ -61,4 +61,12 @@ class CategoriaDeCurso extends Model
         return $this->belongsTo('App\PeriodoLectivo','periodo_lectivo_id','id');
     }
 
+    public function getPeriodoLectivo(){
+        return $this->periodo_lectivo_id;
+    }
+    public function setPeriodoLectivo($periodo){
+        $this->periodo_lectivo_id = $periodo;
+        $this->save();
+    }
+
 }

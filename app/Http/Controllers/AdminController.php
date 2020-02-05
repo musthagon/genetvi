@@ -115,7 +115,6 @@ class AdminController extends Controller
             }
             
             $cursos = Curso::where('cvucv_category_id', $id)->get();
-            
             if(!$cursos->isEmpty()){
                 return view('vendor.voyager.gestion.index',compact('categorias','cursos','wstoken'));
             }else{
@@ -281,7 +280,7 @@ class AdminController extends Controller
 
         //Va a editarla ?
         $edit = false;
-        if(!is_null($categoria->periodo_lectivo) ){
+        if(!is_null($categoria->getPeriodoLectivo()) ){
             $edit = true;
         }
 
@@ -314,17 +313,40 @@ class AdminController extends Controller
         if($categoria->cvucv_category_parent_id != 0){
             return redirect()->back()->with(['message' => "No es una categoría principal", 'alert-type' => 'error']);
         }
-        $categoria->periodo_lectivo = $request->periodo_lectivo;
-        $categoria->save();
+        
+        $categoria->setPeriodoLectivo($request->periodo_lectivo);
 
-        foreach($request->instrumentos as $instrumento){
-            if($instrumento == 'null'){
-                $categoria->instrumentos_habilitados()->detach();
-                break;
-            }else{
+        if (!isset($request->instrumentos)){
+            $categoria->instrumentos_habilitados()->detach();
+        }else{
+            foreach($request->instrumentos as $instrumento){
+                if($instrumento == 'null'){
+                    $categoria->instrumentos_habilitados()->detach();
+                    break;
+                }else{
+                    $categoria->instrumentos_habilitados()->attach($instrumento);
+                }
+            }
+        }
+
+
+        if (!isset($request->instrumentos)){
+            $categoria->instrumentos_habilitados()->detach();
+        }else{
+            foreach($request->instrumentos as $instrumentoRequest){
+                if($instrumento == 'null'){
+                    $categoria->instrumentos_habilitados()->detach();
+                    break;
+                }
+                $instrumento = Instrumento::find($instrumentoRequest);
+                if(empty($instrumento)){
+                    return redirect()->back()->with(['message' => "El instrumento ya no existe, intente actualizar la página", 'alert-type' => 'error']);
+                }
                 $categoria->instrumentos_habilitados()->attach($instrumento);
             }
         }
+
+
         
         return redirect()->route('gestion.evaluaciones')->with(['message' => "Instrumentos habilitados para esta categoría", 'alert-type' => 'success']);
 
