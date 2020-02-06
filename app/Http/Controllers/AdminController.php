@@ -22,6 +22,9 @@ use App\Traits\CommonFunctionsGenetvi;
 class AdminController extends Controller
 {
     use CommonFunctionsGenetvi;
+    protected $permissionHabilitarEvaluacionCategoria = "habilitar_evaluacion_";
+    protected $permissionVerCategoria = "ver_";
+    protected $permissionSincronizarCategoria = "sincronizar_";
     /**
      * Create a new controller instance.
      *
@@ -47,7 +50,7 @@ class AdminController extends Controller
         }
         $categoriaSuperPadre = $categoria->categoria_raiz;
         
-        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
             return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
         }
     }
@@ -67,7 +70,7 @@ class AdminController extends Controller
 
             $categorias = collect();
             foreach($categorias_padre as $data){
-                if (Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$data['name']]  )) {                  
+                if (Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$data['name']]  )) {                  
                     $categorias[] = CategoriaDeCurso::create($data['id'],$data['parent'],$data['name'],$data['description'],$data['coursecount'],$data['visible'],$data['depth'],$data['path']);
                 }
             }  
@@ -76,7 +79,7 @@ class AdminController extends Controller
             if(empty($categorias_padre) || $categorias->isEmpty()){
                 $categoriasDB = CategoriaDeCurso::where('cvucv_category_parent_id', $id)->get();
                 foreach($categoriasDB as $categoria){
-                    if (Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoria->cvucv_name]  )) {    
+                    if (Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoria->getCVUCV_NAME()]  )) {    
                         $categorias[] = $categoria;
                     }
                 }
@@ -96,7 +99,7 @@ class AdminController extends Controller
                     $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
                 }
                 
-                if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+                if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                     return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
                 }
             }
@@ -143,7 +146,7 @@ class AdminController extends Controller
                 $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
             }
             
-            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoriaSuperPadre->cvucv_name]  )) {    
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionSincronizarCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                 return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
             }
         }
@@ -254,8 +257,6 @@ class AdminController extends Controller
      * 
      */
     public function gestionar_evaluacion_categoria($id){
-        /*$categoria = CategoriaDeCurso::find($id);*/
-
         //Tienen acceso?
         $categoria = CategoriaDeCurso::where('id', $id)->first();
         if(!empty($categoria) ){
@@ -265,7 +266,7 @@ class AdminController extends Controller
                 $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
             }
             
-            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['habilitar_evaluacion_',$categoriaSuperPadre->cvucv_name]  )) {    
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                 return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
             }
         }
@@ -367,9 +368,8 @@ class AdminController extends Controller
         if($categoria->cvucv_category_parent_id != 0){
             return redirect()->back()->with(['message' => "No es una categoría principal", 'alert-type' => 'error']);
         }
-        if($categoria->periodo_lectivo != $request->periodo_lectivo){
-            $categoria->periodo_lectivo = $request->periodo_lectivo;
-            $categoria->save();
+        if($categoria->getPeriodoLectivo() != $request->periodo_lectivo){
+            $categoria->setPeriodoLectivo($request->periodo_lectivo);
         }
 
         // Detach all roles from the categoria...
@@ -749,20 +749,27 @@ class AdminController extends Controller
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
 
-        if($instrumentos_habilitados->isEmpty() || ($categoria_raiz->periodo_lectivo==NULL)){
+        if (!empty($categoria_raiz) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria,$categoria_raiz->getCVUCV_NAME()]  )) {    
+            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+
+        if($instrumentos_habilitados->isEmpty() || ($categoria_raiz->getPeriodoLectivo()==NULL)){
             return redirect()->back()->with(['message' => "No está habilitada la evaluación para esta facultad/centro o dependencia", 'alert-type' => 'error']);
         }
 
         //Buscamos los participantes
         $participantes = $this->cvucv_get_participantes_curso($curso->id);
 
+
         foreach($instrumentos_habilitados as $instrumento){
-            if($instrumento->invitacion_automatica){ //El instrumento es de matriculacion automatica
+            if($instrumento->getInvitacionAutomatica()){ //El instrumento es de matriculacion automatica
                 foreach($participantes as $indexParticipante => $participante){
+
+                    dd('actualizar MVC, momento');
 
                     //Verificamos que no tenga invitación previa
                     $invitacionAnterior = Invitacion::where('curso_id', $curso->id)
-                    ->where('periodo_lectivo_id', $categoria_raiz->periodo_lectivo)
+                    ->where('periodo_lectivo_id', $categoria_raiz->getPeriodoLectivo())
                     ->where('cvucv_user_id', $participante['id'])
                     ->where('instrumento_id', $instrumento->id)
                     ->first();
@@ -790,7 +797,7 @@ class AdminController extends Controller
                                     'tipo_invitacion_id'       => 2, //Invitacion automatica
                                     'instrumento_id'        => $instrumento->id,
                                     'curso_id'              => $curso->id,
-                                    'periodo_lectivo_id'    => $categoria_raiz->periodo_lectivo,
+                                    'periodo_lectivo_id'    => $categoria_raiz->getPeriodoLectivo(),
                                     'cvucv_user_id'         => $participante['id'],
                                     /*'usuario_id'            => $token,*/
                                     
@@ -852,7 +859,7 @@ class AdminController extends Controller
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
         $instrumentos_manuales = [];
         foreach($instrumentos_habilitados as $instrumento){
-            if(!$instrumento->invitacion_automatica){ //Instrumentos de matriculacion manual
+            if(!$instrumento->getInvitacionAutomatica()){ //Instrumentos de matriculacion manual
                 array_push($instrumentos_manuales, $instrumento);
             }
             
@@ -946,8 +953,8 @@ class AdminController extends Controller
             if(empty($instrumentoActual)){
                 return redirect()->back()->with(['message' => "Uno de los instrumentos seleccionados no existe", 'alert-type' => 'error']);
             }
-            if($instrumentoActual->invitacion_automatica){
-                return redirect()->back()->with(['message' => "El instrumento: ".$instrumentoActual->nombre." no es válido", 'alert-type' => 'error']);
+            if($instrumentoActual->getInvitacionAutomatica()){
+                return redirect()->back()->with(['message' => "El instrumento: ".$instrumentoActual->nombre." no permite la invitación manual", 'alert-type' => 'error']);
             }
 
             foreach($usuarios as $usuarioIndex => $usuario){

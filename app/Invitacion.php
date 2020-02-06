@@ -8,8 +8,21 @@ use App\Traits\CommonFunctionsGenetvi;
 
 class Invitacion extends Model
 {
+    use CommonFunctionsGenetvi;
     protected $table = 'invitaciones';
-    protected $fillable = ['id', 'token', 'estatus_invitacion_id', 'tipo_invitacion_id', 'instrumento_id', 'curso_id', 'periodo_lectivo_id', 'cvucv_user_id', 'usuario_id','numero_invitacion','created_at','updated_at'];
+    protected $fillable = ['id', 
+    'token', 
+    'estatus_invitacion_id', 
+    'tipo_invitacion_id', 
+    'instrumento_id', 
+    'curso_id', 
+    'periodo_lectivo_id', 
+    'momento_evaluacion_id',
+    'cvucv_user_id', 
+    'usuario_id',
+    'cantidad_recordatorios',
+    'created_at',
+    'updated_at'];
 
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');
@@ -70,5 +83,15 @@ class Invitacion extends Model
         while (Invitacion::where('token', $token)->first());
 
         return $token;
+    }
+
+    public static function invitacionPrevia($curso_id, $instrumento_id, $periodo_lectivo, $momento_evaluacion_id,$participante_id ){
+        //Verificamos que no tenga invitación previa
+        $invitacionAnterior = Invitacion::where('cvucv_user_id', $participante_id)
+        ->where('instrumento_id', $instrumento_id)
+        ->where('momento_evaluacion_id', $momento_evaluacion_id)
+        ->where('periodo_lectivo_id', $periodo_lectivo)
+        ->where('curso_id', $curso_id)
+        ->first();
     }
 }

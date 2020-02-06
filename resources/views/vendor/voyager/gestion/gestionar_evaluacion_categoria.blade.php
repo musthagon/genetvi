@@ -39,7 +39,7 @@
                                 @foreach($periodos_lectivos as $periodo)
                                     <?php $selected = ''; ?>
                                         @if($edit)
-                                            @if($categoria->periodo_lectivo == $periodo->id))
+                                            @if($categoria->getPeriodoLectivo() == $periodo->id))
                                                 <?php $selected = 'selected="selected"'; ?>
                                             @endif
                                         @endif

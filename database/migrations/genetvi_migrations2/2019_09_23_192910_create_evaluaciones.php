@@ -21,7 +21,9 @@ class CreateEvaluaciones extends Migration
             $table->bigInteger('instrumento_id')->unsigned();
             $table->bigInteger('curso_id')->unsigned();
             $table->bigInteger('periodo_lectivo_id')->unsigned();
-            $table->bigInteger('cvucv_user_id')->unsigned();
+            $table->bigInteger('momento_evaluacion_id')->unsigned();
+            $table->bigInteger('cvucv_user_id')->unsigned()->nullable();
+            $table->integer('usuario_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }

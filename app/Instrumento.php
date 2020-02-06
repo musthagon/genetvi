@@ -91,4 +91,8 @@ class Instrumento extends Model
     public function getID(){
         return $this->id;
     }
+
+    public function getInvitacionAutomatica(){
+        return $this->invitacion_automatica;
+    }
 }

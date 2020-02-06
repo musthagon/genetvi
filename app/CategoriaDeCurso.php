@@ -69,4 +69,8 @@ class CategoriaDeCurso extends Model
         $this->save();
     }
 
+    public function getCVUCV_NAME(){
+        return $this->cvucv_name;
+    }
+
 }
