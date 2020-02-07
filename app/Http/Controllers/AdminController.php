@@ -748,18 +748,24 @@ class AdminController extends Controller
 
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+        $periodo_lectivo            = $categoria_raiz->getPeriodoLectivo();
 
         if (!empty($categoria_raiz) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria,$categoria_raiz->getCVUCV_NAME()]  )) {    
             return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
         }
 
-        if($instrumentos_habilitados->isEmpty() || ($categoria_raiz->getPeriodoLectivo()==NULL)){
+        if($instrumentos_habilitados->isEmpty() || ($periodo_lectivo==NULL)){
             return redirect()->back()->with(['message' => "No está habilitada la evaluación para esta facultad/centro o dependencia", 'alert-type' => 'error']);
+        }
+        
+        $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual();
+
+        if($momento_evaluacion_activo==NULL){
+            return redirect()->back()->with(['message' => "No hay momento de evaluación activo para el periodo lectivo ".$periodo_lectivo->getNombre(), 'alert-type' => 'error']);
         }
 
         //Buscamos los participantes
         $participantes = $this->cvucv_get_participantes_curso($curso->id);
-
 
         foreach($instrumentos_habilitados as $instrumento){
             if($instrumento->getInvitacionAutomatica()){ //El instrumento es de matriculacion automatica
@@ -768,12 +774,8 @@ class AdminController extends Controller
                     dd('actualizar MVC, momento');
 
                     //Verificamos que no tenga invitación previa
-                    $invitacionAnterior = Invitacion::where('curso_id', $curso->id)
-                    ->where('periodo_lectivo_id', $categoria_raiz->getPeriodoLectivo())
-                    ->where('cvucv_user_id', $participante['id'])
-                    ->where('instrumento_id', $instrumento->id)
-                    ->first();
-
+                    $invitacionAnterior = Invitacion::invitacionPrevia($curso->id, $instrumento->id, $periodo_lectivo->id, $momento_evaluacion_activo->id, $participante['id']);
+                    
                     //Si no tiene invitación, hay que crearla
                     if(empty($invitacionAnterior)){
 

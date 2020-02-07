@@ -152,12 +152,19 @@ class PeriodoLectivoController extends VoyagerBaseController
             ]); 
         }
             
+        
+        //dd($request->momento_evaluacion[1][0]);
+        //dd(strtotime($request->momento_evaluacion[1][0]));
+        //dd(strtotime("12/28/2002"));
         $momentos                     = $request->momento_evaluacion[0];
         $fecha_inicio                 = $request->momento_evaluacion[1];
+        //$fecha_inicio                 = \Carbon\Carbon::createFromFormat('d/m/Y', $request->momento_evaluacion[1][0]);
+        $fecha_inicio                 = date("Y-m-d H:i:s", strtotime($request->momento_evaluacion[1][0]));
         $fecha_fin                    = $request->momento_evaluacion[2];
         $opciones                     = $request->momento_evaluacion[3];
         $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
         $periodo_lectivo_fecha_fin    = $request->fecha_fin;
+        dd($fecha_inicio);
 
         //Las fechas deben ser distintas
         if($periodo_lectivo_fecha_inicio == $periodo_lectivo_fecha_fin){
@@ -166,6 +173,7 @@ class PeriodoLectivoController extends VoyagerBaseController
                 'alert-type' => 'error',
             ]);
         }
+        
 
         //Verificamos que no esten repetidas los momentos de evalución
         foreach($momentos as $momentosIndex => $momento){

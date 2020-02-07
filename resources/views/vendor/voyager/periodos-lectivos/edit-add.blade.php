@@ -38,6 +38,7 @@
         .error{
             color:rgb(185, 74, 72) ;
         }
+        
     </style>
 @stop
 
@@ -255,12 +256,37 @@
                     @endforeach
                     element +=          '</select>';
                     element +=      '</td>';
+
                     element +=      '<td>';
-                    element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_inicio())->format('Y-m-d') }}" placeholder="Fecha de inicio"/>';
+                    element +=      '<div class="input-group date"> ';
+                    element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
+                    element +=      '       placeholder="Fecha de inicio" ';
+                    element +=      '       value="{{ date("d-m-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_inicio()) ) }}"> ';
+                    element +=      '   <span class="input-group-addon"> ';
+                    element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
+                    element +=      '    </span> ';
+                    element +=      '</div> ';
                     element +=      '</td>';
+
+                    //element +=      '<td>';
+                    //element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_inicio())->format('Y-m-d') }}" placeholder="Fecha de inicio"/>';
+                    //element +=      '</td>';
+                    //element +=      '<td>';
+                    //element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_fin())->format('Y-m-d') }}" placeholder="Fecha de fin"/>';
+                    //element +=      '</td>';
+
                     element +=      '<td>';
-                    element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_fin())->format('Y-m-d') }}" placeholder="Fecha de fin"/>';
+                    element +=      '<div class="input-group date"> ';
+                    element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
+                    element +=      '       placeholder="Fecha de fin" ';
+                    element +=      '       value="{{ date("d-m-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_fin()) ) }}"> ';
+                    element +=      '   <span class="input-group-addon"> ';
+                    element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
+                    element +=      '    </span> ';
+                    element +=      '</div> ';
                     element +=      '</td>';
+
+
                     element +=      '<td>';
                     element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" value="{{$momentoAsociado->pivot->get_opciones()}}" placeholder="Opciones de Configuración"/>';
                     element +=      '</td>';
@@ -298,12 +324,37 @@
                 @endforeach
                 element +=          '</select>';
                 element +=      '</td>';
+
                 element +=      '<td>';
-                element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" placeholder="Fecha de inicio"/>';
+                element +=      '<div class="input-group date"> ';
+                element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
+                element +=      '       placeholder="Fecha de inicio" >';
+                element +=      '   <span class="input-group-addon"> ';
+                element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
+                element +=      '    </span> ';
+                element +=      '</div> ';
                 element +=      '</td>';
+
+
+                //element +=      '<td>';
+                //element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" placeholder="Fecha de inicio"/>';
+                //element +=      '</td>';
+
                 element +=      '<td>';
-                element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" placeholder="Fecha de fin"/>';
+                element +=      '<div class="input-group date"> ';
+                element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
+                element +=      '       placeholder="Fecha de fin" >';
+                element +=      '   <span class="input-group-addon"> ';
+                element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
+                element +=      '    </span> ';
+                element +=      '</div> ';
                 element +=      '</td>';
+
+                //element +=      '<td>';
+                //element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" placeholder="Fecha de fin"/>';
+                //element +=      '</td>';
+
+
                 element +=      '<td>';
                 element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" placeholder="Opciones de Configuración"/>';
                 element +=      '</td>';
@@ -317,6 +368,19 @@
 
                 //Instanciamos select
                 $('#select'+index).select2();
+
+                //Instanciamos el data picker
+                let $picker = $('.date');
+                $picker.datetimepicker({
+                    format: 'MM/DD/YYYY, h:mm a',
+                    locale: 'es'
+                });
+
+                $picker.datetimepicker().on('dp.show', function() {
+                    $(this).closest('.table-responsive').removeClass('table-responsive').addClass('temp');
+                    }).on('dp.hide', function() {
+                        $(this).closest('.temp').addClass('table-responsive').removeClass('temp')
+                });
 
                 //Validamos que no hay filas repetidas
                 validarCategorias();
@@ -384,12 +448,20 @@
 
             //Init datepicker for date fields if data-datepicker attribute defined
             //or if browser does not handle date inputs
-            $('.form-group input[type=date]').each(function (idx, elt) {
-                if (elt.type != 'date' || elt.hasAttribute('data-datepicker')) {
-                    elt.type = 'text';
-                    $(elt).datetimepicker($(elt).data('datepicker'));
-                }
+            //$('.date').datetimepicker();
+
+            let $picker = $('.date');
+            $picker.datetimepicker({
+                format: 'MM/DD/YYYY, h:mm a',
+                locale: 'es'
             });
+
+            $picker.datetimepicker().on('dp.show', function() {
+                $(this).closest('.table-responsive').removeClass('table-responsive').addClass('temp');
+                }).on('dp.hide', function() {
+                    $(this).closest('.temp').addClass('table-responsive').removeClass('temp')
+            });
+
 
             @if ($isModelTranslatable)
                 $('.side-body').multilingual({"editing": true});

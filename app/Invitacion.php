@@ -85,9 +85,9 @@ class Invitacion extends Model
         return $token;
     }
 
+    //Verificamos que no tenga invitación previa
     public static function invitacionPrevia($curso_id, $instrumento_id, $periodo_lectivo, $momento_evaluacion_id,$participante_id ){
-        //Verificamos que no tenga invitación previa
-        $invitacionAnterior = Invitacion::where('cvucv_user_id', $participante_id)
+        return Invitacion::where('cvucv_user_id', $participante_id)
         ->where('instrumento_id', $instrumento_id)
         ->where('momento_evaluacion_id', $momento_evaluacion_id)
         ->where('periodo_lectivo_id', $periodo_lectivo)
