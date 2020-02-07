@@ -151,20 +151,24 @@ class PeriodoLectivoController extends VoyagerBaseController
                 'alert-type' => 'error',
             ]); 
         }
-            
         
-        //dd($request->momento_evaluacion[1][0]);
-        //dd(strtotime($request->momento_evaluacion[1][0]));
-        //dd(strtotime("12/28/2002"));
+        //dd($request);
+        $momentos = $request->momento_evaluacion;
+        dd($momentos);
+        foreach($request->momento_evaluacion[1] as $index => $momento){
+            $momento = date("Y-m-d H:i:s", strtotime($momento));
+            $element['momento_evaluacion'][1][$index] = $momento;
+            $request->merge($element);
+        }  
+        dd($request);
+        
         $momentos                     = $request->momento_evaluacion[0];
         $fecha_inicio                 = $request->momento_evaluacion[1];
-        //$fecha_inicio                 = \Carbon\Carbon::createFromFormat('d/m/Y', $request->momento_evaluacion[1][0]);
-        $fecha_inicio                 = date("Y-m-d H:i:s", strtotime($request->momento_evaluacion[1][0]));
         $fecha_fin                    = $request->momento_evaluacion[2];
         $opciones                     = $request->momento_evaluacion[3];
-        $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
-        $periodo_lectivo_fecha_fin    = $request->fecha_fin;
-        dd($fecha_inicio);
+        $periodo_lectivo_fecha_inicio = date("Y-m-d H:i:s", strtotime($request->fecha_inicio));
+        $periodo_lectivo_fecha_fin    = date("Y-m-d H:i:s", strtotime($request->fecha_fin)); ;
+        //dd($fecha_inicio);
 
         //Las fechas deben ser distintas
         if($periodo_lectivo_fecha_inicio == $periodo_lectivo_fecha_fin){
@@ -199,7 +203,7 @@ class PeriodoLectivoController extends VoyagerBaseController
         //Validación de cada unas de las Fechas de los momentos de evaluación
         $size = count($fecha_inicio);
         $j = 1;
-        for($i = 0; $i < $size ; $i++, $j++){
+        for($i = 0; $i < $size ; $i++, $j++){            
             if($fecha_inicio[$i] >= $fecha_fin[$i]){
                 return redirect()->back()->with([
                     'message'    => 'Error, la fecha de fin debe ser posterior a la fecha de incio',
