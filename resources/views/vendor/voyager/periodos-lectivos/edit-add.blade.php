@@ -319,7 +319,7 @@
                 element +=      '</td>';
 
                 element +=      '<td>';
-                element +=      '<div class="input-group date"> ';
+                element +=      '<div class="input-group date" id="div_fecha_inicio'+index+'"> ';
                 element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
                 element +=      '       placeholder="Fecha de inicio" >';
                 element +=      '   <span class="input-group-addon"> ';
@@ -328,13 +328,8 @@
                 element +=      '</div> ';
                 element +=      '</td>';
 
-
-                //element +=      '<td>';
-                //element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" placeholder="Fecha de inicio"/>';
-                //element +=      '</td>';
-
                 element +=      '<td>';
-                element +=      '<div class="input-group date"> ';
+                element +=      '<div class="input-group date" id="div_fecha_fin'+index+'"> ';
                 element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
                 element +=      '       placeholder="Fecha de fin" >';
                 element +=      '   <span class="input-group-addon"> ';
@@ -342,11 +337,6 @@
                 element +=      '    </span> ';
                 element +=      '</div> ';
                 element +=      '</td>';
-
-                //element +=      '<td>';
-                //element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" placeholder="Fecha de fin"/>';
-                //element +=      '</td>';
-
 
                 element +=      '<td>';
                 element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" placeholder="Opciones de Configuración"/>';
