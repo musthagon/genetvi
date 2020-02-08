@@ -21,6 +21,10 @@ class MomentosEvaluacion extends Model
         'created_at',
         'updated_at'];
 
+    public function periodos_lectivos(){
+        return $this->hasMany('App\PeriodoLectivo');
+    }
+
     public static function get_nombre_field(){
         return 'nombre';
     }

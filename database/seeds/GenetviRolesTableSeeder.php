@@ -53,6 +53,10 @@ class GenetviRolesTableSeeder extends Seeder
 
         Permission::generateFor('instrumentos');
 
+        Permission::generateFor('hooks');
+
+        Permission::generateFor('settings');
+
         Permission::generateFor('categorias');
 
         Permission::generateFor('indicadores');

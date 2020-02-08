@@ -34,7 +34,6 @@ class PeriodoLectivoController extends VoyagerBaseController
 
     public function edit(Request $request, $id)
     {
-        
         $slug = $this->getSlug($request);
 
         $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();

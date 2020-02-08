@@ -21,9 +21,22 @@ class PeriodoLectivo extends Model
     public function getDescripcion(){
         return $this->descripcion;
     }
-
-    public function momento_evaluacion_actual()    {
+    public function getFecha_inicio(){
+        return $this->fecha_inicio;
+    }
+    public function getFecha_fin(){
+        return $this->fecha_fin;
+    }
+    public function getMomento_evaluacion_activo_id(){
+        return $this->momento_evaluacion_activo_id;
+    }
+    public function momento_evaluacion_actual(){
         return $this->belongsTo('App\MomentosEvaluacion','momento_evaluacion_activo_id','id');
+    }
+
+    public function setMomento_evaluacion_activo($momento){
+        $this->momento_evaluacion_activo_id = $momento;
+        $this->save();
     }
 
     public function momentos_evaluacion(){
@@ -32,5 +45,35 @@ class PeriodoLectivo extends Model
             PeriodoLectivoMomentoEvaluacion::get_fecha_inicio_field(),
             PeriodoLectivoMomentoEvaluacion::get_fecha_fin_field(),
             PeriodoLectivoMomentoEvaluacion::get_opciones_field() );
+    }
+
+    public function actualizarMomentoEvaluacion(){
+        $fecha_inicio   = $this->getFecha_inicio();
+        $fecha_fin      = $this->getFecha_fin();
+
+        $momentosAsociados = $this->momentos_evaluacion;
+        $fecha_actual = date("m-d-Y H:i:s", strtotime( \Carbon\Carbon::now()));
+        //dd($fecha_actual);
+        foreach($momentosAsociados as $index => $momento){
+            $fecha_inicio_momento   = date("m-d-Y H:i:s",strtotime( $momento->pivot->get_fecha_inicio() ));
+            $fecha_fin_momento      = date("m-d-Y H:i:s",strtotime( $momento->pivot->get_fecha_fin() ));
+
+            if($fecha_actual >= $fecha_inicio_momento && $fecha_actual <= $fecha_fin_momento){
+                $this->setMomento_evaluacion_activo($momento->id);
+                return $this->getMomento_evaluacion_activo_id();
+            }
+        }
+        $this->setMomento_evaluacion_activo(NULL);
+        return $this->getMomento_evaluacion_activo_id();
+    }
+
+    public function cambioMomentoEvaluacion($momentoAnterior, $momentoActualizado){
+        if($momentoActualizado == null){
+            return false;
+        }
+        if($momentoAnterior == $momentoActualizado){
+            return false;
+        }
+        return true;
     }
 }

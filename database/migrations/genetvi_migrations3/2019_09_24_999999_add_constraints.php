@@ -46,7 +46,7 @@ class AddConstraints extends Migration
         });
 
         Schema::table('periodos_lectivos', function ($table) {
-            $table->foreign('momento_evaluacion_activo_id')->references('id')->on('periodos_lectivos_momentos_evaluacion')->onDelete('cascade');
+            $table->foreign('momento_evaluacion_activo_id')->references('id')->on('momentos_evaluacion')->onDelete('cascade');
         });
 
         Schema::table('periodos_lectivos_momentos_evaluacion', function ($table) {
