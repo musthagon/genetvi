@@ -261,25 +261,18 @@
                     element +=      '<div class="input-group date"> ';
                     element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
                     element +=      '       placeholder="Fecha de inicio" ';
-                    element +=      '       value="{{ date("d-m-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_inicio()) ) }}"> ';
+                    element +=      '       value="{{ date("m-d-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_inicio()) ) }}"> ';
                     element +=      '   <span class="input-group-addon"> ';
                     element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
                     element +=      '    </span> ';
                     element +=      '</div> ';
                     element +=      '</td>';
 
-                    //element +=      '<td>';
-                    //element +=          '<input id="fecha_inicio'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[1][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_inicio())->format('Y-m-d') }}" placeholder="Fecha de inicio"/>';
-                    //element +=      '</td>';
-                    //element +=      '<td>';
-                    //element +=          '<input id="fecha_fin'+index+'" class="form-control name_list" type="date" name="momento_evaluacion[2][]" value="{{ \Carbon\Carbon::parse($momentoAsociado->pivot->get_fecha_fin())->format('Y-m-d') }}" placeholder="Fecha de fin"/>';
-                    //element +=      '</td>';
-
                     element +=      '<td>';
                     element +=      '<div class="input-group date"> ';
                     element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
                     element +=      '       placeholder="Fecha de fin" ';
-                    element +=      '       value="{{ date("d-m-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_fin()) ) }}"> ';
+                    element +=      '       value="{{ date("m-d-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_fin()) ) }}"> ';
                     element +=      '   <span class="input-group-addon"> ';
                     element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
                     element +=      '    </span> ';

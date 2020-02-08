@@ -152,23 +152,29 @@ class PeriodoLectivoController extends VoyagerBaseController
             ]); 
         }
         
-        //dd($request);
+        //Actualizamos el formato de las fechas
         $momentos = $request->momento_evaluacion;
-        dd($momentos);
-        foreach($request->momento_evaluacion[1] as $index => $momento){
-            $momento = date("Y-m-d H:i:s", strtotime($momento));
-            $element['momento_evaluacion'][1][$index] = $momento;
-            $request->merge($element);
+        $momentosAux = []; 
+        $momentosAux['momento_evaluacion'][0] = $momentos[0];
+        foreach($momentos[1] as $index => $actual){
+            $momentosAux['momento_evaluacion'][1][$index] = date("Y-m-d H:i:s", strtotime($actual));
+        }
+        foreach($momentos[2] as $index => $actual){
+            $momentosAux['momento_evaluacion'][2][$index] = date("Y-m-d H:i:s", strtotime($actual));
         }  
-        dd($request);
+        $momentosAux['momento_evaluacion'][3] = $momentos[3];  
         
+        //Actualizamos el request
+        $request->merge($momentosAux);
+        $request->merge(["fecha_inicio" => date("Y-m-d H:i:s", strtotime($request->fecha_inicio))]);
+        $request->merge(["fecha_fin"=> date("Y-m-d H:i:s", strtotime($request->fecha_fin))]);
+
         $momentos                     = $request->momento_evaluacion[0];
         $fecha_inicio                 = $request->momento_evaluacion[1];
         $fecha_fin                    = $request->momento_evaluacion[2];
         $opciones                     = $request->momento_evaluacion[3];
-        $periodo_lectivo_fecha_inicio = date("Y-m-d H:i:s", strtotime($request->fecha_inicio));
-        $periodo_lectivo_fecha_fin    = date("Y-m-d H:i:s", strtotime($request->fecha_fin)); ;
-        //dd($fecha_inicio);
+        $periodo_lectivo_fecha_inicio = $request->fecha_inicio;
+        $periodo_lectivo_fecha_fin    = $request->fecha_fin;
 
         //Las fechas deben ser distintas
         if($periodo_lectivo_fecha_inicio == $periodo_lectivo_fecha_fin){
@@ -178,10 +184,8 @@ class PeriodoLectivoController extends VoyagerBaseController
             ]);
         }
         
-
         //Verificamos que no esten repetidas los momentos de evalución
         foreach($momentos as $momentosIndex => $momento){
-
             foreach($momentos as $momentosIndex2 => $momento2){
                 if(($momentosIndex != $momentosIndex2) && $momento == $momento2){
                     return redirect()->back()->with([
@@ -359,6 +363,23 @@ class PeriodoLectivoController extends VoyagerBaseController
                 'alert-type' => 'error',
             ]); 
         }
+
+        //Actualizamos el formato de las fechas
+        $momentos = $request->momento_evaluacion;
+        $momentosAux = []; 
+        $momentosAux['momento_evaluacion'][0] = $momentos[0];
+        foreach($momentos[1] as $index => $actual){
+            $momentosAux['momento_evaluacion'][1][$index] = date("Y-m-d H:i:s", strtotime($actual));
+        }
+        foreach($momentos[2] as $index => $actual){
+            $momentosAux['momento_evaluacion'][2][$index] = date("Y-m-d H:i:s", strtotime($actual));
+        }  
+        $momentosAux['momento_evaluacion'][3] = $momentos[3];  
+        
+        //Actualizamos el request
+        $request->merge($momentosAux);
+        $request->merge(["fecha_inicio" => date("Y-m-d H:i:s", strtotime($request->fecha_inicio))]);
+        $request->merge(["fecha_fin"=> date("Y-m-d H:i:s", strtotime($request->fecha_fin))]);
 
         $momentos                     = $request->momento_evaluacion[0];
         $fecha_inicio                 = $request->momento_evaluacion[1];
