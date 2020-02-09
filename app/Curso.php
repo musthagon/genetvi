@@ -102,7 +102,7 @@ class Curso extends Model
         return $this->belongsToMany('App\User','cursos_participantes','cvucv_curso_id','user_id')->using('App\CursoParticipante');
     }
 
-    public function evaluacionProgreso(){
+    public function getEvaluacionActiva(){
         return $this->evaluacion_activa;
     }
     public function actualizarEvaluacion(bool $value){
