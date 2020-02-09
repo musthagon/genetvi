@@ -5,9 +5,12 @@ namespace App;
 use App\User;
 use App\Evaluacion;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\CommonFunctionsGenetvi; 
+use App\TipoInvitacion;
 class Curso extends Model
 {
+    use CommonFunctionsGenetvi;
+
     /**
      * The table associated with the model.
      *
@@ -117,4 +120,41 @@ class Curso extends Model
     public function getID(){
         return $this->id;
     }
+
+    public function verificarInvitacionesAlMomentoActual($instrumentos_habilitados, $periodo_lectivo, $momento_evaluacion_activo){
+        //Buscamos los participantes
+        $participantes = $this->cvucv_get_participantes_curso($this->getID());
+        
+        foreach($instrumentos_habilitados as $instrumento){
+
+            //El instrumento es de matriculacion automatica
+            if($instrumento->getInvitacionAutomatica()){ 
+                
+                foreach($participantes as $indexParticipante => $participante){
+                    
+                    //Verificamos que el instrumento va a dirigido al usuario
+                    if(isset($participante['roles']) && !empty($participante['roles'])){
+                        
+                            $rolUsuarioCurso = $participante['roles'][0]['roleid'];
+                            
+                            //Verificamos que el instrumento va a dirigido al usuario
+                            if ($instrumento->instrumentoDirigidoaRol($rolUsuarioCurso)){
+                                
+                                //Verificamos que no tenga invitación previa
+                                if(!Invitacion::invitacionPrevia($this->getID(), $instrumento->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $participante['id']) ){
+                                    
+                                    Invitacion::invitarEvaluador($this->getID(), $instrumento->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $participante['id'], TipoInvitacion::getEstatusAutomatica());
+                                }
+                            }
+                        
+                    }
+
+                }
+            }
+        }
+        
+    }
+
+
+
 }

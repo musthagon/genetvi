@@ -95,4 +95,5 @@ class Instrumento extends Model
     public function getInvitacionAutomatica(){
         return $this->invitacion_automatica;
     }
+
 }

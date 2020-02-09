@@ -15,6 +15,9 @@ class PeriodoLectivo extends Model
 
     protected $fillable = ['id', 'nombre', 'descripcion', 'opciones', 'fecha_inicio', 'fecha_fin', 'momento_evaluacion_activo_id','created_at','updated_at'];
 
+    public function getID(){
+        return $this->id;
+    }
     public function getNombre(){
         return $this->nombre;
     }

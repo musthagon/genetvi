@@ -43,15 +43,29 @@ class AdminController extends Controller
         }
     }
     public function checkAccess_ver($curso){//Verifica si tiene acceso a visualizar la categoría del curso
-        $categoria = CategoriaDeCurso::find($curso->cvucv_category_id);
+        $categoria = $curso->categoria;
 
         if(empty($categoria) ){
             return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
         }
+
         $categoriaSuperPadre = $categoria->categoria_raiz;
         
-        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
-            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria, $categoriaSuperPadre->getCVUCV_NAME()]  )) {    
+            return redirect()->back()->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+    }
+    public function checkAccess_HabilitarEvaluacion($curso){//Verifica si tiene acceso a habilitar evaluacion en la categoría del curso
+        $categoria = $curso->categoria;
+
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
+        }
+
+        $categoriaSuperPadre = $categoria->categoria_raiz;
+        
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria, $categoriaSuperPadre->getCVUCV_NAME()]  )) {    
+            return redirect()->back()->with(['message' => "Error, acceso no autorizado para habilitar la evaluación de esta categoría", 'alert-type' => 'error']);
         }
     }
 
@@ -739,86 +753,40 @@ class AdminController extends Controller
     * Para gestionar la evaluacion
     *
     */
-    public function iniciar_evaluacion_curso($id){        
+    public function verificarCurso($id){
         $curso = Curso::find($id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
+        return $curso;
+    }
+    public function iniciar_evaluacion_curso($id){        
+        
+        $curso = $this->verificarCurso($id);
+
+        $this->checkAccess_HabilitarEvaluacion($curso);
+
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
-        $periodo_lectivo            = $categoria_raiz->getPeriodoLectivo();
+        $periodo_lectivo            = $categoria_raiz->periodo_lectivo_actual;
 
-        if (!empty($categoria_raiz) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria,$categoria_raiz->getCVUCV_NAME()]  )) {    
-            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
-        }
-
-        if($instrumentos_habilitados->isEmpty() || ($periodo_lectivo==NULL)){
+        if($instrumentos_habilitados->isEmpty() || ($periodo_lectivo===NULL)){
             return redirect()->back()->with(['message' => "No está habilitada la evaluación para esta facultad/centro o dependencia", 'alert-type' => 'error']);
         }
         
-        $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual();
+        $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
 
-        if($momento_evaluacion_activo==NULL){
-            return redirect()->back()->with(['message' => "No hay momento de evaluación activo para el periodo lectivo ".$periodo_lectivo->getNombre(), 'alert-type' => 'error']);
+        //1. Verificamos a quienes no se les ha enviado invitacion a este momento
+        if($momento_evaluacion_activo!=NULL){
+            $curso->verificarInvitacionesAlMomentoActual($instrumentos_habilitados, $periodo_lectivo, $momento_evaluacion_activo);
         }
 
-        //Buscamos los participantes
-        $participantes = $this->cvucv_get_participantes_curso($curso->id);
-
-        foreach($instrumentos_habilitados as $instrumento){
-            if($instrumento->getInvitacionAutomatica()){ //El instrumento es de matriculacion automatica
-                foreach($participantes as $indexParticipante => $participante){
-
-                    dd('actualizar MVC, momento');
-
-                    //Verificamos que no tenga invitación previa
-                    $invitacionAnterior = Invitacion::invitacionPrevia($curso->id, $instrumento->id, $periodo_lectivo->id, $momento_evaluacion_activo->id, $participante['id']);
-                    
-                    //Si no tiene invitación, hay que crearla
-                    if(empty($invitacionAnterior)){
-
-                        //Verificamos que el instrumento va a dirigido al usuario
-                        if(isset($participante['roles']) && !empty($participante['roles'])){
-
-                            $rolUsuarioCurso = $participante['roles'][0]['roleid'];
-                            
-                            $instrumento_dirigido_usuario = $instrumento->instrumentoDirigidoaRol($rolUsuarioCurso);
-
-                            if($instrumento_dirigido_usuario){
-                                
-                                
-                                $token = Invitacion::generateToken();
-
-                                //se crea la invitacion
-                                $invite = Invitacion::create([
-                                    'token'                 => $token,
-                                    'estatus_invitacion_id' => 1, //Invitacion creada
-                                    'cantidad_recordatorios' => 0, 
-                                    'tipo_invitacion_id'       => 2, //Invitacion automatica
-                                    'instrumento_id'        => $instrumento->id,
-                                    'curso_id'              => $curso->id,
-                                    'periodo_lectivo_id'    => $categoria_raiz->getPeriodoLectivo(),
-                                    'cvucv_user_id'         => $participante['id'],
-                                    /*'usuario_id'            => $token,*/
-                                    
-                                ]);
-                            }
-                        }
-
-                    }else{
-                        $invitacionAnterior->estatus_invitacion_id = 3;
-                        $invitacionAnterior->cantidad_recordatorios += 1;
-                        $invitacionAnterior->save();
-                    }
-                }
-            }
-        }
         //Actualizamos el atributo
         $curso->actualizarEvaluacion(true);
         
-        return redirect()->back()->with(['message' => "Evaluación iniciada", 'alert-type' => 'success']);
+        return redirect()->back()->with(['message' => "Evaluación activada", 'alert-type' => 'success']);
     }
     public function cerrar_evaluacion_curso($id){
         $curso = Curso::find($id);

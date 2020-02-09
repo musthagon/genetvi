@@ -48,6 +48,16 @@ class Kernel extends ConsoleKernel
                 //Deshabilitamos el momento evaluacion anterior
                 //Realizamos las invitaciones al proximo periodo
                 //********************************** */
+                //¿Que pasa con las invitaciones anteriores? Las borramos?
+
+                //1. Buscamos la categoria que tiene este periodo
+                //2. Buscamos los cursos con evaluacion activa
+                //3. Realizamos las invitaciones
+                //4. Correo al profesor del curso 
+                //5. Correo al administrador de la categoria?
+
+                //6. Verificamos instrumentos de invitacion manual
+                
             }
         }
 

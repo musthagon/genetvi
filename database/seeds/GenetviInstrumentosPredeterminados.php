@@ -234,20 +234,22 @@ class GenetviInstrumentosPredeterminados extends Seeder
                     foreach($list_categorias1 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria, ['valor_porcentual'=> $cantidad]);
-                        if(!empty($rol_estudiante)){
-                            $instrumento->roles_dirigido()->attach($rol_estudiante);
-                        }
                         
+                        
+                    }
+                    if(!empty($rol_estudiante)){
+                        $instrumento->roles_dirigido()->attach($rol_estudiante);
                     }
                 }else if($instrumento->nombre == "Evaluación Tecnopedagógica del EVA desde la Visión Docente") {
                     $cantidad = 100/count($list_categorias2);
                     foreach($list_categorias2 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria, ['valor_porcentual'=> $cantidad]);
-                        if(!($roles_docente->isEmpty())){
-                            foreach($roles_docente as $rol){
-                                $instrumento->roles_dirigido()->attach($rol);
-                            }
+                        
+                    }
+                    if(!($roles_docente->isEmpty())){
+                        foreach($roles_docente as $rol){
+                            $instrumento->roles_dirigido()->attach($rol);
                         }
                     }
 

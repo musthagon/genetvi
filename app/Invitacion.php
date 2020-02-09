@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\EstatusInvitacion;
 
 use App\Traits\CommonFunctionsGenetvi; 
 
@@ -23,6 +24,24 @@ class Invitacion extends Model
     'cantidad_recordatorios',
     'created_at',
     'updated_at'];
+
+    public static function create($token, $estatus_invitacion_id, $tipo_invitacion_id, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id, $cantidad_recordatorios)   {
+        $new = new Invitacion();
+
+        $new->token                     = $token;
+        $new->estatus_invitacion_id     = $estatus_invitacion_id;
+        $new->tipo_invitacion_id        = $tipo_invitacion_id;
+        $new->instrumento_id            = $instrumento_id;
+        $new->curso_id                  = $curso_id;
+        $new->periodo_lectivo_id        = $periodo_lectivo_id;
+        $new->momento_evaluacion_id     = $momento_evaluacion_id;
+        $new->cvucv_user_id             = $cvucv_user_id;
+        $new->cantidad_recordatorios    = $cantidad_recordatorios;
+        $new->created_at                = \Carbon\Carbon::now();
+        $new->updated_at                = \Carbon\Carbon::now();
+
+        $new->save();
+    }
 
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');
@@ -85,13 +104,34 @@ class Invitacion extends Model
         return $token;
     }
 
+   
     //Verificamos que no tenga invitación previa
-    public static function invitacionPrevia($curso_id, $instrumento_id, $periodo_lectivo, $momento_evaluacion_id,$participante_id ){
-        return Invitacion::where('cvucv_user_id', $participante_id)
+    public static function invitacionPrevia($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id ){
+        $existe = Invitacion::where('cvucv_user_id', $participante_id)
         ->where('instrumento_id', $instrumento_id)
-        ->where('momento_evaluacion_id', $momento_evaluacion_id)
-        ->where('periodo_lectivo_id', $periodo_lectivo)
+        ->where('momento_evaluacion_id', $momento_evaluacion_activo_id)
+        ->where('periodo_lectivo_id', $periodo_lectivo_id)
         ->where('curso_id', $curso_id)
         ->first();
+
+        if($existe === null){
+            return false;
+        }
+        return true;
+    }
+
+    public static function invitarEvaluador($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id, $tipo_invitacion_id){
+        
+        Invitacion::create(
+            Invitacion::generateToken(), 
+            EstatusInvitacion::getEstatusCreada(),
+            $tipo_invitacion_id,
+            $instrumento_id,
+            $curso_id,
+            $periodo_lectivo_id,
+            $momento_evaluacion_activo_id,
+            $participante_id,
+            1
+        );
     }
 }

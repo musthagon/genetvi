@@ -23,12 +23,20 @@ class GenetviCursosParticipantesTableSeeder extends Seeder
         $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '2']);
         if (!$curso_rol->exists) {
             $curso_rol->fill([
+                    'cvucv_name' => 'Administrador2 del Espacio Virtual',
+                    'cvucv_shortname' => 'manager2',
+                ])->save();
+        }
+
+        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '3']);
+        if (!$curso_rol->exists) {
+            $curso_rol->fill([
                     'cvucv_name' => 'Profesor editor',
                     'cvucv_shortname' => 'editingteacher',
                 ])->save();
         }
 
-        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '3']);
+        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '4']);
         if (!$curso_rol->exists) {
             $curso_rol->fill([
                     'cvucv_name' => 'Profesor Sin Permisos de Edición',
@@ -36,7 +44,7 @@ class GenetviCursosParticipantesTableSeeder extends Seeder
                 ])->save();
         }
 
-        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '4']);
+        $curso_rol = CursoParticipanteRol::firstOrNew(['id' => '5']);
         if (!$curso_rol->exists) {
             $curso_rol->fill([
                     'cvucv_name' => 'Estudiante',
