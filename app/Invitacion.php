@@ -87,6 +87,12 @@ class Invitacion extends Model
         }
         $this->save();
     }
+    public function actualizar_estatus_recordatorio_enviado(){
+        $this->estatus_invitacion_id = 3;
+        $this->cantidad_recordatorios += 1;
+        $this->save();
+    }
+
 
     public function getID(){
         return $this->id;
@@ -133,5 +139,24 @@ class Invitacion extends Model
             $participante_id,
             1
         );
+    }
+
+    public static function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico
+        $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
+        <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
+
+        return $message;
+    }
+
+    public static function confirmarMensaje($response){
+
+        if(isset($response[0]['msgid'])){
+            if($response[0]['msgid'] == -1){
+                return false;
+            }
+        }elseif(empty($response)){
+            return false;
+        }
+        return true;
     }
 }

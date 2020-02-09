@@ -205,7 +205,7 @@ trait CommonFunctionsGenetvi
      * Perfil de usuario en el Campus
      *
      */
-    public function cvucv_get_profile($field='id',$cvucv_user_id)
+    public function cvucv_get_profile($cvucv_user_id, $field ='id')
     {
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
         $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);

@@ -860,20 +860,15 @@ class AdminController extends Controller
         }
 
         //Enviamos la invitacion
-        $message = $this->messageTemplate($invitacionAnterior->user_profile(), $curso, $invitacionAnterior->token);
+        $message =  Invitacion::messageTemplate($invitacionAnterior->user_profile(), $curso, $invitacionAnterior->token);
         $response = $this->cvucv_send_instant_message($invitacionAnterior->cvucv_user_id, $message, 1);
 
-        if(isset($response[0]['msgid'])){
-            if($response[0]['msgid'] == -1){
-                return redirect()->back()->with(['message' => "Error para enviar recordatorio, intente luego", 'alert-type' => 'error']);
-            }
+        if(!Invitacion::confirmarMensaje($response)){
+            return redirect()->back()->with(['message' => "Error para enviar recordatorio", 'alert-type' => 'error']);
         }
 
         //Actualizamos
-        $invitacionAnterior->estatus_invitacion_id = 3;
-        $invitacionAnterior->cantidad_recordatorios += 1;
-        $invitacionAnterior->save();
-        
+        $invitacionAnterior->actualizar_estatus_recordatorio_enviado();
         
         return redirect()->back()->with(['message' => "Recordatorio enviado", 'alert-type' => 'success']);
     }
@@ -954,13 +949,7 @@ class AdminController extends Controller
 
         return redirect()->back()->with(['message' => $total_invitacion." Usuarios invitados", 'alert-type' => 'success']);
     }
-    public function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico
-        $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
-        <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
-
-        return $message;
-    }
-
+    
     
     
 }
