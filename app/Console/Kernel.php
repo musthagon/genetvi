@@ -55,6 +55,9 @@ class Kernel extends ConsoleKernel
             }
         }
 
+        $periodo = PeriodoLectivo::where('id',1)->first();
+
+        $periodo->invitacionMasivaAutomatica();
     }
     /**
      * Register the commands for the application.

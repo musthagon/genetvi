@@ -92,10 +92,13 @@ class PeriodoLectivo extends Model
         $momento_evaluacion_activo = $this->momento_evaluacion_actual;
 
         foreach($categorias as $index => $categoria){
+
             $categoria_raiz             = $categoria->categoria_raiz;
             $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+            $cursos                     = $categoria->cursos;
             //1. Buscamos la categoria que tiene este periodo
-            foreach($categoria->cursos as $cursoIndex => $curso){
+            foreach($cursos  as $cursoIndex => $curso){
+                dd('a');
                 //2. Buscamos los cursos con evaluacion activa
                 if($curso->getEvaluacionActiva()){
                     //Buscamos los participantes

@@ -35,18 +35,14 @@ class CategoriaDeCurso extends Model
     }
 
     public function cursos(){
-        return $this->hasMany('App\Curso','categoria_id','id');
+        return $this->hasMany('App\Curso','cvucv_category_id','id');
     }
 
     public function instrumentos_habilitados(){
         return $this->belongsToMany('App\Instrumento','instrumentos_habilitados','categoria_id','instrumento_id')->using('App\InstrumentosHabilitados');
     }
     public function categoria_raiz(){
-        if($this->cvucv_category_super_parent_id == NULL){
-            return $this;
-        }
         return $this->belongsTo('App\CategoriaDeCurso','cvucv_category_super_parent_id','id');
-
     }
 
     public function disponible_para_evaluar(){
