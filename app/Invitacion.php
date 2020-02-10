@@ -113,11 +113,11 @@ class Invitacion extends Model
    
     //Verificamos que no tenga invitación previa
     public static function invitacionPrevia($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id ){
-        $existe = Invitacion::where('cvucv_user_id', $participante_id)
-        ->where('instrumento_id', $instrumento_id)
+        $existe = Invitacion::where('instrumento_id', $instrumento_id)
         ->where('momento_evaluacion_id', $momento_evaluacion_activo_id)
         ->where('periodo_lectivo_id', $periodo_lectivo_id)
         ->where('curso_id', $curso_id)
+        ->where('cvucv_user_id', $participante_id)
         ->first();
 
         if($existe === null){

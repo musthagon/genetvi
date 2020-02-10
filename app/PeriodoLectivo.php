@@ -112,11 +112,14 @@ class PeriodoLectivo extends Model
                                     //Verificamos que el instrumento va a dirigido al usuario
                                     if ($instrumento->instrumentoDirigidoaRol($rolUsuarioCurso)){
                                         //3. Realizamos las invitaciones si no tiene
-                                        if(!Invitacion::invitacionPrevia($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id']) ){                 
+                                        if(!Invitacion::invitacionPrevia($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id']) ){   
+                                            dd('ye');          
                                             Invitacion::invitarEvaluador($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id'], TipoInvitacion::getEstatusAutomatica());
                                         }
+                                        dd('nouuu'); 
                                         //4. Enviamos el mensaje de invitacion
                                     }
+
                                 }
                             }
                         

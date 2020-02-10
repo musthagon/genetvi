@@ -25,8 +25,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule){
 
-        //echo date("m-d-Y H:i:s", strtotime( \Carbon\Carbon::now()));
-        //echo " ";
+        echo date("m-d-Y H:i:s", strtotime( \Carbon\Carbon::now()));
+        echo " ";
 
         $schedule->call(function () {
             $this->actualizar_periodos_lectivos();
@@ -43,8 +43,8 @@ class Kernel extends ConsoleKernel
             
             $momento_evaluacion1 = $periodo->getMomento_evaluacion_activo_id();
             $momento_evaluacion2 = $periodo->actualizarMomentoEvaluacion();
-            if($periodo->cambioMomentoEvaluacion($momento_evaluacion1, $momento_evaluacion2)){
-                echo "Periodo: ".$periodo->id." invitacion masiva ";
+            //if($periodo->cambioMomentoEvaluacion($momento_evaluacion1, $momento_evaluacion2)){
+             //   echo "Periodo: ".$periodo->id." invitacion masiva ";
                 //Deshabilitamos el momento evaluacion anterior
                 //Realizamos las invitaciones al proximo periodo
                 //********************************** */
@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
 
                 $periodo->invitacionMasivaAutomatica();
                 
-            }
+            //}
         }
 
     }
