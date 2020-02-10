@@ -11,6 +11,7 @@ use App\Evaluacion;
 use App\Categoria;
 use App\Indicador;
 use App\Invitacion;
+use App\TipoInvitacion;
 use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -904,15 +905,17 @@ class AdminController extends Controller
         if(!isset($request->instrumentos_manuales)){
             return redirect()->back()->with(['message' => "No ha seleccionado ningún instrumento", 'alert-type' => 'error']);
         }
+
         $curso = Curso::find($id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        $instrumentos = $request->instrumentos_manuales;
-        $usuarios = $request->users;
-        $total_invitacion = 0 ;
+        $instrumentos       = $request->instrumentos_manuales;
+        $usuarios           = $request->users;
+        $total_invitacion   = 0 ;
+
         foreach($instrumentos as $instrumentoIndex => $instrumento){
 
             $instrumentoActual = Instrumento::find($instrumento);
@@ -925,24 +928,14 @@ class AdminController extends Controller
 
             foreach($usuarios as $usuarioIndex => $usuario){
 
+                $periodo_lectivo = $curso->periodo_lectivo_actual();
+                $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
 
-                do {
-                    //generate a random string using Laravel's str_random helper
-                    $token = str_random();
-                } //verificamos que el token no exista
-                while (Invitacion::where('token', $token)->first());
+                if(!Invitacion::invitacionPrevia($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $usuario) ){
 
-                //se crea la invitacion
-                Invitacion::create([
-                    'token'                     => $token,
-                    'estatus_invitacion_id'     => 1, //Invitacion creada
-                    'cantidad_recordatorios'    => 0, 
-                    'tipo_invitacion_id'        => 1, //Invitacion automatica
-                    'instrumento_id'            => $instrumentoActual->id,
-                    'curso_id'                  => $curso->id,
-                    'periodo_lectivo_id'        => $curso->periodo_lectivo_actual()->id,
-                    'cvucv_user_id'             => $usuario                    
-                ]);
+                    //se crea la invitacion
+                    Invitacion::invitarEvaluador($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $usuario, TipoInvitacion::getEstatusManual());
+                }
 
             }
             $total_invitacion = ($instrumentoIndex + 1)*($usuarioIndex + 1);

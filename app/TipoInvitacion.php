@@ -12,6 +12,9 @@ class TipoInvitacion extends Model
     public static function getEstatusAutomatica(){
         return TipoInvitacion::where('nombre','automática')->first()->getID();
     }
+    public static function getEstatusManual(){
+        return TipoInvitacion::where('nombre','manual')->first()->getID();
+    }
     public function getID(){
         return $this->id;
     }
