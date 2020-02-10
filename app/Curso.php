@@ -126,7 +126,6 @@ class Curso extends Model
         $participantes = $this->cvucv_get_participantes_curso($this->getID());
         
         foreach($instrumentos_habilitados as $instrumento){
-
             //El instrumento es de matriculacion automatica
             if($instrumento->getInvitacionAutomatica()){ 
                 

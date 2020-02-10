@@ -98,7 +98,6 @@ class PeriodoLectivo extends Model
             $cursos                     = $categoria->cursos;
             //1. Buscamos la categoria que tiene este periodo
             foreach($cursos  as $cursoIndex => $curso){
-                dd('a');
                 //2. Buscamos los cursos con evaluacion activa
                 if($curso->getEvaluacionActiva()){
                     //Buscamos los participantes

@@ -187,7 +187,7 @@ class AdminController extends Controller
 
                 $nueva_categoria->id                         = $categoria['id'];
                 $nueva_categoria->cvucv_category_parent_id   = $categoria['parent'];
-                if(isset($request->categoria_raiz) && $categoria['id'] != $id ){
+                if(isset($request->categoria_raiz)){
                     $nueva_categoria->cvucv_category_super_parent_id   = $id;
                 }
                 $nueva_categoria->cvucv_name                 = $categoria['name'];
@@ -779,6 +779,7 @@ class AdminController extends Controller
         $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
 
         //1. Verificamos a quienes no se les ha enviado invitacion a este momento
+
         if($momento_evaluacion_activo!=NULL){
             $curso->verificarInvitacionesAlMomentoActual($instrumentos_habilitados, $periodo_lectivo, $momento_evaluacion_activo);
         }
