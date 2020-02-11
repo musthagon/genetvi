@@ -44,6 +44,9 @@ class CategoriaDeCurso extends Model
     public function categoria_raiz(){
         return $this->belongsTo('App\CategoriaDeCurso','cvucv_category_super_parent_id','id');
     }
+    public function categoria_raiz_hijos(){
+        return $this->hasMany('App\CategoriaDeCurso','cvucv_category_super_parent_id','id');
+    }
 
     public function disponible_para_evaluar(){
 

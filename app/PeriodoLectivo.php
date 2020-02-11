@@ -91,49 +91,52 @@ class PeriodoLectivo extends Model
         $categorias = $this->categorias;
         $momento_evaluacion_activo = $this->momento_evaluacion_actual;
 
-        foreach($categorias as $index => $categoria){
+        foreach($categorias as $index => $categoriaPrincipal){
 
-            $categoria_raiz             = $categoria->categoria_raiz;
+            $categoria_raiz             = $categoriaPrincipal->categoria_raiz;
             $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
-            $cursos                     = $categoria->cursos;
-            //1. Buscamos la categoria que tiene este periodo
-            foreach($cursos  as $cursoIndex => $curso){
-                //2. Buscamos los cursos con evaluacion activa
-                if($curso->getEvaluacionActiva()){
-                    //Buscamos los participantes
-                    $participantes = $this->cvucv_get_participantes_curso($this->getID());
-                    foreach($instrumentos_habilitados as $instrumentoIndex => $instrumento){
-                        //El instrumento es de matriculacion automatica
-                        if($instrumento->getInvitacionAutomatica()){ 
-                            foreach($participantes as $indexParticipante => $participante){
-                                //Verificamos que el instrumento va a dirigido al usuario
-                                if(isset($participante['roles']) && !empty($participante['roles'])){
-                                    $rolUsuarioCurso = $participante['roles'][0]['roleid'];
+            $categorias_raiz_hijas      = $categoria_raiz->categoria_raiz_hijos;
+            foreach($categorias_raiz_hijas  as $index2 => $categoria){
+                $cursos                     = $categoria->cursos;
+                //1. Buscamos la categoria que tiene este periodo
+                foreach($cursos  as $cursoIndex => $curso){
+                    //2. Buscamos los cursos con evaluacion activa
+                    if($curso->getEvaluacionActiva()){
+                        //Buscamos los participantes
+                        $participantes = $this->cvucv_get_participantes_curso($curso->getID());
+                        foreach($instrumentos_habilitados as $instrumentoIndex => $instrumento){
+                            //El instrumento es de matriculacion automatica
+                            if($instrumento->getInvitacionAutomatica()){ 
+                                foreach($participantes as $indexParticipante => $participante){
                                     //Verificamos que el instrumento va a dirigido al usuario
-                                    if ($instrumento->instrumentoDirigidoaRol($rolUsuarioCurso)){
-                                        //3. Realizamos las invitaciones si no tiene
-                                        if(!Invitacion::invitacionPrevia($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id']) ){   
-                                            dd('ye');          
-                                            Invitacion::invitarEvaluador($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id'], TipoInvitacion::getEstatusAutomatica());
+                                    if(isset($participante['roles']) && !empty($participante['roles'])){
+                                        $rolUsuarioCurso = $participante['roles'][0]['roleid'];
+                                        //Verificamos que el instrumento va a dirigido al usuario
+                                        if ($instrumento->instrumentoDirigidoaRol($rolUsuarioCurso)){
+                                            //3. Realizamos las invitaciones si no tiene
+                                            if(!Invitacion::invitacionPrevia($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id']) ){   
+                                                //dd('ye');          
+                                                Invitacion::invitarEvaluador($curso->getID(), $instrumento->getID(), $this->getID(), $momento_evaluacion_activo->getID(), $participante['id'], TipoInvitacion::getEstatusAutomatica());
+                                            }
+                                            //dd('nouuu'); 
+                                            //4. Enviamos el mensaje de invitacion
                                         }
-                                        dd('nouuu'); 
-                                        //4. Enviamos el mensaje de invitacion
-                                    }
 
+                                    }
                                 }
+                            
                             }
-                        
+                            
                         }
                         
+                        
+
+                        
+                        //4. Correo al profesor del curso 
+                        //5. Correo al administrador de la categoria?
+
+                        //6. Verificamos instrumentos de invitacion manual
                     }
-                    
-                    
-
-                    
-                    //4. Correo al profesor del curso 
-                    //5. Correo al administrador de la categoria?
-
-                    //6. Verificamos instrumentos de invitacion manual
                 }
             }
         }
