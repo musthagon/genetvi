@@ -17,7 +17,7 @@ class CursoParticipanteRol extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id', 'cvucv_name', 'cvucv_shortname'];
+    protected $fillable = ['id', 'cvucv_name', 'cvucv_shortname','created_at','updated_at'];
 
     public function cursos(){
         return $this->hasMany('App\Curso','categoria_id','id');

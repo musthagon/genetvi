@@ -5,9 +5,12 @@ namespace App;
 use App\User;
 use App\Evaluacion;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\CommonFunctionsGenetvi; 
+use App\TipoInvitacion;
 class Curso extends Model
 {
+    use CommonFunctionsGenetvi;
+
     /**
      * The table associated with the model.
      *
@@ -19,7 +22,7 @@ class Curso extends Model
 
     public $incrementing = false;
 
-    protected $fillable = ['id', 'cvucv_shortname', 'cvucv_category_id', 'cvucv_fullname', 'cvucv_displayname', 'cvucv_summary', 'cvucv_link', 'cvucv_visible', 'evaluacion_activa'];
+    protected $fillable = ['id', 'cvucv_shortname', 'cvucv_category_id', 'cvucv_fullname', 'cvucv_displayname', 'cvucv_summary', 'cvucv_link', 'cvucv_visible', 'evaluacion_activa','created_at','updated_at'];
 
     public static function existe_curso($cvucv_course_id){
         return Curso::query()
@@ -99,7 +102,7 @@ class Curso extends Model
         return $this->belongsToMany('App\User','cursos_participantes','cvucv_curso_id','user_id')->using('App\CursoParticipante');
     }
 
-    public function evaluacionProgreso(){
+    public function getEvaluacionActiva(){
         return $this->evaluacion_activa;
     }
     public function actualizarEvaluacion(bool $value){
@@ -117,4 +120,40 @@ class Curso extends Model
     public function getID(){
         return $this->id;
     }
+
+    public function verificarInvitacionesAlMomentoActual($instrumentos_habilitados, $periodo_lectivo, $momento_evaluacion_activo){
+        //Buscamos los participantes
+        $participantes = $this->cvucv_get_participantes_curso($this->getID());
+        
+        foreach($instrumentos_habilitados as $instrumento){
+            //El instrumento es de matriculacion automatica
+            if($instrumento->getInvitacionAutomatica()){ 
+                
+                foreach($participantes as $indexParticipante => $participante){
+                    
+                    //Verificamos que el instrumento va a dirigido al usuario
+                    if(isset($participante['roles']) && !empty($participante['roles'])){
+                        
+                            $rolUsuarioCurso = $participante['roles'][0]['roleid'];
+                            
+                            //Verificamos que el instrumento va a dirigido al usuario
+                            if ($instrumento->instrumentoDirigidoaRol($rolUsuarioCurso)){
+                                
+                                //Verificamos que no tenga invitación previa
+                                if(!Invitacion::invitacionPrevia($this->getID(), $instrumento->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $participante['id']) ){
+                                    
+                                    Invitacion::invitarEvaluador($this->getID(), $instrumento->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $participante['id'], TipoInvitacion::getEstatusAutomatica());
+                                }
+                            }
+                        
+                    }
+
+                }
+            }
+        }
+        
+    }
+
+
+
 }

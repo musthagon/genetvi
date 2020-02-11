@@ -13,5 +13,5 @@ class InstrumentoCursoParticipanteRol extends Pivot
      */
     protected $table = 'instrumentos_cursos_participantes_roles';
 
-    protected $fillable = ['id', 'curso_participante_rol_id', 'instrumento_id'];
+    protected $fillable = ['id', 'curso_participante_rol_id', 'instrumento_id','created_at','updated_at'];
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instrumento extends Model
 {
-    protected $fillable = ['id','nombre','nombre_corto','descripcion','habilitar','anonimo','puede_rechazar','opciones','invitacion_automatica'];
+    protected $fillable = ['id','nombre','nombre_corto','descripcion','habilitar','anonimo','puede_rechazar','opciones','invitacion_automatica','created_at','updated_at'];
     /**
      * The table associated with the model.
      *
@@ -91,4 +91,9 @@ class Instrumento extends Model
     public function getID(){
         return $this->id;
     }
+
+    public function getInvitacionAutomatica(){
+        return $this->invitacion_automatica;
+    }
+
 }

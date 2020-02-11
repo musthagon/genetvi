@@ -15,6 +15,7 @@
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "nahid/jsonq": "^5.2",
+        "orangehill/iseed": "^2.6",
         "tcg/voyager": "^1.2",
         "yajra/laravel-datatables-oracle": "~8.0"
     },

@@ -50,7 +50,7 @@ Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
  
     // Your overwrites here
-    //Route::post('login', ['uses' => 'Voyager\MyAuthController@postLogin', 'as' => 'postlogin']);
+    //Route::post('login', ['uses' => 'Voyager\VoyagerAuthController@postLogin', 'as' => 'postlogin']);
 
     Route::get('instrumentos/{id}/constructor', 'Voyager\InstrumentoController@constructor')->name('instrumentos.constructor');
 

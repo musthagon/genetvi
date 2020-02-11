@@ -11,6 +11,7 @@ use App\Evaluacion;
 use App\Categoria;
 use App\Indicador;
 use App\Invitacion;
+use App\TipoInvitacion;
 use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -22,6 +23,9 @@ use App\Traits\CommonFunctionsGenetvi;
 class AdminController extends Controller
 {
     use CommonFunctionsGenetvi;
+    protected $permissionHabilitarEvaluacionCategoria = "habilitar_evaluacion_";
+    protected $permissionVerCategoria = "ver_";
+    protected $permissionSincronizarCategoria = "sincronizar_";
     /**
      * Create a new controller instance.
      *
@@ -40,15 +44,29 @@ class AdminController extends Controller
         }
     }
     public function checkAccess_ver($curso){//Verifica si tiene acceso a visualizar la categoría del curso
-        $categoria = CategoriaDeCurso::find($curso->cvucv_category_id);
+        $categoria = $curso->categoria;
 
         if(empty($categoria) ){
             return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
         }
+
         $categoriaSuperPadre = $categoria->categoria_raiz;
         
-        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
-            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria, $categoriaSuperPadre->getCVUCV_NAME()]  )) {    
+            return redirect()->back()->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+    }
+    public function checkAccess_HabilitarEvaluacion($curso){//Verifica si tiene acceso a habilitar evaluacion en la categoría del curso
+        $categoria = $curso->categoria;
+
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
+        }
+
+        $categoriaSuperPadre = $categoria->categoria_raiz;
+        
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria, $categoriaSuperPadre->getCVUCV_NAME()]  )) {    
+            return redirect()->back()->with(['message' => "Error, acceso no autorizado para habilitar la evaluación de esta categoría", 'alert-type' => 'error']);
         }
     }
 
@@ -67,7 +85,7 @@ class AdminController extends Controller
 
             $categorias = collect();
             foreach($categorias_padre as $data){
-                if (Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$data['name']]  )) {                  
+                if (Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$data['name']]  )) {                  
                     $categorias[] = CategoriaDeCurso::create($data['id'],$data['parent'],$data['name'],$data['description'],$data['coursecount'],$data['visible'],$data['depth'],$data['path']);
                 }
             }  
@@ -76,7 +94,7 @@ class AdminController extends Controller
             if(empty($categorias_padre) || $categorias->isEmpty()){
                 $categoriasDB = CategoriaDeCurso::where('cvucv_category_parent_id', $id)->get();
                 foreach($categoriasDB as $categoria){
-                    if (Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoria->cvucv_name]  )) {    
+                    if (Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoria->getCVUCV_NAME()]  )) {    
                         $categorias[] = $categoria;
                     }
                 }
@@ -96,7 +114,7 @@ class AdminController extends Controller
                     $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
                 }
                 
-                if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['ver_',$categoriaSuperPadre->cvucv_name]  )) {    
+                if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                     return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
                 }
             }
@@ -115,7 +133,6 @@ class AdminController extends Controller
             }
             
             $cursos = Curso::where('cvucv_category_id', $id)->get();
-            
             if(!$cursos->isEmpty()){
                 return view('vendor.voyager.gestion.index',compact('categorias','cursos','wstoken'));
             }else{
@@ -144,7 +161,7 @@ class AdminController extends Controller
                 $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
             }
             
-            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoriaSuperPadre->cvucv_name]  )) {    
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionSincronizarCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                 return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
             }
         }
@@ -171,7 +188,7 @@ class AdminController extends Controller
 
                 $nueva_categoria->id                         = $categoria['id'];
                 $nueva_categoria->cvucv_category_parent_id   = $categoria['parent'];
-                if(isset($request->categoria_raiz) && $categoria['id'] != $id ){
+                if(isset($request->categoria_raiz)){
                     $nueva_categoria->cvucv_category_super_parent_id   = $id;
                 }
                 $nueva_categoria->cvucv_name                 = $categoria['name'];
@@ -255,8 +272,6 @@ class AdminController extends Controller
      * 
      */
     public function gestionar_evaluacion_categoria($id){
-        /*$categoria = CategoriaDeCurso::find($id);*/
-
         //Tienen acceso?
         $categoria = CategoriaDeCurso::where('id', $id)->first();
         if(!empty($categoria) ){
@@ -266,7 +281,7 @@ class AdminController extends Controller
                 $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
             }
             
-            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', ['habilitar_evaluacion_',$categoriaSuperPadre->cvucv_name]  )) {    
+            if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                 return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
             }
         }
@@ -281,7 +296,7 @@ class AdminController extends Controller
 
         //Va a editarla ?
         $edit = false;
-        if(!is_null($categoria->periodo_lectivo) ){
+        if(!is_null($categoria->getPeriodoLectivo()) ){
             $edit = true;
         }
 
@@ -314,17 +329,40 @@ class AdminController extends Controller
         if($categoria->cvucv_category_parent_id != 0){
             return redirect()->back()->with(['message' => "No es una categoría principal", 'alert-type' => 'error']);
         }
-        $categoria->periodo_lectivo = $request->periodo_lectivo;
-        $categoria->save();
+        
+        $categoria->setPeriodoLectivo($request->periodo_lectivo);
 
-        foreach($request->instrumentos as $instrumento){
-            if($instrumento == 'null'){
-                $categoria->instrumentos_habilitados()->detach();
-                break;
-            }else{
+        if (!isset($request->instrumentos)){
+            $categoria->instrumentos_habilitados()->detach();
+        }else{
+            foreach($request->instrumentos as $instrumento){
+                if($instrumento == 'null'){
+                    $categoria->instrumentos_habilitados()->detach();
+                    break;
+                }else{
+                    $categoria->instrumentos_habilitados()->attach($instrumento);
+                }
+            }
+        }
+
+
+        if (!isset($request->instrumentos)){
+            $categoria->instrumentos_habilitados()->detach();
+        }else{
+            foreach($request->instrumentos as $instrumentoRequest){
+                if($instrumento == 'null'){
+                    $categoria->instrumentos_habilitados()->detach();
+                    break;
+                }
+                $instrumento = Instrumento::find($instrumentoRequest);
+                if(empty($instrumento)){
+                    return redirect()->back()->with(['message' => "El instrumento ya no existe, intente actualizar la página", 'alert-type' => 'error']);
+                }
                 $categoria->instrumentos_habilitados()->attach($instrumento);
             }
         }
+
+
         
         return redirect()->route('gestion.evaluaciones')->with(['message' => "Instrumentos habilitados para esta categoría", 'alert-type' => 'success']);
 
@@ -345,9 +383,8 @@ class AdminController extends Controller
         if($categoria->cvucv_category_parent_id != 0){
             return redirect()->back()->with(['message' => "No es una categoría principal", 'alert-type' => 'error']);
         }
-        if($categoria->periodo_lectivo != $request->periodo_lectivo){
-            $categoria->periodo_lectivo = $request->periodo_lectivo;
-            $categoria->save();
+        if($categoria->getPeriodoLectivo() != $request->periodo_lectivo){
+            $categoria->setPeriodoLectivo($request->periodo_lectivo);
         }
 
         // Detach all roles from the categoria...
@@ -717,79 +754,41 @@ class AdminController extends Controller
     * Para gestionar la evaluacion
     *
     */
-    public function iniciar_evaluacion_curso($id){        
+    public function verificarCurso($id){
         $curso = Curso::find($id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
+        return $curso;
+    }
+    public function iniciar_evaluacion_curso($id){        
+        
+        $curso = $this->verificarCurso($id);
+
+        $this->checkAccess_HabilitarEvaluacion($curso);
+
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+        $periodo_lectivo            = $categoria_raiz->periodo_lectivo_actual;
 
-        if($instrumentos_habilitados->isEmpty() || ($categoria_raiz->periodo_lectivo==NULL)){
+        if($instrumentos_habilitados->isEmpty() || ($periodo_lectivo===NULL)){
             return redirect()->back()->with(['message' => "No está habilitada la evaluación para esta facultad/centro o dependencia", 'alert-type' => 'error']);
         }
-
-        //Buscamos los participantes
-        $participantes = $this->cvucv_get_participantes_curso($curso->id);
-
-        foreach($instrumentos_habilitados as $instrumento){
-            if($instrumento->invitacion_automatica){ //El instrumento es de matriculacion automatica
-                foreach($participantes as $indexParticipante => $participante){
-
-                    //Verificamos que no tenga invitación previa
-                    $invitacionAnterior = Invitacion::where('curso_id', $curso->id)
-                    ->where('periodo_lectivo_id', $categoria_raiz->periodo_lectivo)
-                    ->where('cvucv_user_id', $participante['id'])
-                    ->where('instrumento_id', $instrumento->id)
-                    ->first();
-
-                    //Si no tiene invitación, hay que crearla
-                    if(empty($invitacionAnterior)){
-
-                        //Verificamos que el instrumento va a dirigido al usuario
-                        if(isset($participante['roles']) && !empty($participante['roles'])){
-
-                            $rolUsuarioCurso = $participante['roles'][0]['roleid'];
-                            
-                            $instrumento_dirigido_usuario = $instrumento->instrumentoDirigidoaRol($rolUsuarioCurso);
-
-                            if($instrumento_dirigido_usuario){
-                                do {
-                                    //generate a random string using Laravel's str_random helper
-                                    $token = str_random();
-                                } //verificamos que el token no exista
-                                while (Invitacion::where('token', $token)->first());
         
-                                //se crea la invitacion
-                                $invite = Invitacion::create([
-                                    'token'                 => $token,
-                                    'estatus_invitacion_id' => 1, //Invitacion creada
-                                    'cantidad_recordatorios' => 0, 
-                                    'tipo_invitacion_id'       => 2, //Invitacion automatica
-                                    'instrumento_id'        => $instrumento->id,
-                                    'curso_id'              => $curso->id,
-                                    'periodo_lectivo_id'    => $categoria_raiz->periodo_lectivo,
-                                    'cvucv_user_id'         => $participante['id'],
-                                    /*'usuario_id'            => $token,*/
-                                    
-                                ]);
-                            }
-                        }
+        $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
 
-                    }else{
-                        $invitacionAnterior->estatus_invitacion_id = 3;
-                        $invitacionAnterior->cantidad_recordatorios += 1;
-                        $invitacionAnterior->save();
-                    }
-                }
-            }
+        //1. Verificamos a quienes no se les ha enviado invitacion a este momento
+
+        if($momento_evaluacion_activo!=NULL){
+            $curso->verificarInvitacionesAlMomentoActual($instrumentos_habilitados, $periodo_lectivo, $momento_evaluacion_activo);
         }
+
         //Actualizamos el atributo
         $curso->actualizarEvaluacion(true);
         
-        return redirect()->back()->with(['message' => "Evaluación iniciada", 'alert-type' => 'success']);
+        return redirect()->back()->with(['message' => "Evaluación activada", 'alert-type' => 'success']);
     }
     public function cerrar_evaluacion_curso($id){
         $curso = Curso::find($id);
@@ -832,7 +831,7 @@ class AdminController extends Controller
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
         $instrumentos_manuales = [];
         foreach($instrumentos_habilitados as $instrumento){
-            if(!$instrumento->invitacion_automatica){ //Instrumentos de matriculacion manual
+            if(!$instrumento->getInvitacionAutomatica()){ //Instrumentos de matriculacion manual
                 array_push($instrumentos_manuales, $instrumento);
             }
             
@@ -863,20 +862,15 @@ class AdminController extends Controller
         }
 
         //Enviamos la invitacion
-        $message = $this->messageTemplate($invitacionAnterior->user_profile(), $curso, $invitacionAnterior->token);
+        $message =  Invitacion::messageTemplate($invitacionAnterior->user_profile(), $curso, $invitacionAnterior->token);
         $response = $this->cvucv_send_instant_message($invitacionAnterior->cvucv_user_id, $message, 1);
 
-        if(isset($response[0]['msgid'])){
-            if($response[0]['msgid'] == -1){
-                return redirect()->back()->with(['message' => "Error para enviar recordatorio, intente luego", 'alert-type' => 'error']);
-            }
+        if(!Invitacion::confirmarMensaje($response)){
+            return redirect()->back()->with(['message' => "Error para enviar recordatorio", 'alert-type' => 'error']);
         }
 
         //Actualizamos
-        $invitacionAnterior->estatus_invitacion_id = 3;
-        $invitacionAnterior->cantidad_recordatorios += 1;
-        $invitacionAnterior->save();
-        
+        $invitacionAnterior->actualizar_estatus_recordatorio_enviado();
         
         return redirect()->back()->with(['message' => "Recordatorio enviado", 'alert-type' => 'success']);
     }
@@ -911,45 +905,37 @@ class AdminController extends Controller
         if(!isset($request->instrumentos_manuales)){
             return redirect()->back()->with(['message' => "No ha seleccionado ningún instrumento", 'alert-type' => 'error']);
         }
+
         $curso = Curso::find($id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        $instrumentos = $request->instrumentos_manuales;
-        $usuarios = $request->users;
-        $total_invitacion = 0 ;
+        $instrumentos       = $request->instrumentos_manuales;
+        $usuarios           = $request->users;
+        $total_invitacion   = 0 ;
+
         foreach($instrumentos as $instrumentoIndex => $instrumento){
 
             $instrumentoActual = Instrumento::find($instrumento);
             if(empty($instrumentoActual)){
                 return redirect()->back()->with(['message' => "Uno de los instrumentos seleccionados no existe", 'alert-type' => 'error']);
             }
-            if($instrumentoActual->invitacion_automatica){
-                return redirect()->back()->with(['message' => "El instrumento: ".$instrumentoActual->nombre." no es válido", 'alert-type' => 'error']);
+            if($instrumentoActual->getInvitacionAutomatica()){
+                return redirect()->back()->with(['message' => "El instrumento: ".$instrumentoActual->nombre." no permite la invitación manual", 'alert-type' => 'error']);
             }
 
             foreach($usuarios as $usuarioIndex => $usuario){
 
+                $periodo_lectivo = $curso->periodo_lectivo_actual();
+                $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
 
-                do {
-                    //generate a random string using Laravel's str_random helper
-                    $token = str_random();
-                } //verificamos que el token no exista
-                while (Invitacion::where('token', $token)->first());
+                if(!Invitacion::invitacionPrevia($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $usuario) ){
 
-                //se crea la invitacion
-                Invitacion::create([
-                    'token'                     => $token,
-                    'estatus_invitacion_id'     => 1, //Invitacion creada
-                    'cantidad_recordatorios'    => 0, 
-                    'tipo_invitacion_id'        => 1, //Invitacion automatica
-                    'instrumento_id'            => $instrumentoActual->id,
-                    'curso_id'                  => $curso->id,
-                    'periodo_lectivo_id'        => $curso->periodo_lectivo_actual()->id,
-                    'cvucv_user_id'             => $usuario                    
-                ]);
+                    //se crea la invitacion
+                    Invitacion::invitarEvaluador($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $usuario, TipoInvitacion::getEstatusManual());
+                }
 
             }
             $total_invitacion = ($instrumentoIndex + 1)*($usuarioIndex + 1);
@@ -957,13 +943,7 @@ class AdminController extends Controller
 
         return redirect()->back()->with(['message' => $total_invitacion." Usuarios invitados", 'alert-type' => 'success']);
     }
-    public function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico
-        $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
-        <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
-
-        return $message;
-    }
-
+    
     
     
 }

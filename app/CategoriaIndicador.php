@@ -12,4 +12,6 @@ class CategoriaIndicador extends Pivot
      * @var string
      */
     protected $table = 'categorias_indicadores';
+    protected $fillable = ['id','valor_porcentual','categoria_id','indicador_id','created_at','updated_at'];
+
 }

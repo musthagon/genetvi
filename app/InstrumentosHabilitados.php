@@ -8,6 +8,6 @@ class InstrumentosHabilitados extends Pivot
 {
     protected $table = 'instrumentos_habilitados';
 
-    protected $fillable = ['id','categoria_id','instrumento_id'];
+    protected $fillable = ['id','categoria_id','instrumento_id','created_at','updated_at'];
 
 }

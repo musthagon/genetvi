@@ -11,28 +11,64 @@ use Illuminate\Support\Facades\Auth;
 
 trait CommonFunctionsGenetvi
 {
+    private $connection_error = 'connection_error';    
+    private $CVUCV_GET_USER_TOKEN = '';
+    private $CVUCV_GET_USER_TOKEN_SERVICE = '';
+    private $CVUCV_GET_WEBSERVICE_ENDPOINT = '';
+    private $CVUCV_ADMIN_TOKEN = '';
+    private $CVUCV_ADMIN_TOKEN2 = '';
     /**
      * CURL generíco usando GuzzleHTTP
      *
      */
     public function send_curl($request_type, $endpoint, $params){
+        try {
+            $client   = new \GuzzleHttp\Client();
 
-        $client   = new \GuzzleHttp\Client();
+            $response = $client->request($request_type, $endpoint, ['query' => $params ]);
 
-        $response = $client->request($request_type, $endpoint, ['query' => $params ]);
+            $statusCode = $response->getStatusCode();
 
-        $statusCode = $response->getStatusCode();
+            if($statusCode == 200){
 
-        $content    = json_decode($response->getBody(), true);
+                $response = json_decode($response->getBody(), true);
 
-        return $content;
+            }else{
+
+                throw new \Exception('Failed');
+
+            }
+        
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
+            //Catch the guzzle connection errors over here.These errors are something 
+            // like the connection failed or some other network error  
+            $error_message = $e->getMessage();
+
+            $error_message = "Error, no se puede conectar con el Campus Virtual";
+
+            $response = array($this->connection_error => $error_message);
+        }
+
+        return $response;
+    }
+    /**
+     * Verifica si GuzzleHTTP generó algun error
+     *
+     */
+    public function hasError($response){
+        return isset($response[$this->connection_error]);
+    }
+    public function getErrorStatus(){
+        return $this->connection_error;
     }
 
-
-    public function cvucv_autenticacion(Request $request)
-    {
-        $endpoint = env("CVUCV_GET_USER_TOKEN","https://campusvirtual.ucv.ve/moodle/login/token.php");
-        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE","moodle_mobile_app");
+    /**
+     * Parámetros para autenticación con el Campus Virtual
+     *
+     */
+    public function cvucv_autenticacion(Request $request){
+        $endpoint = env("CVUCV_GET_USER_TOKEN", $this->CVUCV_GET_USER_TOKEN);
+        $service  = env("CVUCV_GET_USER_TOKEN_SERVICE", $this->CVUCV_GET_USER_TOKEN_SERVICE);
 
         $params = [
             'service'  => $service,
@@ -45,14 +81,13 @@ trait CommonFunctionsGenetvi
         return $response;
     }
 
-
     /**
      * Obtiene los cursos de una categoria o
      * Obtiene los cursos por un campo
      */
     public function cvucv_get_category_courses($field,$value)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         $params = [
             'wsfunction'            => 'core_course_get_courses_by_field',
@@ -64,6 +99,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response['courses'];
     }
     /**
@@ -71,8 +110,8 @@ trait CommonFunctionsGenetvi
      *
      */
     public function cvucv_get_users_courses($user_id)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         $params = [
             'wsfunction'            => 'core_enrol_get_users_courses',
@@ -83,6 +122,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -90,8 +133,8 @@ trait CommonFunctionsGenetvi
      *
      */
     public function cvucv_get_participantes_curso($course_id)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         $params = [
             'wsfunction'            => 'core_enrol_get_enrolled_users',
@@ -102,6 +145,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -109,8 +156,8 @@ trait CommonFunctionsGenetvi
      *
      */
     public function cvucv_get_courses_categories($key = 'id', $value, $subcategories = 0){
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         $params = [
             'wsfunction'            => 'core_course_get_categories',
@@ -123,6 +170,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
@@ -130,8 +181,8 @@ trait CommonFunctionsGenetvi
      *
      */
     public function cvucv_send_instant_message($user_id, $message, $format)    {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         $params = [
             'wsfunction'                => 'core_message_send_instant_messages',
@@ -144,37 +195,46 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
         
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response;
     }
     /**
      * Perfil de usuario en el Campus
      *
      */
-    public function cvucv_get_profile($cvucv_user_id)
+    public function cvucv_get_profile($cvucv_user_id, $field ='id')
     {
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         $params = [
             'wsfunction'            => 'core_user_get_users_by_field',
             'wstoken'               => $wstoken,
             'moodlewsrestformat'    => 'json',
-            'field'                 => 'id',
+            'field'                 => $field,
             'values[0]'             => $cvucv_user_id,
         ];
 
         $response = $this->send_curl('GET', $endpoint, $params);
-        
+
+        if($this->hasError($response)){
+            return [];
+        }
+
         return $response[0];
     }
+
     /**
      * Consulta los usuarios del Campus Virtual y configura la paginación
-     *
+     * AJAX
      */
     public function campus_users(Request $request){
 
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN2");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN2", $this->CVUCV_ADMIN_TOKEN2);
 
         if(!isset($request->lastname)){
             return [];
@@ -221,6 +281,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
 
+        if($this->hasError($response)){
+            return [];
+        }
+
         //Construimos la paginación
         if(isset($response['users']) && isset($request->page)){
             $page = $request->page;
@@ -251,12 +315,12 @@ trait CommonFunctionsGenetvi
     }
     /**
      * Consulta los usuarios del Campus Virtual por IDS y configura la paginación
-     *
+     * AJAX
      */
     public function campus_users_by_ids(Request $request){
 
-        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT","https://campusvirtual.ucv.ve/moodle/webservice/rest/server.php");
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
         if(!isset($request->curso_id) || !isset($request->periodo_lectivo_id)  || !isset($request->instrumento_id)){
             return [];
@@ -293,6 +357,10 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('POST', $endpoint, $params);
 
+        if($this->hasError($response)){
+            return [];
+        }
+        
         //Busqueda en el response por el valor del select2
         if(isset($request->lastname)){
             $json = new Jsonq();

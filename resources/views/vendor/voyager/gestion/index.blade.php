@@ -59,7 +59,7 @@
 
                                             
                                             <td class="no-sort no-click" id="bread-actions">
-                                                @if($curso->evaluacionProgreso() == true)
+                                                @if($curso->getEvaluacionActiva() == true)
                                                     <a href="{{ route('curso_estatus_evaluacion_curso', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->id]) }}" title="Ver" class="btn btn-sm btn-success" style="margin-right: 5px;">
                                                         <i class="voyager-eye"></i> Ver Estatus de Evaluación
                                                     </a>

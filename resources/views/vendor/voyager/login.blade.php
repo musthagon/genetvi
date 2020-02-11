@@ -83,9 +83,9 @@
                     <form action="{{ route('voyager.login') }}" method="POST">
                         {{ csrf_field() }}
                         <div class="form-group form-group-default" id="emailGroup">
-                            <label>Nombre de usuario</label>
+                            <label>Correo Electrónico</label>
                             <div class="controls">
-                                <input type="text" name="cvucv_username" id="email" value="{{ old('email') }}" placeholder="Nombre de usuario" class="form-control" required>
+                                <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="Correo Electrónico" class="form-control" required>
                             </div>
                         </div>
 
@@ -153,7 +153,7 @@
 <script>
     var btn = document.querySelector('button[type="submit"]');
     var form = document.forms[0];
-    var email = document.querySelector('[name="cvucv_username"]');
+    var email = document.querySelector('[name="email"]');
     var password = document.querySelector('[name="password"]');
     btn.addEventListener('click', function(ev){
         if (form.checkValidity()) {

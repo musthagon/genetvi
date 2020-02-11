@@ -76,14 +76,15 @@ class LoginController extends Controller
             return $this->sendLockoutResponse($request);
         }
 
-        // Para consultar los usuarios al CAMPUS VIRTUAL UCV
-        // Si existe algun error / o las credenciales no coinciden se retorna a la vista anterior (login)
         $response = $this->cvucv_autenticacion($request);
+
+        if($this->hasError($response)){
+            return back()->withErrors([$this->username() => $response[$this->getErrorStatus()]]);
+        }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
-
         $this->incrementLoginAttempts($request);
 
         //Si está registrado en el CVUCV, usaremos su token para puder usar los servicios $response['token']
@@ -100,10 +101,11 @@ class LoginController extends Controller
         // Si no puedo logearme con esos datos
         // Puede siginificar dos cosas: Que la clave la cambio en el otro sistema, o simplemente no esta registrado en nuestro sistema
         
-        //1. Consultamos si el username existe, y actualizariamos su clave
+        //1. Consultamos si el username existe
         $obj_user = User::where($this->username(),$request->{($this->username())})->first();
 
         if($obj_user != null){
+            //MOVER AL MODELOO
             $obj_user->password = bcrypt($request->password);
             $obj_user->save();
 
@@ -113,19 +115,19 @@ class LoginController extends Controller
         }
 
         //2. O si no, Lo registramos...
-        $new_profile = $this->cvucv_get_profile($request, $response['token']);
-
+        $new_profile = $this->cvucv_get_profile('username',$request->cvucv_username);
+        
         if (empty($new_profile)){
             return back()->withErrors([$this->username() => 'Error inesperado. (cod=002) ']);
         }
 
         $params = [
-            '_token'            => $request->token,
+            '_token'            => $request->_token,
             $this->username()   => $new_profile['username'],
             'cvucv_id'          => $new_profile['id'],
             'cvucv_lastname'    => $new_profile['lastname'],
+            'cvucv_firstname'   => $new_profile['firstname'],
             'cvucv_suspended'   => $new_profile['suspended'],
-            'cvucv_token'       => $response['token'],
             'email'             => $new_profile['email'],
             'name'              => $new_profile['firstname'],
             'password'          => $request->password,
@@ -262,6 +264,7 @@ class LoginController extends Controller
     {
         return Auth::guard();
     }
+
 
     
 }
