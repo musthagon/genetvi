@@ -288,7 +288,7 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'updated_at');
         $this->filldataRow($dataRow,'timestamp','Updated At',0,1,1,0,0,0,'{}',7);
 
-        $dataType = $this->dataType('slug', 'invitaciones');
+        /*$dataType = $this->dataType('slug', 'invitaciones');
         $this->filldataType($dataType,'invitaciones','Invitación','Invitaciones','','App\\Invitacion','',1,'');
 
         $dataRow = $this->dataRow($dataType, 'id');
@@ -325,7 +325,7 @@ class GenetviDataTypesTableSeeder extends Seeder
         $this->filldataRow($dataRow,'relationship','cursos',0,1,1,1,1,1,["model"=>"App\\\\Curso","table"=>"cursos","type"=>"belongsTo","column"=>"curso_id","key"=>"id","label"=>"cvucv_fullname","pivot_table"=>"categorias","pivot"=>"0","taggable"=>"0"],16);
         $dataRow = $this->dataRow($dataType, 'invitacione_belongsto_periodos_lectivo_relationship');
         $this->filldataRow($dataRow,'relationship','periodos_lectivos',0,1,1,1,1,1,["model"=>"App\\\\PeriodoLectivo","table"=>"periodos_lectivos","type"=>"belongsTo","column"=>"periodo_lectivo_id","key"=>"id","label"=>"nombre","pivot_table"=>"categorias","pivot"=>"0","taggable"=>"0"],17);
-   
+            */
     }
 
     /**

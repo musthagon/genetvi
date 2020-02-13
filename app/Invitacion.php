@@ -106,6 +106,12 @@ class Invitacion extends Model
     public function getToken(){
         return $this->token;
     }
+    public function getCvucv_user_id(){
+        return $this->cvucv_user_id;
+    }
+    public function getUsuario_id(){
+        return $this->usuario_id;
+    }
     public static function generateToken(){
         do {
             //generate a random string using Laravel's str_random helper

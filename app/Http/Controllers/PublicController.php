@@ -12,6 +12,9 @@ use App\MomentosEvaluacion;
 
 class PublicController extends Controller
 {
+    protected $respuestas_save;
+    protected $percentil_total_eva;
+    protected $respuestas;
 
     public function evaluacion($token){
 
@@ -24,8 +27,6 @@ class PublicController extends Controller
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
         $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion);
-
-        
 
         //Actualizamos el estatus de la invitacion
         $invitacion->actualizar_estatus_leida();
@@ -40,10 +41,10 @@ class PublicController extends Controller
 
         $curso              = $invitacion->curso;
         $instrumento        = $invitacion->instrumento;
-        $periodo            = $invitacion->periodo;
+        $periodo_lectivo    = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
-        $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion);
+        $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo_lectivo, $momento_evaluacion);
 
         //Verificamos que los campos del request no esten vacíos
         //No puede haber indicadores repetidos
@@ -79,7 +80,88 @@ class PublicController extends Controller
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
         }
 
+        $this->caculoPercentil($request, $instrumento_categorias);
         
+        //Guardamos la evaluacion realizada
+        $anonimo = $instrumento->getAnonimo();
+
+        $evaluacion = Evaluacion::create(
+            $anonimo, 
+            $this->respuestas_save, 
+            $this->percentil_total_eva, 
+            $instrumento->getID(), 
+            $curso->getID(), 
+            $periodo_lectivo->getID(), 
+            $momento_evaluacion->getID(), 
+            ($anonimo ? NULL : $invitacion->getCvucv_user_id()) , 
+            ($anonimo ? NULL : $invitacion->getUsuario_id())  ) ;
+        //$evaluacion = Evaluacion::create($respuestas_save, $instrumento->id, $curso->id, $invitacion->cvucv_user_id, $categoria_raiz->periodo_lectivo, $percentil_total_eva);
+
+        //Guardamos las respuestas ya procesadas / calculadas
+        foreach($this->respuestas as $respuesta){
+            foreach($respuesta as $campos){
+
+                Respuesta::create(
+                    $campos['value_string'], 
+                    $campos['value_percentil'], 
+                    $campos['indicador_nombre'], 
+                    $campos['indicador_id'], 
+                    $campos['categoria_id'], 
+                    $evaluacion->id);
+            
+            }
+        }
+
+        //Actualizamos el estatus de la invitacion
+        $invitacion->actualizar_estatus_completada();
+
+        return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
+    }
+
+    public function message($message, $alert_type){
+        
+        $message    = $message;
+        $alert_type = $alert_type; 
+
+        if( !isset($message) || !isset($alert_type)){
+            $message    = "La página que buscas, ya no se encuentra disponible.";
+            $alert_type = "Error"; 
+        }
+        return view('public.evaluacion_cursos_link', compact('message','alert_type'));
+    }
+
+    //Verificamos la invitación
+    public function verificarInvitacion($invitacion){
+        
+        if (empty($invitacion)){ 
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
+        }
+        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+            return $this->message("Error, invitación revocada", "error");
+        }
+        if($invitacion->invitacion_completada()){
+            return $this->message("Ya evaluaste este curso", "error");
+        }
+    }
+    public function verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion){
+        if (empty($curso)){ 
+            return $this->message("Error, el curso no esta disponible en este momento", "error");
+        }
+        if (empty($instrumento)){ 
+            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
+        }
+        if (empty($periodo)){ 
+            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
+        }
+        if(empty($momento_evaluacion)){
+            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
+        }
+        if(!$instrumento->esValido()){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
+        }
+    }
+
+    public function caculoPercentil($request, $instrumento_categorias){
         /***********
          *  Cálculo del valor porcentual de los indicadores
          *  Supongamos que tenemos el siguiente instrumento:
@@ -175,23 +257,22 @@ class PublicController extends Controller
          */
                             
         //Procesamos las respuestas
-        $respuestas = array();
+        $this->respuestas = array();
         $i = 0;
         //Es para calcular el valor numerico de la evaluación 
         //$percentil_value_categoria = $instrumento->percentilValue();
-        $percentil_total_eva = 0;
+        $this->percentil_total_eva = 0;
 
         //Buscamos las categorias del instrumento
         foreach($instrumento_categorias as $categoria){
             $categoria_field = array();
             $j = 0;
             $valorCategoria = $categoria->pivot->valor_porcentual;
-            $percentil_value_indicadores = 0;
 
             //Recorremos los indicadores del instrumento para calcular su valor numérico
             $categoria_likertType       = $categoria->likertType();
             $categoria_likertOpciones   = $categoria->likertOpciones();
-            
+
             foreach($categoria->indicadoresOrdenados() as $indicador){
                 if(isset($request->{($indicador->id)} )){
 
@@ -206,7 +287,7 @@ class PublicController extends Controller
                         $value_percentil_request = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria_likertOpciones);
 
                         $percentil_indicador_actual =($percentil_value_categoria/$percentil_value_opciones) * $value_percentil_request;
-                        $percentil_total_eva = $percentil_total_eva + $percentil_indicador_actual;
+                        $this->percentil_total_eva = $this->percentil_total_eva + $percentil_indicador_actual;
                     }
                     
                     $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
@@ -222,71 +303,9 @@ class PublicController extends Controller
                     $j++;
                 }
             }
-            $respuestas[$i] = $categoria_field;
+            $this->respuestas[$i] = $categoria_field;
             $i++;
         }
-        $respuestas_save = json_encode($respuestas);
-
-        //Guardamos la evaluacion realizada
-        dd('a');
-        $evaluacion = Evaluacion::create($anonimo, $respuestas_save, $percentil_total_eva, $$instrumento->getID(), $curso->getID(), $categoria_raiz->periodo_lectivo, $momento_evaluacion_id, $invitacion->cvucv_user_id, $usuario_id ) ;
-        //$evaluacion = Evaluacion::create($respuestas_save, $instrumento->id, $curso->id, $invitacion->cvucv_user_id, $categoria_raiz->periodo_lectivo, $percentil_total_eva);
-
-        //Guardamos las respuestas ya procesadas / calculadas
-        foreach($respuestas as $respuesta){
-            foreach($respuesta as $campos){
-
-                Respuesta::create($campos['value_string'], $campos['value_percentil'], $campos['indicador_nombre'], $campos['indicador_id'], $campos['categoria_id'], $evaluacion->id);
-            
-            }
-        }
-
-        //Actualizamos el estatus de la invitacion
-        $invitacion->actualizar_estatus_completada();
-
-        return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
-    }
-
-    public function message($message, $alert_type){
-        
-        $message    = $message;
-        $alert_type = $alert_type; 
-
-        if( !isset($message) || !isset($alert_type)){
-            $message    = "La página que buscas, ya no se encuentra disponible.";
-            $alert_type = "Error"; 
-        }
-        return view('public.evaluacion_cursos_link', compact('message','alert_type'));
-    }
-
-    //Verificamos la invitación
-    public function verificarInvitacion($invitacion){
-        
-        if (empty($invitacion)){ 
-            return $this->message("Error, invitación para evaluar curso inválida", "error");
-        }
-        if ($invitacion->invitacion_revocada()){ //Invitación revocada
-            return $this->message("Error, invitación revocada", "error");
-        }
-        if($invitacion->invitacion_completada()){
-            return $this->message("Ya evaluaste este curso", "error");
-        }
-    }
-    public function verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion){
-        if (empty($curso)){ 
-            return $this->message("Error, el curso no esta disponible en este momento", "error");
-        }
-        if (empty($instrumento)){ 
-            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
-        }
-        if (empty($periodo)){ 
-            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
-        }
-        if(empty($momento_evaluacion)){
-            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
-        }
-        if(!$instrumento->esValido()){
-            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
-        }
+        $this->respuestas_save = json_encode($this->respuestas);
     }
 }
