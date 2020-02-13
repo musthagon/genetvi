@@ -185,27 +185,19 @@ class PublicController extends Controller
         foreach($instrumento_categorias as $categoria){
             $categoria_field = array();
             $j = 0;
-            //$categoria_percentilValue = $categoria->percentilValue();
-
             $valorCategoria = $categoria->pivot->valor_porcentual;
             $percentil_value_indicadores = 0;
-            /*if($categoria_percentilValue != 0){
-                $percentil_value_indicadores = $percentil_value_categoria/$categoria_percentilValue;
-            }*/
 
             //Recorremos los indicadores del instrumento para calcular su valor numérico
-            $categoria_likertType = $categoria->likertType();
-            $categoria_likertOpciones = $categoria->likertOpciones();
+            $categoria_likertType       = $categoria->likertType();
+            $categoria_likertOpciones   = $categoria->likertOpciones();
+            
             foreach($categoria->indicadoresOrdenados() as $indicador){
                 if(isset($request->{($indicador->id)} )){
 
                     $valorIndicador = $indicador->pivot->valor_porcentual;
                     $percentil_value_categoria = ($valorIndicador * $valorCategoria) / 100;
 
-                    /*if($categoria_percentilValue == 0 || !$indicador->esMedible()){
-                        $percentil_indicador_actual = -1;
-                    }
-                    */
                     if($percentil_value_categoria == 0 || !$indicador->esMedible()){
                         $percentil_indicador_actual = -1;
                     }else{
@@ -220,10 +212,8 @@ class PublicController extends Controller
                     $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
                     if($indicador->getTipo() != "select_multiple"){
                         $categoria_field[$j]['value_string']    = $request->{($indicador->id)};
-                        /*$categoria_field[$j]['value_request']   = $request->{($indicador->id)};*/
                     }else{
                         $categoria_field[$j]['value_string']    = json_encode($request->{($indicador->id)});;
-                        /*$categoria_field[$j]['value_request']   = "";*/
                     }
                     $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
                     $categoria_field[$j]['indicador_id']    = $indicador->id;
@@ -238,42 +228,23 @@ class PublicController extends Controller
         $respuestas_save = json_encode($respuestas);
 
         //Guardamos la evaluacion realizada
-        $evaluacion = new Evaluacion;
-
-        $evaluacion->respuestas          = $respuestas_save;
-        $evaluacion->percentil_eva       = $percentil_total_eva;
-        $evaluacion->instrumento_id      = $instrumento->id;
-        $evaluacion->curso_id            = $curso->id;
-        $evaluacion->cvucv_user_id       = $invitacion->cvucv_user_id;
-        $evaluacion->periodo_lectivo_id  = $categoria_raiz->periodo_lectivo;
-
-        $evaluacion->save();
+        dd('a');
+        $evaluacion = Evaluacion::create($anonimo, $respuestas_save, $percentil_total_eva, $$instrumento->getID(), $curso->getID(), $categoria_raiz->periodo_lectivo, $momento_evaluacion_id, $invitacion->cvucv_user_id, $usuario_id ) ;
+        //$evaluacion = Evaluacion::create($respuestas_save, $instrumento->id, $curso->id, $invitacion->cvucv_user_id, $categoria_raiz->periodo_lectivo, $percentil_total_eva);
 
         //Guardamos las respuestas ya procesadas / calculadas
         foreach($respuestas as $respuesta){
             foreach($respuesta as $campos){
-                $respuesta = new Respuesta;
 
-                $respuesta->value_string     = $campos['value_string'];
-                /*$respuesta->value_request    = $campos['value_request'];*/
-                $respuesta->value_percentil  = $campos['value_percentil'];
-                $respuesta->indicador_nombre = $campos['indicador_nombre'] ;
-                $respuesta->indicador_id     = $campos['indicador_id'];
-                $respuesta->categoria_id     = $campos['categoria_id'] ;
-                $respuesta->evaluacion_id    = $evaluacion->id;
-                
-                $respuesta->save();
+                Respuesta::create($campos['value_string'], $campos['value_percentil'], $campos['indicador_nombre'], $campos['indicador_id'], $campos['categoria_id'], $evaluacion->id);
+            
             }
         }
 
-
         //Actualizamos el estatus de la invitacion
-        $invitacion->estatus_invitacion_id = 7; //Invitacion completada
-        $invitacion->save();
+        $invitacion->actualizar_estatus_completada();
 
         return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
-        
-    
     }
 
     public function message($message, $alert_type){

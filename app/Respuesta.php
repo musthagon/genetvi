@@ -13,7 +13,23 @@ class Respuesta extends Model
      */
     protected $table = 'respuestas';
 
-    protected $fillable = ['id','value_string','value_request','value_percentil','indicador_nombre','indicador_id','categoria_id','evaluacion_id','created_at','updated_at'];
+    protected $fillable = ['id','value_string','value_percentil','indicador_nombre','indicador_id','categoria_id','evaluacion_id','created_at','updated_at'];
+
+    public static function create($value_string, $value_percentil, $indicador_nombre, $indicador_id, $categoria_id, $evaluacion_id)   {
+        $new = new Respuesta();
+
+        $new->value_string      = $value_string;
+        $new->value_percentil   = $value_percentil;
+        $new->indicador_nombre  = $indicador_nombre;
+        $new->indicador_id      = $indicador_id;
+        $new->categoria_id      = $categoria_id;
+        $new->evaluacion_id     = $evaluacion_id;
+        $new->created_at        = \Carbon\Carbon::now();
+        $new->updated_at        = \Carbon\Carbon::now();
+
+        $new->save();
+
+    }
 
     public function evaluacion(){
         return $this->belongsTo('App\Evaluacion','evaluacion_id','id');

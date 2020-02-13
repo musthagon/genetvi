@@ -22,7 +22,28 @@ class Evaluacion extends Model
      */
     protected $table = 'evaluaciones';
 
-    protected $fillable = ['id','respuestas','instrumento_id','curso_id','usuario_id','periodo_lectivo_id','percentil_eva','created_at','updated_at'];
+    protected $fillable = ['id','anonimo','respuestas','percentil_eva','instrumento_id','curso_id','periodo_lectivo_id','momento_evaluacion_id','cvucv_user_id','usuario_id','created_at','updated_at'];
+
+    public static function create($anonimo, $respuestas, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id,$usuario_id )   {
+        $new = new Evaluacion();
+
+        $new->respuestas            = $anonimo;
+        $new->respuestas            = $respuestas;
+        $new->percentil_eva         = $percentil_eva;
+        $new->instrumento_id        = $instrumento_id;
+        $new->curso_id              = $curso_id;
+        $new->periodo_lectivo_id    = $periodo_lectivo_id;
+        $new->momento_evaluacion_id = $momento_evaluacion_id;
+        $new->cvucv_user_id         = $cvucv_user_id;
+        $new->usuario_id            = $usuario_id;
+        
+        $new->created_at            = \Carbon\Carbon::now();
+        $new->updated_at            = \Carbon\Carbon::now();
+
+        $new->save();
+
+        return $new;
+    }
 
     public function instrumento()    {
         return $this->belongsTo('App\Instrumento','instrumento_id','id');

@@ -94,6 +94,10 @@ class Invitacion extends Model
         $this->cantidad_recordatorios += 1;
         $this->save();
     }
+    public function actualizar_estatus_completada(){
+        $this->estatus_invitacion_id = 7;
+        $this->save();
+    }
 
 
     public function getID(){
