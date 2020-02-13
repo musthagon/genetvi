@@ -8,65 +8,45 @@ use App\Curso;
 use App\Evaluacion;
 use App\Respuesta;
 use App\Invitacion;
-
+use App\MomentosEvaluacion;
 
 class PublicController extends Controller
 {
 
     public function evaluacion($token){
+
         $invitacion     = Invitacion::where('token',$token)->first();
+        $this->verificarInvitacion($invitacion);
 
-        //Verificamos la invitación
-        if (empty($invitacion)){ 
-            return $this->message("Error, invitación para evaluar curso inválida", "error");
-        }
-        if ($invitacion->invitacion_revocada()){ //Invitación revocada
-            return $this->message("Error, invitación revocada", "error");
-        }
-        if($invitacion->invitacion_completada()){
-            return $this->message("Ya evaluaste este curso", "error");
-        }
+        $curso              = $invitacion->curso;
+        $instrumento        = $invitacion->instrumento;
+        $periodo            = $invitacion->periodo;
+        $momento_evaluacion = $invitacion->momento_evaluacion;
 
-        $curso          = $invitacion->curso;
-        $instrumento    = $invitacion->instrumento;
-        $periodo        = $invitacion->periodo;
+        $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion);
 
-        if (empty($curso) || empty($instrumento) || empty($periodo)){ 
-            return $this->message("Error, el curso o instrumento no estan disponibles en este momento", "error");
-        }
-
-        if(!$instrumento->esValido()){
-            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
-        }
+        
 
         //Actualizamos el estatus de la invitacion
         $invitacion->actualizar_estatus_leida();
         
-        return view('public.evaluacion_cursos_link', compact('invitacion','curso', 'instrumento','periodo'));
+        return view('public.evaluacion_cursos_link', compact('invitacion','curso', 'instrumento','periodo','momento_evaluacion'));
                 
     }
     public function evaluacion_procesar($invitacion_id,Request $request){
-        $invitacion     = Invitacion::find($invitacion_id);
-        
-        if (empty($invitacion)){ 
-            return $this->message("Error, invitación para evaluar curso inválida", "error");
-        }
-        if ($invitacion->invitacion_revocada()){ 
-            return $this->message("Error, invitación revocada", "error");
-        }
-        if($invitacion->invitacion_completada()){
-            return $this->message("Ya evaluaste este curso", "error");
-        }
 
-        $curso          = Curso::find($invitacion->curso_id);
-        $instrumento    = Instrumento::find($invitacion->instrumento_id);
-        
-        //1. Verificamos que el curso y el instrumento existan
-        if (empty($curso) || empty($instrumento)){ 
-            return $this->message("Error, el curso o instrumento no estan disponibles en este momento", "error");
-        }
+        $invitacion     = Invitacion::where('id',$invitacion_id)->first();
+        $this->verificarInvitacion($invitacion);
+
+        $curso              = $invitacion->curso;
+        $instrumento        = $invitacion->instrumento;
+        $periodo            = $invitacion->periodo;
+        $momento_evaluacion = $invitacion->momento_evaluacion;
+
+        $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion);
 
         //Verificamos que los campos del request no esten vacíos
+        //No puede haber indicadores repetidos
         $instrumento_categorias = $instrumento->categoriasOrdenadas();
         foreach($instrumento_categorias as $categorias){
             foreach($categorias->indicadoresOrdenados() as $indicador){
@@ -79,11 +59,7 @@ class PublicController extends Controller
 
             }
         }
-        //3. Verificamos que el instrumento sea valido
-        if(!$instrumento->esValido()){
-            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
-        }
-
+        
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
 
@@ -310,5 +286,36 @@ class PublicController extends Controller
             $alert_type = "Error"; 
         }
         return view('public.evaluacion_cursos_link', compact('message','alert_type'));
+    }
+
+    //Verificamos la invitación
+    public function verificarInvitacion($invitacion){
+        
+        if (empty($invitacion)){ 
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
+        }
+        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+            return $this->message("Error, invitación revocada", "error");
+        }
+        if($invitacion->invitacion_completada()){
+            return $this->message("Ya evaluaste este curso", "error");
+        }
+    }
+    public function verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion){
+        if (empty($curso)){ 
+            return $this->message("Error, el curso no esta disponible en este momento", "error");
+        }
+        if (empty($instrumento)){ 
+            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
+        }
+        if (empty($periodo)){ 
+            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
+        }
+        if(empty($momento_evaluacion)){
+            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
+        }
+        if(!$instrumento->esValido()){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
+        }
     }
 }

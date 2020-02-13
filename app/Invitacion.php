@@ -43,17 +43,19 @@ class Invitacion extends Model
         $new->save();
     }
 
-    public function instrumento()    {
-        return $this->belongsTo('App\Instrumento','instrumento_id','id');
-    }
-
     public function curso()    {
         return $this->belongsTo('App\Curso','curso_id','id');
     }
-
+    public function instrumento()    {
+        return $this->belongsTo('App\Instrumento','instrumento_id','id');
+    }
     public function periodo()    {
         return $this->belongsTo('App\PeriodoLectivo','periodo_lectivo_id','id');
     }
+    public function momento_evaluacion(){
+        return $this->belongsTo('App\MomentosEvaluacion','momento_evaluacion_id','id');
+    }
+
     public function estatus_invitacion()    {
         return $this->belongsTo('App\EstatusInvitacion','estatus_invitacion_id','id');
     }
