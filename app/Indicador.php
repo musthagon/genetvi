@@ -105,9 +105,10 @@ class Indicador extends Model
         $tipo_indicador = $this->getTipo();
         $cantidad_opciones = 0;
         if ($tipo_indicador == "likert"){
-            $cantidad_opciones = 2;
             if($likertType == 2){
                 $cantidad_opciones = 5;
+            }else{
+                $cantidad_opciones = 3;
             }
         }elseif ($tipo_indicador == "select_dropdown" ||
             $tipo_indicador == "select_multiple") {

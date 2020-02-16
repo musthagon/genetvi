@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
 
         echo date("m-d-Y H:i:s", strtotime( \Carbon\Carbon::now()));
         echo " ";
-
+ 
         $schedule->call(function () {
             $this->actualizar_periodos_lectivos();
         })->everyMinute();

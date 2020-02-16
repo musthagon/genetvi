@@ -19,12 +19,12 @@ class GenetviInstrumentosPredeterminados extends Seeder
         Categoria::query()->delete();
         Instrumento::query()->delete();
 
-        /*$indicadores[0]=array(
+        $indicadores[0]=array(
             "¿Ha tenido experiencia participando en otros Entornos Virtuales de Aprendizaje en la UCV?",
             "¿Dispone de un computador?",
             "¿Dispone de acceso a internet que le permita participar en el Entorno Virtual de Aprendizaje?",
             "¿Dispones un dispositivo móvil inteligente con acceso a internet?",
-        );*/
+        );
         $indicadores[1]=array(
             "El docente informa sobre el perfil de ingreso, requerimientos académicos y técnicos necesarios para participar en el Entorno Virtual de Aprendizaje.",
             "Se realizan planes de inducción, preparación y apoyo a los estudiantes para participar en el Entorno Virtual de Aprendizaje.",
@@ -67,7 +67,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
 
         //Lista de categorias1
         $categorias1=array(
-            //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
+            "Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
@@ -80,21 +80,22 @@ class GenetviInstrumentosPredeterminados extends Seeder
         );
 
         //Categorias que tiene el instrumento para Estudiante
+
         $list_categorias1=array(
-            //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
             "Componente Campus Virtual"                 => "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas",
         );
-
         //Categorias que tiene el instrumento para Docentes
         $list_categorias2=array(
-            //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia (Docentes)",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
             "Componente Campus Virtual"                 => "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas (Docentes)",
+        );
+        $list_categoriasComun=array(
+            "Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
         );
 
         //Listado de instrumentos
@@ -147,12 +148,14 @@ class GenetviInstrumentosPredeterminados extends Seeder
             $actual = Categoria::firstOrNew(['nombre' => $categoria]);
             if ($actual->exists) {
                 
-                /*if ($actual->nombre == "Dimensión Perfil de Usuario") {
+                if ($actual->nombre == "Dimensión Perfil de Usuario") {
+                    $actual->opciones = json_encode('{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}'); 
+                    $actual->save();
                     foreach($indicadores[0] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
                         $actual->indicadores()->attach($indicador);
                     }
-                }*/
+                }
 
                 if ($actual->nombre == "Dimensión Académica - Componente Estudiantil") {
                     $cantidad = 100/count($indicadores[1]);
@@ -235,17 +238,25 @@ class GenetviInstrumentosPredeterminados extends Seeder
             if ($instrumento->exists) {
                 
                 if ($instrumento->nombre == "Evaluación Tecnopedagógica del EVA desde la Visión Estudiante") {
+                    $cantidad = 0;
+                    foreach($list_categoriasComun as $categoria){
+                        $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
+                        $instrumento->categorias()->attach($categoria, ['valor_porcentual'=> $cantidad]);
+                    }
                     $cantidad = 100/count($list_categorias1);
                     foreach($list_categorias1 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
                         $instrumento->categorias()->attach($categoria, ['valor_porcentual'=> $cantidad]);
-                        
-                        
                     }
                     if(!empty($rol_estudiante)){
                         $instrumento->roles_dirigido()->attach($rol_estudiante);
                     }
                 }else if($instrumento->nombre == "Evaluación Tecnopedagógica del EVA desde la Visión Docente") {
+                    $cantidad = 0;
+                    foreach($list_categoriasComun as $categoria){
+                        $categoria = Categoria::where(['nombre' => $categoria])->first() ; 
+                        $instrumento->categorias()->attach($categoria, ['valor_porcentual'=> $cantidad]);
+                    }
                     $cantidad = 100/count($list_categorias2);
                     foreach($list_categorias2 as $categoria){
                         $categoria = Categoria::where(['nombre' => $categoria])->first() ; 

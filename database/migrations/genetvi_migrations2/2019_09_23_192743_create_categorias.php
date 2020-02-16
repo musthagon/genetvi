@@ -18,7 +18,6 @@ class CreateCategorias extends Migration
             $table->longText('nombre');
             $table->longText('nombre_corto');
             $table->longText('descripcion')->nullable();
-            /*$table->boolean('indicadores_medibles')->default(true);*/
             $table->longText('opciones')->nullable();
             $table->integer('orden')->nullable();
             $table->timestamps();

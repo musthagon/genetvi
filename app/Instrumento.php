@@ -24,6 +24,19 @@ class Instrumento extends Model
         });
     }
 
+    public function categoriasCodificadasInstrumento() {
+        $cat = $this->categoriasOrdenadas();
+        
+        foreach($cat as $categoria){
+            if ($categoria){//Categoria es del perfil
+                $cat['a'] = "abc";
+            }else{
+                $cat['b'] = "def";
+            }
+        }
+        return $cat;
+    }
+
     public function roles_dirigido(){
         return $this->belongsToMany('App\CursoParticipanteRol','instrumentos_cursos_participantes_roles','instrumento_id','curso_participante_rol_id')->using('App\InstrumentoCursoParticipanteRol');
     }

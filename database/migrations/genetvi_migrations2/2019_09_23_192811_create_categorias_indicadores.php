@@ -15,9 +15,10 @@ class CreateCategoriasIndicadores extends Migration
     {
         Schema::create('categorias_indicadores', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->float('valor_porcentual', 8, 2)->unsigned();
+            $table->double('valor_porcentual', 8, 2)->unsigned()->default(0);
             $table->bigInteger('categoria_id')->unsigned();
             $table->bigInteger('indicador_id')->unsigned();
+            $table->longText('opciones')->nullable();
             $table->timestamps();
         });
     }

@@ -107,20 +107,31 @@ class CategoriaController extends VoyagerBaseController
         // Check permission
         $this->authorize('edit', $data);
 
+        //Validacion de opcion likert
+        if(isset($request->opciones)){
+            if(!Categoria::checkLikertOption($request->opciones)){
+                return redirect()->back()->with([
+                    'message'    => 'Error, el campo de opciones Likert no es válido. Debe ser un array de texto: "likert":["text1","text2"]',
+                    'alert-type' => 'error',
+                ]);
+            }
+            if(!Categoria::checkCategoriaPerfil($request->opciones)){
+                return redirect()->back()->with([
+                    'message'    => 'Error, el campo de opciones Perfil no es válido. Debe ser true o false)',
+                    'alert-type' => 'error',
+                ]);
+            }
+        }
+
+
         // Validate fields with ajax
         $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id)->validate();
         $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
 
-        //La descripción es requerida
-        /*if(!isset($request->descripcion)){
-            return redirect()->back()->with([
-                'message'    => 'Error, el campo descripción del instrumento es requerido',
-                'alert-type' => 'error',
-            ]);
-        }*/
 
         //Agregamos indicadores
         $categoria = $data;
+
         if(isset($request->categorias_list)){
             $indicadores            = $request->categorias_list[0];
             $valores_porcentuales   = $request->categorias_list[1];
@@ -232,17 +243,26 @@ class CategoriaController extends VoyagerBaseController
         // Check permission
         $this->authorize('add', app($dataType->model_name));
 
+        
         // Validate fields with ajax
         $val = $this->validateBread($request->all(), $dataType->addRows)->validate();
         $data = $this->insertUpdateData($request, $slug, $dataType->addRows, new $dataType->model_name());
 
-        //La descripción es requerida
-        /*if(!isset($request->descripcion)){
-            return redirect()->back()->with([
-                'message'    => 'Error, el campo descripción del instrumento es requerido',
-                'alert-type' => 'error',
-            ]);
-        }*/
+        //Validacion de opcion likert
+        if(isset($request->opciones)){
+            if(!Categoria::checkLikertOption($request->opciones)){
+                return redirect()->back()->with([
+                    'message'    => 'Error, el campo de opciones Likert no es válido. Debe ser un array de texto: "likert":["text1","text2"]',
+                    'alert-type' => 'error',
+                ]);
+            }
+            if(!Categoria::checkCategoriaPerfil($request->opciones)){
+                return redirect()->back()->with([
+                    'message'    => 'Error, el campo de opciones Perfil no es válido. Debe ser true o false)',
+                    'alert-type' => 'error',
+                ]);
+            }
+        }
 
         //Agregamos indicadores
         $categoria = $data;

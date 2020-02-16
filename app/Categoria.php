@@ -14,6 +14,10 @@ class Categoria extends Model
     protected $table = 'categorias';
     protected $fillable = ['id','nombre','nombre_corto','descripcion','opciones','orden','created_at','updated_at'];
     
+    //Opciones del campo opciones
+    protected $likertOption     = "likert";
+    protected $categoriaPerfil  = "perfil";
+
     public function indicadores(){
         return $this->belongsToMany('App\Indicador','categorias_indicadores','categoria_id','indicador_id')->using('App\CategoriaIndicador')->withPivot('valor_porcentual');
     }
@@ -30,6 +34,81 @@ class Categoria extends Model
 
     public function esValida(){
         return !$this->indicadores->isEmpty();
+    }
+
+    public function likertDefault(){
+        $likert = [
+            "Totalmente de acuerdo",
+            "De acuerdo",
+            "Ni de acuerdo ni en desacuerdo",
+            "En desacuerdo",
+            "Totalmente en desacuerdo",          
+        ];
+        return $likert;
+    }
+
+    public function perfilDefault(){
+        return false;
+    }
+
+    public static function checkLikertOption($request){
+        $opciones = json_decode($request,true);
+
+        if(!isset( $opciones[(new self)->likertOption] )){
+            return true;
+        }
+
+        $likert = $opciones[(new self)->likertOption];
+        
+        if(!is_array($likert)){
+            return false;
+        }
+        
+        $index = 0;
+        foreach($likert as $key => $opcion){
+            if($index != $key || !is_string($opcion) ){
+                return false;
+            }
+            $index++;
+        }
+
+        return true;
+    }
+
+    public static function checkCategoriaPerfil($request){
+        $opciones = json_decode($request,true);
+
+        if(!isset( $opciones[(new self)->categoriaPerfil] )){
+            return true;
+        }
+
+        $perfil = $opciones[(new self)->categoriaPerfil];
+        
+        if(!is_bool($perfil)){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getLikertType(){
+        $opciones = $this->getOpciones();
+
+        if(!isset( $opciones[$this->likertOption] )){
+            return $this->likertDefault();
+        }else{
+            return $opciones[$this->likertOption];
+        }
+    }
+
+    public function getPerfil(){
+        $opciones = $this->getOpciones();
+
+        if(!isset( $opciones[$this->categoriaPerfil] )){
+            return $this->perfilDefault();
+        }else{
+            return $opciones[$this->categoriaPerfil];
+        }
     }
 
     public function percentilValue(){
@@ -61,10 +140,6 @@ class Categoria extends Model
         return $this->nombre;
     }
     
-    public function categoriaPersonalizada(){
-        return !$this->indicadores_medibles;
-    }
-
     public function existenIndicadoresObligatorios(){
         $indicadores = $this->indicadores;
         foreach($indicadores as $indicador){
