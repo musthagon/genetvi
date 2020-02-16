@@ -19,14 +19,37 @@ class PublicController extends Controller
     public function evaluacion($token){
 
         $invitacion     = Invitacion::where('token',$token)->first();
-        $this->verificarInvitacion($invitacion);
+        
+        if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
+        }
+        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+            return $this->message("Error, invitación revocada", "error");
+        }
+        if($invitacion->invitacion_completada()){
+            return $this->message("Ya evaluaste este curso", "error");
+        }
 
         $curso              = $invitacion->curso;
         $instrumento        = $invitacion->instrumento;
         $periodo            = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
-        $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion);
+        if (empty($curso)){ 
+            return $this->message("Error, el curso no esta disponible en este momento", "error");
+        }
+        if (empty($instrumento)){ 
+            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
+        }
+        if (empty($periodo)){ 
+            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
+        }
+        if(empty($momento_evaluacion)){
+            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
+        }
+        if(!$instrumento->esValido()){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
+        }
 
         //Actualizamos el estatus de la invitacion
         $invitacion->actualizar_estatus_leida();
@@ -37,14 +60,37 @@ class PublicController extends Controller
     public function evaluacion_procesar($invitacion_id,Request $request){
 
         $invitacion     = Invitacion::where('id',$invitacion_id)->first();
-        $this->verificarInvitacion($invitacion);
+        
+        if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
+        }
+        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+            return $this->message("Error, invitación revocada", "error");
+        }
+        if($invitacion->invitacion_completada()){
+            return $this->message("Ya evaluaste este curso", "error");
+        }
 
         $curso              = $invitacion->curso;
         $instrumento        = $invitacion->instrumento;
         $periodo_lectivo    = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
-        $this->verificarDatosdeLaInvitacion($curso, $instrumento, $periodo_lectivo, $momento_evaluacion);
+        if (empty($curso)){ 
+            return $this->message("Error, el curso no esta disponible en este momento", "error");
+        }
+        if (empty($instrumento)){ 
+            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
+        }
+        if (empty($periodo)){ 
+            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
+        }
+        if(empty($momento_evaluacion)){
+            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
+        }
+        if(!$instrumento->esValido()){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
+        }
 
         //Verificamos que los campos del request no esten vacíos
         //No puede haber indicadores repetidos
@@ -95,7 +141,6 @@ class PublicController extends Controller
             $momento_evaluacion->getID(), 
             ($anonimo ? NULL : $invitacion->getCvucv_user_id()) , 
             ($anonimo ? NULL : $invitacion->getUsuario_id())  ) ;
-        //$evaluacion = Evaluacion::create($respuestas_save, $instrumento->id, $curso->id, $invitacion->cvucv_user_id, $categoria_raiz->periodo_lectivo, $percentil_total_eva);
 
         //Guardamos las respuestas ya procesadas / calculadas
         foreach($this->respuestas as $respuesta){
@@ -128,37 +173,6 @@ class PublicController extends Controller
             $alert_type = "Error"; 
         }
         return view('public.evaluacion_cursos_link', compact('message','alert_type'));
-    }
-
-    //Verificamos la invitación
-    public function verificarInvitacion($invitacion){
-        
-        if (empty($invitacion)){ 
-            return $this->message("Error, invitación para evaluar curso inválida", "error");
-        }
-        if ($invitacion->invitacion_revocada()){ //Invitación revocada
-            return $this->message("Error, invitación revocada", "error");
-        }
-        if($invitacion->invitacion_completada()){
-            return $this->message("Ya evaluaste este curso", "error");
-        }
-    }
-    public function verificarDatosdeLaInvitacion($curso, $instrumento, $periodo, $momento_evaluacion){
-        if (empty($curso)){ 
-            return $this->message("Error, el curso no esta disponible en este momento", "error");
-        }
-        if (empty($instrumento)){ 
-            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
-        }
-        if (empty($periodo)){ 
-            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
-        }
-        if(empty($momento_evaluacion)){
-            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
-        }
-        if(!$instrumento->esValido()){
-            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
-        }
     }
 
     public function caculoPercentil($request, $instrumento_categorias){

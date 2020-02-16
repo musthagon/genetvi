@@ -65,18 +65,21 @@ class GenetviInstrumentosPredeterminados extends Seeder
             "El Sistema de Educación a Distancia de la UCV ofrece un sistema para respaldar los datos de los cursos en línea y sus usuarios."
         );
 
-        $categorias=array(
+        //Lista de categorias1
+        $categorias1=array(
             //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia",
             "Componente Infraestructura Tecnológica"    => "Dimensión Tecnológica - Componente Plataforma e Infraestructura Tecnológica",
             "Componente Campus Virtual"                 => "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas",
         );
+        //Lista de categorias2
         $categorias2=array(  
             "Componente Docencia"                       => "Dimensión Académica - Componente Docencia (Docentes)",
             "Componente Campus Virtual"                 => "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas (Docentes)",
         );
 
+        //Categorias que tiene el instrumento para Estudiante
         $list_categorias1=array(
             //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
@@ -85,6 +88,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
             "Componente Campus Virtual"                 => "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas",
         );
 
+        //Categorias que tiene el instrumento para Docentes
         $list_categorias2=array(
             //"Perfil de Usuario"                         => "Dimensión Perfil de Usuario",
             "Componente Estudiantil"                    => "Dimensión Académica - Componente Estudiantil",
@@ -93,6 +97,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
             "Componente Campus Virtual"                 => "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas (Docentes)",
         );
 
+        //Listado de instrumentos
         $list_instrumentos = array(
             array(
                 "nombre"        =>"Evaluación Tecnopedagógica del EVA desde la Visión Estudiante",
@@ -111,7 +116,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
             }
         }
         //Agregamos las categorías
-        foreach($categorias as $nombreCorto => $categoria){
+        foreach($categorias1 as $nombreCorto => $categoria){
             $actual = Categoria::firstOrNew(['nombre' => $categoria]);
             if (!$actual->exists) {
                 $actual->fill([
@@ -138,7 +143,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
         }
 
         //Attacch indicadores - categorias
-        foreach($categorias as $nombreCorto => $categoria){
+        foreach($categorias1 as $nombreCorto => $categoria){
             $actual = Categoria::firstOrNew(['nombre' => $categoria]);
             if ($actual->exists) {
                 
