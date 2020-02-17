@@ -104,13 +104,15 @@ class Indicador extends Model
     public function percentilValueOpciones($likertType = 1){
         $tipo_indicador = $this->getTipo();
         $cantidad_opciones = 0;
-        if ($tipo_indicador == "likert"){
+        /*if ($tipo_indicador == "likert"){
             if($likertType == 2){
                 $cantidad_opciones = 5;
             }else{
                 $cantidad_opciones = 3;
             }
-        }elseif ($tipo_indicador == "select_dropdown" ||
+        }else
+        */
+        if ($tipo_indicador == "select_dropdown" ||
             $tipo_indicador == "select_multiple") {
             $cantidad_opciones = count($this->getOpciones(1));
         }
@@ -125,7 +127,6 @@ class Indicador extends Model
         if($this->getTipo() == "likert"){
             foreach($likertOpciones as $key => $opcion){
                 if($string_request == $key){
-                    
                     break;
                 }
                 $opcionValue = $opcionValue - 1;

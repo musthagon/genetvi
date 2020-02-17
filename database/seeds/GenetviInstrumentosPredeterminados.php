@@ -149,7 +149,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
             if ($actual->exists) {
                 
                 if ($actual->nombre == "Dimensión Perfil de Usuario") {
-                    $actual->opciones = json_encode('{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}'); 
+                    $actual->opciones = json_encode('{"perfil":true,"likert":["Si","No"]}'); 
                     $actual->save();
                     foreach($indicadores[0] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 

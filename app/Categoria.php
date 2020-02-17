@@ -28,7 +28,7 @@ class Categoria extends Model
         });
     }
 
-    public function instrumento()    {
+    public function instrumento(){
         return $this->belongsTo('App\Instrumento','instrumento_id','id');
     }
 
@@ -99,6 +99,11 @@ class Categoria extends Model
         }else{
             return $opciones[$this->likertOption];
         }
+    }
+
+    public function getLikertCantidadOpciones(){
+        $likert = $this->getLikertType();
+        return count($likert);
     }
 
     public function getPerfil(){

@@ -2,7 +2,7 @@
 
 @section('content')
 
-  @if(isset($curso) && isset($instrumento) && isset($invitacion))
+  @if(isset($curso) && isset($instrumento) && isset($invitacion) && isset($CategoriasPerfilInstrumento) && isset($CategoriasInstrumento))
 
     <h2>Evaluación de {{$curso->getNombre()}}</h2>
 
@@ -27,7 +27,7 @@
       <!-- CSRF TOKEN -->
       {{ csrf_field() }}
       @php $categoriaIndex = 0; @endphp
-      @foreach($instrumento->categoriasOrdenadas() as $categoria)
+      @foreach($CategoriasInstrumento as $categoria)
       <!-- Cat -->
       <h2>{{$categoria->getNombre()}}</h2>
       <section>
@@ -41,14 +41,9 @@
               <th class='responses'>
                 <table class='likert-table'>
                   <tr>
-                    <!-- Ops -->
-                    @if(!$categoria->categoriaPersonalizada())
-                      @foreach($categoria->likertOpciones() as $opcion)
-                        <th class='response'>{{$opcion}}</th>
-                      @endforeach
-                    @else
-                      <th class='response'>Opciones</th>
-                    @endif
+                    @foreach($categoria->getLikertType() as $opcion)
+                      <th class='response'>{{$opcion}}</th>
+                    @endforeach
                   </tr>
                 </table>
               </th>

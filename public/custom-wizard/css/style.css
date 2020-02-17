@@ -171,3 +171,6 @@ body {
     border: 1px solid #fbc2c4;
     color: #8a1f11;
 }
+.content section{
+  overflow-x: auto;
+}

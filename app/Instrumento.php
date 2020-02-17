@@ -25,13 +25,16 @@ class Instrumento extends Model
     }
 
     public function categoriasCodificadasInstrumento() {
-        $cat = $this->categoriasOrdenadas();
-        
-        foreach($cat as $categoria){
-            if ($categoria){//Categoria es del perfil
-                $cat['a'] = "abc";
+        $categorias = $this->categoriasOrdenadas();
+
+        $cat['perfil'] = array();
+        $cat['instrumento'] = array();
+
+        foreach($categorias as $categoria){
+            if ($categoria->getPerfil()){ //Categoria es del perfil
+                array_push($cat['perfil'],$categoria);
             }else{
-                $cat['b'] = "def";
+                array_push($cat['instrumento'],$categoria);
             }
         }
         return $cat;

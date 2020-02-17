@@ -32,7 +32,7 @@ class PublicController extends Controller
 
         $curso              = $invitacion->curso;
         $instrumento        = $invitacion->instrumento;
-        $periodo            = $invitacion->periodo;
+        $periodo_lectivo    = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
         if (empty($curso)){ 
@@ -41,7 +41,7 @@ class PublicController extends Controller
         if (empty($instrumento)){ 
             return $this->message("Error, el instrumento no esta disponible en este momento", "error");
         }
-        if (empty($periodo)){ 
+        if (empty($periodo_lectivo)){ 
             return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
         }
         if(empty($momento_evaluacion)){
@@ -51,10 +51,21 @@ class PublicController extends Controller
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
         }
 
+        $categorias = $instrumento->categoriasCodificadasInstrumento();
+        $CategoriasPerfilInstrumento = $categorias["perfil"];
+        $CategoriasInstrumento = $categorias["instrumento"];
+
         //Actualizamos el estatus de la invitacion
         $invitacion->actualizar_estatus_leida();
         
-        return view('public.evaluacion_cursos_link', compact('invitacion','curso', 'instrumento','periodo','momento_evaluacion'));
+        return view('public.evaluacion_cursos_link', 
+        compact('invitacion',
+        'curso', 
+        'instrumento',
+        'CategoriasPerfilInstrumento',
+        'CategoriasInstrumento',
+        'periodo_lectivo',
+        'momento_evaluacion'));
                 
     }
     public function evaluacion_procesar($invitacion_id,Request $request){
@@ -82,7 +93,7 @@ class PublicController extends Controller
         if (empty($instrumento)){ 
             return $this->message("Error, el instrumento no esta disponible en este momento", "error");
         }
-        if (empty($periodo)){ 
+        if (empty($periodo_lectivo)){ 
             return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
         }
         if(empty($momento_evaluacion)){
@@ -284,8 +295,8 @@ class PublicController extends Controller
             $valorCategoria = $categoria->pivot->valor_porcentual;
 
             //Recorremos los indicadores del instrumento para calcular su valor numérico
-            $categoria_likertType       = $categoria->likertType();
-            $categoria_likertOpciones   = $categoria->likertOpciones();
+            $categoria_likertOpciones           = $categoria->getLikertType();
+            $categoria_likert_cantidad_opciones = $categoria->getLikertCantidadOpciones();
 
             foreach($categoria->indicadoresOrdenados() as $indicador){
                 if(isset($request->{($indicador->id)} )){
@@ -297,8 +308,8 @@ class PublicController extends Controller
                         $percentil_indicador_actual = -1;
                     }else{
 
-                        $percentil_value_opciones = $indicador->percentilValueOpciones($categoria_likertType); //Cantidad de opciones
-                        $value_percentil_request = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria_likertOpciones);
+                        $percentil_value_opciones = $categoria_likert_cantidad_opciones; //Cantidad de opciones
+                        $value_percentil_request  = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria_likertOpciones);
 
                         $percentil_indicador_actual =($percentil_value_categoria/$percentil_value_opciones) * $value_percentil_request;
                         $this->percentil_total_eva = $this->percentil_total_eva + $percentil_indicador_actual;
