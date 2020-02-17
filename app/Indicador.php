@@ -126,7 +126,7 @@ class Indicador extends Model
 
         if($this->getTipo() == "likert"){
             foreach($likertOpciones as $key => $opcion){
-                if($string_request == $key){
+                if($string_request == $opcion){
                     break;
                 }
                 $opcionValue = $opcionValue - 1;

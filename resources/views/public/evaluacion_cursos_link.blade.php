@@ -27,64 +27,126 @@
       <!-- CSRF TOKEN -->
       {{ csrf_field() }}
       @php $categoriaIndex = 0; @endphp
-      @foreach($CategoriasInstrumento as $categoria)
-      <!-- Cat -->
-      <h2>{{$categoria->getNombre()}}</h2>
-      <section>
-        
-        <table class='likert-form likert-table form-container table-hover'>
-          <thead>
-            <tr class='likert-header'>
 
-              <!-- Cat - title -->
-              <th class='question'>{{$categoria->getNombre()}}</th>
-              <th class='responses'>
-                <table class='likert-table'>
-                  <tr>
-                    @foreach($categoria->getLikertType() as $opcion)
-                      <th class='response'>{{$opcion}}</th>
-                    @endforeach
+      @foreach($CategoriasPerfilInstrumento as $key => $categoria)
+        <!-- Cat2 -->
+        <h2>{{$categoria->getNombre()}}</h2>
+        <section id="questions-perfil-@php $key @endphp" class="perfil">
+          
+          <table class='likert-form likert-table form-container table-hover'>
+            <thead>
+              <tr class='likert-header'>
+
+                <!-- Cat - title -->
+                <th class='question'>{{$categoria->getNombre()}}</th>
+                <th class='responses'>
+                  <table class='likert-table'>
+                    <tr>
+                      @foreach($categoria->getLikertType() as $opcion)
+                        <th class='response'>{{$opcion}}</th>
+                      @endforeach
+                    </tr>
+                  </table>
+                </th>
+              </tr>
+              <tbody class='likert'>
+                @php $indicadorIndex = 0; @endphp
+                @foreach($categoria->indicadoresOrdenados() as $indicador)
+                <!-- Inds -->
+                <fieldset>
+                  <tr class='likert-row'>
+                    <td class='question'>
+                      <legend class='likert-legend'>
+                        <div class="field-title">
+                          {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
+
+                          @if($indicador->getRequerido())
+                            <span class="obligatorio">*</span>
+                          @endif
+                        <div>  
+
+                        <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
+                        
+                      </legend>
+                    </td>
+                    <td class='responses'>
+                    
+                      @include('public.formfields.'.$indicador->getTipo())
+                                  
+                    </td>
                   </tr>
-                </table>
-              </th>
-            </tr>
-            <tbody class='likert'>
-              @php $indicadorIndex = 0; @endphp
-              @foreach($categoria->indicadoresOrdenados() as $indicador)
-              <!-- Inds -->
-              <fieldset>
-                <tr class='likert-row'>
-                  <td class='question'>
-                    <legend class='likert-legend'>
-                      <div class="field-title">
-                        {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
+                </fieldset>
+                @php $indicadorIndex = $indicadorIndex + 1; @endphp
+                @endforeach
+              </tbody>
+            </thead>
+          </table>
+          @if($categoria->existenIndicadoresObligatorios())
+            <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
+          @endif
+        </section>
+        @php $categoriaIndex = $categoriaIndex + 1; @endphp
+      @endforeach
 
-                        @if($indicador->getRequerido())
-                          <span class="obligatorio">*</span>
-                        @endif
-                      <div>  
 
-                      <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
-                      
-                    </legend>
-                  </td>
-                  <td class='responses'>
-                  
-                    @include('public.formfields.'.$indicador->getTipo())
-                                
-                  </td>
-                </tr>
-              </fieldset>
-              @php $indicadorIndex = $indicadorIndex + 1; @endphp
-              @endforeach
-            </tbody>
-          </thead>
-        </table>
-        @if($categoria->existenIndicadoresObligatorios())
-          <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
-        @endif
-      </section>
-      @php $categoriaIndex = $categoriaIndex + 1; @endphp
+      @foreach($CategoriasInstrumento as $key => $categoria)
+        <!-- Cat2 -->
+        <h2>{{$categoria->getNombre()}}</h2>
+        <section id="questions-@php $key @endphp" class="instrumento">
+          
+          <table class='likert-form likert-table form-container table-hover'>
+            <thead>
+              <tr class='likert-header'>
+
+                <!-- Cat - title -->
+                <th class='question'>{{$categoria->getNombre()}}</th>
+                <th class='responses'>
+                  <table class='likert-table'>
+                    <tr>
+                      @foreach($categoria->getLikertType() as $opcion)
+                        <th class='response'>{{$opcion}}</th>
+                      @endforeach
+                    </tr>
+                  </table>
+                </th>
+              </tr>
+              <tbody class='likert'>
+                @php $indicadorIndex = 0; @endphp
+                @foreach($categoria->indicadoresOrdenados() as $indicador)
+                <!-- Inds -->
+                <fieldset>
+                  <tr class='likert-row'>
+                    <td class='question'>
+                      <legend class='likert-legend'>
+                        <div class="field-title">
+                          {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
+
+                          @if($indicador->getRequerido())
+                            <span class="obligatorio">*</span>
+                          @endif
+                        <div>  
+
+                        <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
+                        
+                      </legend>
+                    </td>
+                    <td class='responses'>
+                    
+                      @include('public.formfields.'.$indicador->getTipo())
+                                  
+                    </td>
+                  </tr>
+                </fieldset>
+                @php $indicadorIndex = $indicadorIndex + 1; @endphp
+                @endforeach
+              </tbody>
+            </thead>
+          </table>
+          @if($categoria->existenIndicadoresObligatorios())
+            <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
+          @endif
+        </section>
+        @php $categoriaIndex = $categoriaIndex + 1; @endphp
       @endforeach
 
     </form>

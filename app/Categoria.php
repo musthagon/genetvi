@@ -103,7 +103,7 @@ class Categoria extends Model
 
     public function getLikertCantidadOpciones(){
         $likert = $this->getLikertType();
-        return count($likert);
+        return count($likert)-1;
     }
 
     public function getPerfil(){
