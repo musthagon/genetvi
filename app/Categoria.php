@@ -144,6 +144,9 @@ class Categoria extends Model
     public function getNombre(){
         return $this->nombre;
     }
+    public function getNombreCorto(){
+        return $this->nombre_corto;
+    }
     
     public function existenIndicadoresObligatorios(){
         $indicadores = $this->indicadores;

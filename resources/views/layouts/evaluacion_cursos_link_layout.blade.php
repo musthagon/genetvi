@@ -9,34 +9,30 @@
 
     <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
     @if($admin_favicon == '')
-        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+        <link rel="shortcut icon" href="{{asset('img/LogoGENETVI_rombo.png')}}" type="image/png">
     @else
-        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+        <link rel="shortcut icon" href="{{asset('img/LogoGENETVI_rombo.png')}}" type="image/png">
     @endif
 
     <title>Evaluación de @isset($curso) {{$curso->getNombre()}} @else Curso @endif</title>
 
     <!-- Font Icon -->
-    <link rel="stylesheet" href="/adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{asset('adminlte/bower_components/bootstrap/dist/css/bootstrap.min.css')}}">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="/adminlte/bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{asset('adminlte/bower_components/font-awesome/css/font-awesome.min.css')}}">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="/adminlte/bower_components/Ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="{{asset('adminlte/bower_components/Ionicons/css/ionicons.min.css')}}">
     <!-- Likert CSS -->
-    <link rel='stylesheet' href='/css/foundation.min.css'>
-    <link rel="stylesheet" href="/css/jquery.steps.css">
-    <link rel="stylesheet" href="/css/linkert-table.css">
-
+    <link rel='stylesheet' href="{{asset('css/foundation.min.css')}}">
+    <link rel="stylesheet" href="{{asset('css/jquery.steps.css')}}">
+    <link rel="stylesheet" href="{{asset('css/linkert-table.css')}}">
     <!-- Select2 -->
-    <link rel="stylesheet" href="/adminlte/bower_components/select2/dist/css/select2.min.css">
-
+    <link rel="stylesheet" href="{{asset('adminlte/bower_components/select2/dist/css/select2.min.css')}}">
     <!-- Toastr style -->
-    <link rel="stylesheet" href="/toastr/css/toastr.min.css">
-    
-    <link rel="stylesheet" href="/adminlte/css/AdminLTE.min.css">
-    
+    <link rel="stylesheet" href="{{asset('toastr/css/toastr.min.css')}}">
+    <link rel="stylesheet" href="{{asset('adminlte/css/AdminLTE.min.css')}}">
     <!-- Main css -->
-    <link rel="stylesheet" href="/custom-wizard/css/style.css">
+    <link rel="stylesheet" href="{{asset('custom-wizard/css/style.css')}}" >
 
     @yield('css')
 </head>
@@ -74,17 +70,16 @@
 
     <!-- JS -->
     <!-- jQuery 3 -->
-    <script src="/adminlte/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="{{asset('adminlte/bower_components/jquery/dist/jquery.min.js ')}}"></script>
     <!-- Bootstrap 3.3.7 -->
-    <script src="/adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="{{asset('adminlte/bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
     <!-- Select2 -->
-    <script src="/adminlte/bower_components/select2/dist/js/select2.js"></script>
+    <script src="{{asset('adminlte/bower_components/select2/dist/js/select2.js')}}"></script>
     <!-- Jquery Validate -->
-    <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-    <script type="text/javascript"  src="/js/jquery.steps.js"></script>
-
+    <script type="text/javascript" src="{{asset('js/jquery.validate.min.js')}}"></script>
+    <script type="text/javascript"  src="{{asset('js/jquery.steps.js')}}"></script>
     <!-- Toastr style -->
-    <script src="/toastr/js/toastr.min.js"></script>
+    <script src="{{asset('toastr/js/toastr.min.js')}}"></script>
     <script>
         $(function (){
           toastr.options = {

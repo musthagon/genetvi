@@ -81,6 +81,20 @@ class Invitacion extends Model
         return false;
     }
 
+    public function invitacion_rechazada(){
+        if ($this->estatus_invitacion_id == 5){
+            return true;
+        }
+        return false;
+    }
+
+    public function invitacion_aceptada(){
+        if ($this->estatus_invitacion_id == 4){
+            return true;
+        }
+        return false;
+    }
+
     public function actualizar_estatus_leida(){
         if($this->instrumento->puede_rechazar){
             $this->estatus_invitacion_id = 4; //Invitacion aceptada
@@ -98,7 +112,16 @@ class Invitacion extends Model
         $this->estatus_invitacion_id = 7;
         $this->save();
     }
-
+    public function actualizar_estatus_aceptada($acepto){
+        if($acepto){
+            $this->estatus_invitacion_id = 4;
+            $this->save();
+        }else{
+            $this->estatus_invitacion_id = 5;
+            $this->save();
+        }
+        
+    }
 
     public function getID(){
         return $this->id;
@@ -112,6 +135,10 @@ class Invitacion extends Model
     public function getUsuario_id(){
         return $this->usuario_id;
     }
+
+    public function checkToken($token){
+        return $this->getToken() == $token;
+    }
     public static function generateToken(){
         do {
             //generate a random string using Laravel's str_random helper
@@ -121,7 +148,7 @@ class Invitacion extends Model
 
         return $token;
     }
-
+    
    
     //Verificamos que no tenga invitación previa
     public static function invitacionPrevia($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id ){

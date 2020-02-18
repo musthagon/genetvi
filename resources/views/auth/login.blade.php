@@ -39,8 +39,9 @@
             padding:0 5px;
         }
     </style>
+    
+    <link href="{{asset('css/fonts.googleapis.com_OpenSans300,400,700.css')}}" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
 </head>
 <body class="login">
 <div class="container-fluid">

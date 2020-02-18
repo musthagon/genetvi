@@ -27,7 +27,7 @@ class Evaluacion extends Model
     public static function create($anonimo, $respuestas, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id,$usuario_id )   {
         $new = new Evaluacion();
 
-        $new->respuestas            = $anonimo;
+        $new->anonimo               = $anonimo;
         $new->respuestas            = $respuestas;
         $new->percentil_eva         = $percentil_eva;
         $new->instrumento_id        = $instrumento_id;
@@ -43,6 +43,14 @@ class Evaluacion extends Model
         $new->save();
 
         return $new;
+    }
+
+    public function actualizarEvaluacion($respuestas, $percentil_eva,$cvucv_user_id,$usuario_id ){
+        $this->respuestas            = $respuestas;
+        $this->percentil_eva         = $percentil_eva;
+        $this->cvucv_user_id         = $cvucv_user_id;
+        $this->usuario_id            = $usuario_id;
+        $this->save();
     }
 
     public function instrumento()    {
@@ -107,6 +115,18 @@ class Evaluacion extends Model
                             ->where('curso_id', $curso_id)
                             ->where('periodo_lectivo_id', $periodo_lectivo_id)
                             ->where('cvucv_user_id', $usuario_id)
+                            ->first();
+    }
+    public static function buscar_evaluacion_token($anonimo,$token, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id, $usuario_id){
+        return Evaluacion::where('respuestas', $token)
+                            ->where('anonimo', $anonimo)
+                            ->where('percentil_eva', $percentil_eva)
+                            ->where('instrumento_id', $instrumento_id)
+                            ->where('curso_id', $curso_id)
+                            ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->where('momento_evaluacion_id', $momento_evaluacion_id)
+                            ->where('cvucv_user_id', $cvucv_user_id)
+                            ->where('usuario_id', $usuario_id)
                             ->first();
     }
     public static function instrumentos_de_evaluacion_del_curso($id, &$instrumentos_collection, &$nombreInstrumentos, $anonimo = 0){

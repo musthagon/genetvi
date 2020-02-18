@@ -1710,7 +1710,8 @@ var defaults = $.fn.steps.defaults = {
      * @defaultMiguel "<span class=\"number\">#index#.</span> <span class='title'>#title#</span>"
      * @for defaults
      **/
-    titleTemplate: "<span class=\"number\">#index#</span> <span class='title'>Sección</span>  ",
+    titleTemplate: "<span class=\"number\">#index#</span> <span class='title'>#title#</span>  ",
+    //titleTemplate: "<span class=\"number\">#index#</span> <span class='title'>Sección</span>  ",
 
     /**
      * The loading template which will be used to create the loading animation.

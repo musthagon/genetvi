@@ -19,7 +19,8 @@ Route::post('/logout',  'Auth\LoginController@logout')->name('logout');
 
 //Public evaluacion
 Route::get('/evaluar_curso/id/{token}', 'PublicController@evaluacion')->name('evaluacion_link');
-Route::post('/evaluar_curso/procesar/{invitacion}', 'PublicController@evaluacion_procesar')->name('evaluacion_link_procesar');
+Route::post('/evaluar_curso/id/{token}/procesar/{invitacion}', 'PublicController@evaluacion_procesar1')->name('evaluacion_link_procesar1');
+Route::put('/evaluar_curso/id/{token}/procesar/{invitacion}', 'PublicController@evaluacion_procesar2')->name('evaluacion_link_procesar2');
 
 /*
 |--------------------------------------------------------------------------

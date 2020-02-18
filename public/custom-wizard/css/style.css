@@ -114,11 +114,11 @@ body {
   display:initial;
 }
 .descripcion{
-  padding: 50px 20px 50px 20px;
+  padding: 50px 20px 5px 20px;
   text-align: justify;
 }
 .anonimo{
-  padding: 50px 20px 0px 20px;
+  padding: 5px 20px 0px 20px;
   text-align: center;
   font-style: italic;
 }

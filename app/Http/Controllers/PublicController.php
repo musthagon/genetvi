@@ -50,30 +50,42 @@ class PublicController extends Controller
         if(!$instrumento->esValido()){
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
         }
+        if($instrumento->getPuedeRechazar() && $invitacion->invitacion_rechazada()){
+            return $this->message("Rechazaste evaluar este curso", "error");
+        }
 
         $categorias = $instrumento->categoriasCodificadasInstrumento();
         $CategoriasPerfilInstrumento = $categorias["perfil"];
         $CategoriasInstrumento = $categorias["instrumento"];
 
         //Actualizamos el estatus de la invitacion
-        $invitacion->actualizar_estatus_leida();
+        if($invitacion->invitacion_aceptada()){
+            $edit = true;
+        }else{
+            $invitacion->actualizar_estatus_leida();
+            $edit = false;
+        }
         
         return view('public.evaluacion_cursos_link', 
-        compact('invitacion',
+        compact(
+        'invitacion',
         'curso', 
         'instrumento',
         'CategoriasPerfilInstrumento',
         'CategoriasInstrumento',
         'periodo_lectivo',
-        'momento_evaluacion'));
+        'momento_evaluacion',
+        'edit'));
                 
     }
-    public function evaluacion_procesar($invitacion_id,Request $request){
-
+    public function evaluacion_procesar1($token, $invitacion_id,Request $request){
         $invitacion     = Invitacion::where('id',$invitacion_id)->first();
         
         if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
             return $this->message("Error, invitación para evaluar curso inválida", "error");
+        }
+        if (!$invitacion->checkToken($token)){ //Invitación revocada
+            return $this->message("Error, invitación erronea", "error");
         }
         if ($invitacion->invitacion_revocada()){ //Invitación revocada
             return $this->message("Error, invitación revocada", "error");
@@ -105,7 +117,11 @@ class PublicController extends Controller
 
         //Verificamos que los campos del request no esten vacíos
         //No puede haber indicadores repetidos
-        $instrumento_categorias = $instrumento->categoriasOrdenadas();
+        $categorias                  = $instrumento->categoriasCodificadasInstrumento();
+        $CategoriasPerfilInstrumento = $categorias["perfil"];
+        $CategoriasInstrumento       = $categorias["instrumento"];
+        
+        $instrumento_categorias = $CategoriasPerfilInstrumento;
         foreach($instrumento_categorias as $categorias){
             foreach($categorias->indicadoresOrdenados() as $indicador){
                 if(!isset($request->{($indicador->id)}) && $indicador->getRequerido() ){  
@@ -142,14 +158,183 @@ class PublicController extends Controller
         //Guardamos la evaluacion realizada
         $anonimo = $instrumento->getAnonimo();
 
+        $evaluacion = Evaluacion::buscar_evaluacion_token(
+            $anonimo, 
+            $token,
+            null,
+            $instrumento->getID(), 
+            $curso->getID(), 
+            $periodo_lectivo->getID(), 
+            $momento_evaluacion->getID(),
+            $invitacion->getCvucv_user_id(),
+            $invitacion->getUsuario_id()
+        );
+        if(!empty($evaluacion)){
+            return $this->message("Error, no se puede reenviar la peticion, intente de nuevo mas tarde", "error");
+        }
+
         $evaluacion = Evaluacion::create(
             $anonimo, 
-            $this->respuestas_save, 
-            $this->percentil_total_eva, 
+            $token,//$this->respuestas_save, 
+            null,//$this->percentil_total_eva, 
             $instrumento->getID(), 
             $curso->getID(), 
             $periodo_lectivo->getID(), 
             $momento_evaluacion->getID(), 
+            $invitacion->getCvucv_user_id() , 
+            $invitacion->getUsuario_id()  ) ;
+
+        //Guardamos las respuestas ya procesadas / calculadas
+        foreach($this->respuestas as $respuesta){
+            foreach($respuesta as $campos){
+
+                Respuesta::create(
+                    $campos['value_string'], 
+                    $campos['value_percentil'], 
+                    $campos['indicador_nombre'], 
+                    $campos['indicador_id'], 
+                    $campos['categoria_id'], 
+                    $evaluacion->id);
+            
+            }
+        }
+
+        //Actualizamos el estatus de la invitacion
+        $acepto = true;
+        if($instrumento->getPuedeRechazar() && isset($request->aceptar)){
+            if($request->aceptar == "on"){
+                $invitacion->actualizar_estatus_aceptada(true);
+            }else{
+                $invitacion->actualizar_estatus_aceptada(false);
+                $acepto = false;
+            }
+        }elseif($instrumento->getPuedeRechazar()){
+            $invitacion->actualizar_estatus_aceptada(false);
+            $acepto = false;
+        }else{
+            $invitacion->actualizar_estatus_aceptada(true);
+        }
+        
+        unset($request);
+
+        if($instrumento->getPuedeRechazar() && !$acepto){
+            return $this->message("Hasta la próxima!", "warning");
+        }else{
+            /*$edit = true;
+            return view('public.evaluacion_cursos_link', 
+            compact(
+            'invitacion',
+            'curso', 
+            'instrumento',
+            'CategoriasInstrumento',
+            'periodo_lectivo',
+            'momento_evaluacion',
+            'edit'));*/
+            
+            return redirect()->route('evaluacion_link', ['token' => $token]);
+        }
+
+        
+    }
+    public function evaluacion_procesar2($token, $invitacion_id,Request $request){
+        $invitacion     = Invitacion::where('id',$invitacion_id)->first();
+        
+        if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
+            return $this->message("Error, invitación para evaluar curso inválida", "error");
+        }
+        if (!$invitacion->checkToken($token)){ //Invitación revocada
+            return $this->message("Error, invitación erronea", "error");
+        }
+        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+            return $this->message("Error, invitación revocada", "error");
+        }
+        if($invitacion->invitacion_completada()){
+            return $this->message("Ya evaluaste este curso", "error");
+        }
+        
+
+        $curso              = $invitacion->curso;
+        $instrumento        = $invitacion->instrumento;
+        $periodo_lectivo    = $invitacion->periodo;
+        $momento_evaluacion = $invitacion->momento_evaluacion;
+
+        if (empty($curso)){ 
+            return $this->message("Error, el curso no esta disponible en este momento", "error");
+        }
+        if (empty($instrumento)){ 
+            return $this->message("Error, el instrumento no esta disponible en este momento", "error");
+        }
+        if (empty($periodo_lectivo)){ 
+            return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
+        }
+        if(empty($momento_evaluacion)){
+            return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
+        }
+        if(!$instrumento->esValido()){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
+        }
+        if($instrumento->getPuedeRechazar() && $invitacion->invitacion_rechazada()){
+            return $this->message("Rechazaste evaluar este curso", "error");
+        }
+        
+        //Verificamos que los campos del request no esten vacíos
+        //No puede haber indicadores repetidos
+        $categorias                  = $instrumento->categoriasCodificadasInstrumento();
+        $CategoriasPerfilInstrumento = $categorias["perfil"];
+        $CategoriasInstrumento       = $categorias["instrumento"];
+
+        $instrumento_categorias = $CategoriasInstrumento;
+        foreach($instrumento_categorias as $categorias){
+            foreach($categorias->indicadoresOrdenados() as $indicador){
+                if(!isset($request->{($indicador->id)}) && $indicador->getRequerido() ){  
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->with(['message' => "Debe completar el campo: ".$indicador->nombre, 'alert-type' => 'error']);
+                }
+
+            }
+        }
+        
+        $categoria_raiz             = $curso->categoria->categoria_raiz;
+        $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+
+        //4. Verificamos que la categoria del curso tenga instrumentos habilitados para evaluar
+        if(empty($instrumentos_habilitados)){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
+        }
+
+        $instrumento_disponible = false;
+        foreach($instrumentos_habilitados as $actual){
+            //5. Verificamos que el curso puede ser evaluado por el instrumento (pasado por parametro)
+            if($actual->id == $instrumento->id){
+                $instrumento_disponible = true;
+            }
+        } 
+        if(!$instrumento_disponible){
+            return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento", "error");
+        }
+
+        $this->caculoPercentil($request, $instrumento_categorias);
+        
+        //Guardamos la evaluacion realizada
+        $anonimo = $instrumento->getAnonimo();
+
+        $evaluacion = Evaluacion::buscar_evaluacion_token(
+            $anonimo, 
+            $token,
+            null,
+            $instrumento->getID(), 
+            $curso->getID(), 
+            $periodo_lectivo->getID(), 
+            $momento_evaluacion->getID(),
+            $invitacion->getCvucv_user_id(),
+            $invitacion->getUsuario_id()
+        );
+
+        $evaluacion->actualizarEvaluacion(
+            $this->respuestas_save, 
+            $this->percentil_total_eva, 
             ($anonimo ? NULL : $invitacion->getCvucv_user_id()) , 
             ($anonimo ? NULL : $invitacion->getUsuario_id())  ) ;
 
@@ -170,10 +355,12 @@ class PublicController extends Controller
 
         //Actualizamos el estatus de la invitacion
         $invitacion->actualizar_estatus_completada();
+        
+        unset($request);
 
         return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
-    }
 
+    }
     public function message($message, $alert_type){
         
         $message    = $message;

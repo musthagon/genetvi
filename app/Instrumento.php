@@ -104,6 +104,11 @@ class Instrumento extends Model
         return $this->anonimo;
     }
 
+    public function getPuedeRechazar(){
+        return $this->puede_rechazar;
+    }
+    
+
     public function getID(){
         return $this->id;
     }

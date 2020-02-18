@@ -10,147 +10,105 @@
       <div class="descripcion">
         {!!$instrumento->getDescripcion()!!}
       </div>
-      <button id="iniciar" type="button" class="btn btn-block btn-success btn-lg">Iniciar</button>
+
+
+      <!-- Instru -->
+      @if(!empty($instrumento))
+      <form id="wizard1" class=""
+        action="{{ $edit ? route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()]) : route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()]) }}" 
+        method="POST">
+
+        <!-- PUT Method if we are editing -->
+        @if($edit)
+            {{ method_field("PUT") }}
+        @endif
+
+        <!-- CSRF TOKEN -->
+        {{ csrf_field() }}
+
+        @php 
+          $categorias = array();
+          if(isset($CategoriasPerfilInstrumento) && !$edit){
+            $categorias = $CategoriasPerfilInstrumento;
+          }elseif(isset($CategoriasInstrumento)){
+            $categorias = $CategoriasInstrumento;
+          }
+          $categoriaIndex = 0; 
+      
+        @endphp
+
+        @foreach($categorias as $key => $categoria)
+          <!-- Cat2 -->
+          <h3>{{$categoria->getNombreCorto()}}</h3>
+          <section id="questions-perfil-@php $key @endphp" class="perfil">
+            
+            <table class='likert-form likert-table form-container table-hover'>
+              <thead>
+                <tr class='likert-header'>
+
+                  <!-- Cat - title -->
+                  <th class='question'>{{$categoria->getNombre()}}</th>
+                  <th class='responses'>
+                    <table class='likert-table'>
+                      <tr>
+                        @foreach($categoria->getLikertType() as $opcion)
+                          <th class='response'>{{$opcion}}</th>
+                        @endforeach
+                      </tr>
+                    </table>
+                  </th>
+                </tr>
+                <tbody class='likert'>
+                  @php $indicadorIndex = 0; @endphp
+                  @foreach($categoria->indicadoresOrdenados() as $indicador)
+                  <!-- Inds -->
+                  <fieldset>
+                    <tr class='likert-row'>
+                      <td class='question'>
+                        <legend class='likert-legend'>
+                          <div class="field-title">
+                            {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
+
+                            @if($indicador->getRequerido())
+                              <span class="obligatorio">*</span>
+                            @endif
+                          <div>  
+
+                          <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
+                          
+                        </legend>
+                      </td>
+                      <td class='responses'>
+                      
+                        @include('public.formfields.'.$indicador->getTipo())
+                                    
+                      </td>
+                    </tr>
+                  </fieldset>
+                  @php $indicadorIndex = $indicadorIndex + 1; @endphp
+                  @endforeach
+                </tbody>
+              </thead>
+            </table>
+            @if($categoria->existenIndicadoresObligatorios())
+              <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
+            @endif
+            @if($instrumento->getPuedeRechazar() && !$edit)
+              <input type="checkbox" name="aceptar" id="aceptar" onchange="activateButton(this)" checked=checked> Acepto evaluar este curso.
+            @endif
+          </section>
+          @php $categoriaIndex = $categoriaIndex + 1; @endphp
+        @endforeach
+
+      </form>
+      @endif
+      
       @if($instrumento->getAnonimo())
-      <div class="anonimo">
-        Las respuestas de este instrumento son anónimas
-      </div>
+        <div class="anonimo">
+          Las respuestas de este instrumento son anónimas
+        </div>
       @endif
     </div>
-
-    <!-- Instru -->
-    @if(!empty($instrumento))
-    <form id="wizard" class="hide-div"
-      action="{{ route('evaluacion_link_procesar', ['invitacion' => $invitacion->getID()]) }}" 
-      method="POST">
-
-      <!-- CSRF TOKEN -->
-      {{ csrf_field() }}
-      @php $categoriaIndex = 0; @endphp
-
-      @foreach($CategoriasPerfilInstrumento as $key => $categoria)
-        <!-- Cat2 -->
-        <h2>{{$categoria->getNombre()}}</h2>
-        <section id="questions-perfil-@php $key @endphp" class="perfil">
-          
-          <table class='likert-form likert-table form-container table-hover'>
-            <thead>
-              <tr class='likert-header'>
-
-                <!-- Cat - title -->
-                <th class='question'>{{$categoria->getNombre()}}</th>
-                <th class='responses'>
-                  <table class='likert-table'>
-                    <tr>
-                      @foreach($categoria->getLikertType() as $opcion)
-                        <th class='response'>{{$opcion}}</th>
-                      @endforeach
-                    </tr>
-                  </table>
-                </th>
-              </tr>
-              <tbody class='likert'>
-                @php $indicadorIndex = 0; @endphp
-                @foreach($categoria->indicadoresOrdenados() as $indicador)
-                <!-- Inds -->
-                <fieldset>
-                  <tr class='likert-row'>
-                    <td class='question'>
-                      <legend class='likert-legend'>
-                        <div class="field-title">
-                          {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
-
-                          @if($indicador->getRequerido())
-                            <span class="obligatorio">*</span>
-                          @endif
-                        <div>  
-
-                        <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
-                        
-                      </legend>
-                    </td>
-                    <td class='responses'>
-                    
-                      @include('public.formfields.'.$indicador->getTipo())
-                                  
-                    </td>
-                  </tr>
-                </fieldset>
-                @php $indicadorIndex = $indicadorIndex + 1; @endphp
-                @endforeach
-              </tbody>
-            </thead>
-          </table>
-          @if($categoria->existenIndicadoresObligatorios())
-            <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
-          @endif
-        </section>
-        @php $categoriaIndex = $categoriaIndex + 1; @endphp
-      @endforeach
-
-
-      @foreach($CategoriasInstrumento as $key => $categoria)
-        <!-- Cat2 -->
-        <h2>{{$categoria->getNombre()}}</h2>
-        <section id="questions-@php $key @endphp" class="instrumento">
-          
-          <table class='likert-form likert-table form-container table-hover'>
-            <thead>
-              <tr class='likert-header'>
-
-                <!-- Cat - title -->
-                <th class='question'>{{$categoria->getNombre()}}</th>
-                <th class='responses'>
-                  <table class='likert-table'>
-                    <tr>
-                      @foreach($categoria->getLikertType() as $opcion)
-                        <th class='response'>{{$opcion}}</th>
-                      @endforeach
-                    </tr>
-                  </table>
-                </th>
-              </tr>
-              <tbody class='likert'>
-                @php $indicadorIndex = 0; @endphp
-                @foreach($categoria->indicadoresOrdenados() as $indicador)
-                <!-- Inds -->
-                <fieldset>
-                  <tr class='likert-row'>
-                    <td class='question'>
-                      <legend class='likert-legend'>
-                        <div class="field-title">
-                          {{$categoriaIndex+1}}-{{$indicadorIndex+1}}. {{$indicador->getNombre()}} 
-
-                          @if($indicador->getRequerido())
-                            <span class="obligatorio">*</span>
-                          @endif
-                        <div>  
-
-                        <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
-                        
-                      </legend>
-                    </td>
-                    <td class='responses'>
-                    
-                      @include('public.formfields.'.$indicador->getTipo())
-                                  
-                    </td>
-                  </tr>
-                </fieldset>
-                @php $indicadorIndex = $indicadorIndex + 1; @endphp
-                @endforeach
-              </tbody>
-            </thead>
-          </table>
-          @if($categoria->existenIndicadoresObligatorios())
-            <div class="validation-error"><label class="validation-error" style=""> <span class="obligatorio">*</span> Existen campos obligatorios.</label></div>
-          @endif
-        </section>
-        @php $categoriaIndex = $categoriaIndex + 1; @endphp
-      @endforeach
-
-    </form>
-    @endif
 
   @endif
 
@@ -158,22 +116,22 @@
 
 @section('css')
   <style>
-
+    h3{
+      font-size: 14px;
+    }
     
   </style>
 @stop
 
 @section('javascript')  
     <script>
+        $(document).ready(function() {
+            
+        });
         $(function (){
           
-          $("#iniciar").on('click', function(event){
-              $("#wizard").removeClass("hide-div");
-              $("#instrucciones").addClass("hide-div");
-          });
-
           @if(!empty($instrumento))
-              var form = $("#wizard");
+              var form = $("#wizard1");
 
               form.validate({
                 errorPlacement: function errorPlacement(error, element) {},
@@ -207,9 +165,9 @@
               });
 
               form.steps({
-                  headerTag: "h2",
+                  headerTag: "h3",
                   bodyTag: "section",
-                  transitionEffect: "slide",
+                  transitionEffect: "slideLeft",
                   onStepChanging: function (event, currentIndex, newIndex)
                   {
                       // Allways allow step back to the previous step even if the current step is not valid!
@@ -230,6 +188,8 @@
                       form.submit();
                   }
               });
+
+              $('a[href$="#finish"]').text("Enviar");
           @endif
 
           $('.select2').select2({
@@ -244,7 +204,7 @@
               $(this).valid()
           })
 
-
         });
+
     </script>
 @stop
