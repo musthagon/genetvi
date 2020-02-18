@@ -96,11 +96,11 @@ class Invitacion extends Model
     }
 
     public function actualizar_estatus_leida(){
-        if($this->instrumento->puede_rechazar){
+        /*if($this->instrumento->puede_rechazar){
             $this->estatus_invitacion_id = 4; //Invitacion aceptada
-        }else{
+        }else{*/
             $this->estatus_invitacion_id = 6; // Invitacion leída
-        }
+        //}
         $this->save();
     }
     public function actualizar_estatus_recordatorio_enviado(){
@@ -120,7 +120,6 @@ class Invitacion extends Model
             $this->estatus_invitacion_id = 5;
             $this->save();
         }
-        
     }
 
     public function getID(){

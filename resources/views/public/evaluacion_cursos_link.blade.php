@@ -125,9 +125,8 @@
 
 @section('javascript')  
     <script>
-        $(document).ready(function() {
-            
-        });
+        
+
         $(function (){
           
           @if(!empty($instrumento))

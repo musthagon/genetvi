@@ -149,8 +149,9 @@ class CategoriaController extends VoyagerBaseController
                         ]);
                     }    
                 }
-                $total += (int)$valores_porcentuales[$indicadorIndex];
+                $total += floatval($valores_porcentuales[$indicadorIndex]);
             }
+
             if($total != 100 && $total != 0){
                 return redirect()->back()->with([
                     'message'    => 'Error, la suma de los valores porcentuales de los indicadores debe ser 100%',
@@ -160,7 +161,7 @@ class CategoriaController extends VoyagerBaseController
             
             $categoria->indicadores()->detach();
             foreach($indicadores as $indicadorIndex => $indicador){
-                $categoria->indicadores()->attach($indicador, ['valor_porcentual' => (int)$valores_porcentuales[$indicadorIndex]]);
+                $categoria->indicadores()->attach($indicador, ['valor_porcentual' => floatval($valores_porcentuales[$indicadorIndex]) ]);
             }
 
         }
@@ -283,7 +284,7 @@ class CategoriaController extends VoyagerBaseController
                         ]);
                     }    
                 }
-                $total += (int)$valores_porcentuales[$indicadorIndex];
+                $total += floatval($valores_porcentuales[$indicadorIndex]);
             }
             if($total != 100 && $total != 0){
                 return redirect()->back()->with([
@@ -294,7 +295,7 @@ class CategoriaController extends VoyagerBaseController
             
             $categoria->indicadores()->detach();
             foreach($indicadores as $indicadorIndex => $indicador){
-                $categoria->indicadores()->attach($indicador, ['valor_porcentual' => (int)$valores_porcentuales[$indicadorIndex]]);
+                $categoria->indicadores()->attach($indicador, ['valor_porcentual' => floatval($valores_porcentuales[$indicadorIndex]) ]);
             }
 
         }
