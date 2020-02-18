@@ -223,7 +223,6 @@ trait CommonFunctionsGenetvi
         if($this->hasError($response)){
             return [];
         }
-
         return $response[0];
     }
 

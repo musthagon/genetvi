@@ -115,7 +115,7 @@ class LoginController extends Controller
         }
 
         //2. O si no, Lo registramos...
-        $new_profile = $this->cvucv_get_profile('username',$request->cvucv_username);
+        $new_profile = $this->cvucv_get_profile($request->cvucv_username,'username');
         
         if (empty($new_profile)){
             return back()->withErrors([$this->username() => 'Error inesperado. (cod=002) ']);
