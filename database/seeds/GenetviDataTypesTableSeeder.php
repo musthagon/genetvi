@@ -26,7 +26,7 @@ class GenetviDataTypesTableSeeder extends Seeder
                 'icon'                  => 'voyager-person',
                 'model_name'            => 'TCG\\Voyager\\Models\\User',
                 'policy_name'           => 'TCG\\Voyager\\Policies\\UserPolicy',
-                'controller'            => 'TCG\\Voyager\\Http\\Controllers\\VoyagerUserController',
+                'controller'            => 'App\\Http\\Controllers\\Voyager\\VoyagerUserController',
                 'generate_permissions'  => 1,
                 'description'           => '',
             ])->save();

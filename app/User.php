@@ -83,4 +83,19 @@ class User extends \TCG\Voyager\Models\User
 
         
     }
+
+    public function updateData($request){
+        if(!isset($request)){
+            return;
+        }
+        if(isset($request->name)){
+            $this->name = $request->name;
+        }
+        if(isset($request->email)){
+            $this->name = $request->name;
+        }
+        if(isset($request->password)){
+            $this->name = $request->name;
+        }
+    }
 }

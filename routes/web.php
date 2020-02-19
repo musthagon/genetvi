@@ -50,31 +50,28 @@ Route::get('/mis_cursos/visualizar_{id}', 'HomeController@visualizar_resultados_
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
  
-    // Your overwrites here
-    //Route::post('login', ['uses' => 'Voyager\VoyagerAuthController@postLogin', 'as' => 'postlogin']);
+    //User
+    Route::post('users/agregar_usuario_cvucv', 'Voyager\VoyagerUserController@agregar_usuario_cvucv')->name('agregar_usuario_cvucv');
 
+
+    //gestion
     Route::get('instrumentos/{id}/constructor', 'Voyager\InstrumentoController@constructor')->name('instrumentos.constructor');
-
     Route::get('gestion', 'AdminController@gestion')->name('gestion.evaluaciones');
     Route::get('gestion/{id}', 'AdminController@gestion')->name('gestion.evaluaciones2');
     Route::get('gestion/{id}/sincronizar', 'AdminController@gestion_sincronizar')->name('gestion.sincronizar');
     Route::get('gestion/{id}/sincronizar_categorias', 'AdminController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
-
     Route::get('gestion/{id}/gestionar_evaluacion', 'AdminController@gestionar_evaluacion_categoria')->name('gestion.evaluacion_categoria');
     Route::post('gestion/{id}/gestionar_evaluacion/store', 'AdminController@gestionar_evaluacion_categoria_store')->name('gestion.evaluacion_categoria_store');
     Route::put('gestion/{id}/gestionar_evaluacion/edit', 'AdminController@gestionar_evaluacion_categoria_edit')->name('gestion.evaluacion_categoria_edit');
 
     //Cursos dashboards
     /*Route::get('gestion/curso/{id}', 'AdminController@visualizar_curso')->name('curso.visualizar');*/
-    
     Route::get('gestion/{categoria_id}/curso_{curso_id}/', 'AdminController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');
     Route::get('gestion/{categoria_id}/curso_{curso_id}/respuesta', 'AdminController@visualizar_resultados_curso_respuesta_publica')->name('curso.visualizar_resultados_curso.respuesta_publica');
     Route::get('gestion/curso/{id}/consultar_grafico/', 'AdminController@consultar_grafico')->name('curso.consultar_grafico');
     Route::get('gestion/curso/{curso_id}/consultar_grafico_indicadores/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
     Route::get('gestion/curso/{curso_id}/consultar_tabla_indicador/{periodo}/{instrumento}/{categoria}/{indicador}', 'AdminController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');
     Route::get('gestion/curso/{curso_id}/consultar_grafico_generales/tipo/{tipo}', 'AdminController@consultar_grafico_generales')->name('curso.consultar_grafico_generales');
-
-
 
     //Evaluación de cursos
     Route::get('gestion/curso/{id}/iniciar_evaluacion/', 'AdminController@iniciar_evaluacion_curso')->name('curso_iniciar_evaluacion_curso');

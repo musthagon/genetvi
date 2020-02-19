@@ -173,7 +173,7 @@
 
 @section('css')
    
-    <link rel="stylesheet" href="/css/user_list.css">
+    <link rel="stylesheet" href="{{asset('css/user_list.css')}}">
     <style>
 
 

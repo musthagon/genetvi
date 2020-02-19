@@ -47,7 +47,7 @@
             <div class="col-md-12">
                 <form role="form"
                     class="form-edit-add"
-                    action="{{ route('curso_invitar_evaluacion_curso', ['id' => $curso->id]) }}"
+                    action="{{ route('agregar_usuario_cvucv') }}"
                     method="POST">
 
                     <!-- CSRF TOKEN -->
@@ -58,7 +58,7 @@
 
                                 <div class="page-title-content">
                                     <h1 class="page-title page-title-custom">
-                                        <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->cvucv_fullname}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->nombre}}</div>
+                                        <i class="icon voyager-settings"></i> Agregar usuarios a GENETVI desde el CVUCV
                                     </h1>
 
                                 </div>
@@ -70,17 +70,17 @@
                                 </div>
 
                                 <div class="form-group  col-md-12 ">
-                                    <label class="control-label" for="name">Instrumentos a invitar</label>
-                                    <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
-                                        @foreach($instrumentos_manuales as $instrumento)
-                                        <option value="{{$instrumento->id}}">{{$instrumento->nombre}}</option>
+                                    <label class="control-label" for="name">Roles a asignar</label>
+                                    <select id="roles" class="form-control select2" name="roles[]" multiple required>
+                                        @foreach($roles as $rol)
+                                        <option value="{{$rol->getID()}}">{{$rol->getDisplayName()}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                         </div>
 
                         <div class="panel-footer">
-                            <button type="submit" class="btn btn-primary save">Enviar invitación para evaluar</button>
+                            <button type="submit" class="btn btn-primary save">Agregar</button>
                         </div>
                     </div>
                 </form>
@@ -354,9 +354,10 @@
 @stop
 
 @section('css')
-@if(!$dataType->server_side && config('dashboard.data_tables.responsive'))
-    <link rel="stylesheet" href="{{ voyager_asset('lib/css/responsive.dataTables.min.css') }}">
-@endif
+    <link rel="stylesheet" href="{{asset('css/user_list.css')}}">                                
+    @if(!$dataType->server_side && config('dashboard.data_tables.responsive'))
+        <link rel="stylesheet" href="{{ voyager_asset('lib/css/responsive.dataTables.min.css') }}">
+    @endif
 @stop
 
 @section('javascript')
@@ -429,6 +430,10 @@
                 minimumInputLength: 2,
                 templateResult: formatRepo,
                 templateSelection: formatRepoSelection
+            });
+
+            $("#roles").select2({
+                placeholder: 'Roles a asignar',
             });
 
             function formatRepo (results) {
