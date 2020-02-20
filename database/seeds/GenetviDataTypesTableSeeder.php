@@ -35,29 +35,29 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'id');
         $this->filldataRow($dataRow,'number','ID',1,0,0,0,0,0,'{}',1);
         $dataRow = $this->dataRow($dataType, 'name');
-        $this->filldataRow($dataRow,'text','Name',1,1,1,1,1,1,'{}',2);
+        $this->filldataRow($dataRow,'text','Nombre',1,1,1,1,1,1,'{}',3);
         $dataRow = $this->dataRow($dataType, 'email');
-        $this->filldataRow($dataRow,'text','Email',1,1,1,1,1,1,'{}',3);
+        $this->filldataRow($dataRow,'text','Correo eléctronico',1,1,1,1,1,1,'{}',4);
         $dataRow = $this->dataRow($dataType, 'password');
-        $this->filldataRow($dataRow,'password','Password',1,0,0,1,1,0,'{}',4);
+        $this->filldataRow($dataRow,'password','Contraseña',1,0,0,1,1,0,'{}',5);
         $dataRow = $this->dataRow($dataType, 'remember_token');
-        $this->filldataRow($dataRow,'text','ID',0,0,0,0,0,0,'{}',5);
+        $this->filldataRow($dataRow,'text','ID',0,0,0,0,0,0,'{}',6);
         $dataRow = $this->dataRow($dataType, 'avatar');
-        $this->filldataRow($dataRow,'image','Avatar',0,1,1,1,1,1,'{}',6);
+        $this->filldataRow($dataRow,'image','Avatar',0,1,1,1,1,1,'{}',2);
         $dataRow = $this->dataRow($dataType, 'role_id');
-        $this->filldataRow($dataRow,'text','Role',0,1,1,1,1,1,'{}',7);
+        $this->filldataRow($dataRow,'text','Rol asignado',0,1,1,1,1,1,'{}',7);
         $dataRow = $this->dataRow($dataType, 'cvucv_id');
-        $this->filldataRow($dataRow,'text','CVUCV ID',0,1,1,1,1,1,'{}',8);
+        $this->filldataRow($dataRow,'text','CVUCV ID',0,0,0,1,1,1,'{}',8);
         $dataRow = $this->dataRow($dataType, 'cvucv_username');
-        $this->filldataRow($dataRow,'text','CVUCV Usuario',0,1,1,1,1,1,'{}',9);
+        $this->filldataRow($dataRow,'text','CVUCV Usuario',0,0,0,1,1,1,'{}',9);
         $dataRow = $this->dataRow($dataType, 'cvucv_firstname');
-        $this->filldataRow($dataRow,'text','CVUCV Nombre',0,1,1,1,1,1,'{}',10);
+        $this->filldataRow($dataRow,'text','CVUCV Nombre',0,0,0,1,1,1,'{}',10);
         $dataRow = $this->dataRow($dataType, 'cvucv_lastname');
-        $this->filldataRow($dataRow,'text','CVUCV Apellido',0,1,1,1,1,1,'{}',11);
+        $this->filldataRow($dataRow,'text','CVUCV Apellido',0,0,0,1,1,1,'{}',11);
         $dataRow = $this->dataRow($dataType, 'cvucv_suspended');
-        $this->filldataRow($dataRow,'number','CVUCV Suspendido',0,1,1,1,1,1,'{}',12);
+        $this->filldataRow($dataRow,'number','CVUCV Suspendido',0,0,0,1,1,1,'{}',12);
         $dataRow = $this->dataRow($dataType, 'user_belongsto_role_relationship');
-        $this->filldataRow($dataRow,'relationship','Role',0,1,1,1,1,0,
+        $this->filldataRow($dataRow,'relationship','Rol asignado',1,1,1,1,1,0,
         [
             'model'       => 'TCG\\Voyager\\Models\\Role',
             'table'       => 'roles',
@@ -70,7 +70,7 @@ class GenetviDataTypesTableSeeder extends Seeder
             'taggable'    => '0',
         ],13);
         $dataRow = $this->dataRow($dataType, 'user_belongstomany_role_relationship');
-        $this->filldataRow($dataRow,'relationship','Roles',0,1,1,1,1,0,
+        $this->filldataRow($dataRow,'relationship','Roles asignados',0,0,0,1,1,0,
         [
             'model'       => 'TCG\\Voyager\\Models\\Role',
             'table'       => 'roles',
@@ -85,7 +85,7 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'settings');
         $this->filldataRow($dataRow,'hidden','Settings',0,0,0,0,0,0,'{}',15);
         $dataRow = $this->dataRow($dataType, 'created_at');
-        $this->filldataRow($dataRow,'timestamp','Created At',0,1,1,0,0,0,'{}',16);
+        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',16);
         $dataRow = $this->dataRow($dataType, 'updated_at');
         $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',17);
 
