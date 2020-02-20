@@ -71,7 +71,7 @@
 
                                 <div class="form-group  col-md-12 ">
                                     <label class="control-label" for="name">Roles a asignar</label>
-                                    <select id="roles" class="form-control select2" name="roles[]" multiple required>
+                                    <select id="roles" class="form-control select2" name="rol" required>
                                         @foreach($roles as $rol)
                                         <option value="{{$rol->getID()}}">{{$rol->getDisplayName()}}</option>
                                         @endforeach

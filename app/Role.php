@@ -23,4 +23,8 @@ class Role extends \TCG\Voyager\Models\Role
     public function getDisplayName(){
         return $this->display_name;
     }
+
+    public static function existeRol($id){
+        return Role::where('id',$id)->first();
+    }
 }
