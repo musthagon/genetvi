@@ -57,7 +57,9 @@ class HomeController extends Controller
         $user = Auth::user();
 
         $cursosDocente = CursoParticipante::cursosDocente($user->getCVUCV_USER_ID());
-                
+        
+        $site['titulo'] = "Cursos";
+        $site['descripcion'] = "...";
         return view('user.mis_cursos', compact('cursosDocente'));
     }
 
