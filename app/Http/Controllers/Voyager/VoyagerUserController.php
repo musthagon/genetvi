@@ -17,6 +17,7 @@ use TCG\Voyager\Http\Controllers\Traits\BreadRelationshipParser;
 use TCG\Voyager\Http\Controllers\VoyagerUserController as BaseVoyagerUserController;
 
 use App\Role;
+use App\User;
 
 class VoyagerUserController extends BaseVoyagerUserController
 {
@@ -210,8 +211,11 @@ class VoyagerUserController extends BaseVoyagerUserController
         // Validate fields with ajax
         $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id)->validate();
         
-        dd($data);
-        $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
+        //$this->insertUpdateData($request, $slug, $dataType->editRows, $data);
+       
+        $data = User::findOrFail($data->id);
+        $data->updateData($request);
+        
 
         event(new BreadDataUpdated($dataType, $data));
 

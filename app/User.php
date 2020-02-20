@@ -35,6 +35,9 @@ class User extends \TCG\Voyager\Models\User
     public function roles(){
         return $this->belongsTo('App\Role','role_id','id');
     }
+    public function rolesMany(){
+        return $this->belongsTo('App\Role','user_roles','user_id','role_id');
+    }
 
     public function getCVUCV_USER_ID(){
         return $this->cvucv_id;
@@ -43,7 +46,7 @@ class User extends \TCG\Voyager\Models\User
     public static function username(){
         return 'cvucv_username';
     }
-    public static function password(){
+    protected static function password(){
         return 'password';
     }
 
@@ -85,17 +88,64 @@ class User extends \TCG\Voyager\Models\User
     }
 
     public function updateData($request){
+        //dd($request);
+        $c = 0;
         if(!isset($request)){
             return;
         }
+        
         if(isset($request->name)){
             $this->name = $request->name;
+            $c++;
         }
         if(isset($request->email)){
-            $this->name = $request->name;
+            $this->email = $request->email;
+            $c++;
         }
         if(isset($request->password)){
-            $this->name = $request->name;
+            $this->password = Hash::make($request->password);
+            $c++;
         }
+        if(isset($request->cvucv_username)){
+            $this->cvucv_username = $request->cvucv_username;
+            $c++;
+        }
+        if(isset($request->cvucv_firstname)){
+            $this->cvucv_firstname = $request->cvucv_firstname;
+            $c++;
+        }
+        if(isset($request->cvucv_lastname)){
+            $this->cvucv_lastname = $request->cvucv_lastname;
+            $c++;
+        }
+        if(isset($request->cvucv_suspended)){
+            $this->cvucv_suspended = $request->cvucv_suspended;
+            $c++;
+        }
+        if(isset($request->cvucv_id)){
+            $this->cvucv_id = $request->cvucv_id;
+            $c++;
+        }
+        if(isset($request->avatar)){
+            $this->avatar = $request->avatar;
+            $c++;
+        }
+        if(isset($request->user_belongsto_role_relationship)){
+            $this->role_id = $request->user_belongsto_role_relationship;
+            $c++;
+        }
+        /*if(isset($request->user_belongstomany_role_relationship)){
+            foreach($request->user_belongstomany_role_relationship as $role){
+                $rol = Role::find($role);
+                if(!empty($rol)){
+                    $this->rolesMany()->attach($rol);
+                }
+            }
+        }*/
+
+        if($c == 0){
+            return;
+        }
+        $this->save();
     }
 }
