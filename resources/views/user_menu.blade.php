@@ -59,11 +59,5 @@
         @endif
     @endforeach
 
-    <li class="header">Ir al Campus Virtual UCV</li>
-    <li>
-        <a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL'))}}" target="_blank">
-            <i class="fa fa-circle-o text-aqua"></i> 
-            <span>Campus Virtual UCV</span>
-        </a>
-    </li>
+    
 </ul>

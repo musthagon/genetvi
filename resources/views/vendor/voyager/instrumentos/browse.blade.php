@@ -9,7 +9,7 @@
         </h1>
         @can('add', app($dataType->model_name))
             <a href="{{ route('voyager.'.$dataType->slug.'.create') }}" class="btn btn-success btn-add-new">
-                <i class="voyager-plus"></i> <span>{{ __('voyager::generic.add_new') }}</span>
+                <i class="voyager-plus"></i> <span>{{ __('Agregar Nuevo') }}</span>
             </a>
         @endcan
         @php $showCheckboxColumn = false @endphp
@@ -104,7 +104,7 @@
                                             @endif
                                         </th>
                                         @endforeach
-                                        <th class="actions text-right">{{ __('voyager::generic.actions') }}</th>
+                                        <th class="actions text-right">{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -297,15 +297,15 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('voyager::generic.close') }}"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><i class="voyager-trash"></i> {{ __('voyager::generic.delete_question') }} {{ strtolower($dataType->getTranslatedAttribute('display_name_singular')) }}?</h4>
+                    <h4 class="modal-title"><i class="voyager-trash"></i> {{ __('¿Está seguro que desea borrar ') }} {{ strtolower($dataType->getTranslatedAttribute('display_name_singular')) }}?</h4>
                 </div>
                 <div class="modal-footer">
                     <form action="#" id="delete_form" method="POST">
                         {{ method_field('DELETE') }}
                         {{ csrf_field() }}
-                        <input type="submit" class="btn btn-danger pull-right delete-confirm" value="{{ __('voyager::generic.delete_confirm') }}">
+                        <input type="submit" class="btn btn-danger pull-right delete-confirm" value="{{ __('Si, bórralo') }}">
                     </form>
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('voyager::generic.cancel') }}</button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('Cancelar') }}</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -329,7 +329,34 @@
                 var table = $('#dataTable').DataTable({!! json_encode(
                     array_merge([
                         "order" => $orderColumn,
-                        "language" => __('voyager::datatable'),
+                        "language" => [
+                            "sProcessing"=>    "Procesando...",
+                            "sLengthMenu"=>     "Mostrar _MENU_ registros",
+                            "sZeroRecords"=>    "No se encontraron resultados",
+                            "sEmptyTable"=>     "Ningún dato disponible en esta tabla =(",
+                            "sInfo"=>          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                            "sInfoEmpty"=>      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                            "sInfoFiltered"=>   "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix"=>    "",
+                            "sSearch"=>         "Buscar:",
+                            "sUrl"=>           "",
+                            "sInfoThousands"=>  ",",
+                            "sLoadingRecords"=> "Cargando...",
+                            "oPaginate"=> [
+                                "sFirst"=>    "Primero",
+                                "sLast"=>     "Último",
+                                "sNext"=>     "Siguiente",
+                                "sPrevious"=> "Anterior"
+                            ],
+                            "oAria"=> [
+                                "sSortAscending"=>  ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending"=> ": Activar para ordenar la columna de manera descendente"
+                            ],
+                            "buttons"=> [
+                                "copy"=> "Copiar",
+                                "colvis"=> "Visibilidad"
+                            ]
+                        ],
                         "columnDefs" => [['targets' => -1, 'searchable' =>  false, 'orderable' => false]],
                     ],
                     config('voyager.dashboard.data_tables', []))

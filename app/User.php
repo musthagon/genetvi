@@ -50,6 +50,11 @@ class User extends \TCG\Voyager\Models\User
         return 'password';
     }
 
+    public static function findUser($id){
+        $param = 'cvucv_id';
+        return User::where($param,$id)->first();
+    }
+
     public static function create(array $data)
     {
 
@@ -146,6 +151,11 @@ class User extends \TCG\Voyager\Models\User
         if($c == 0){
             return;
         }
+        $this->save();
+    }
+
+    public function asignarRol($rol){
+        $this->role_id = $rol;
         $this->save();
     }
 }

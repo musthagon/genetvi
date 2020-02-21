@@ -42,51 +42,6 @@
 @section('content')
     <div class="page-content browse container-fluid">
         @include('voyager::alerts')
-        
-        <div class="row">
-            <div class="col-md-12">
-                <form role="form"
-                    class="form-edit-add"
-                    action="{{ route('agregar_usuario_cvucv') }}"
-                    method="POST">
-
-                    <!-- CSRF TOKEN -->
-                    {{ csrf_field() }}
-
-                    <div class="panel panel-bordered">
-                        <div class="panel-body">
-
-                                <div class="page-title-content">
-                                    <h1 class="page-title page-title-custom">
-                                        <i class="icon voyager-settings"></i> Agregar usuarios a GENETVI desde el CVUCV
-                                    </h1>
-
-                                </div>
-
-                                <div class="form-group  col-md-12 ">
-                                    <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
-                                    <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
-                                    </select>
-                                </div>
-
-                                <div class="form-group  col-md-12 ">
-                                    <label class="control-label" for="name">Roles a asignar</label>
-                                    <select id="roles" class="form-control select2" name="rol" required>
-                                        @foreach($roles as $rol)
-                                        <option value="{{$rol->getID()}}">{{$rol->getDisplayName()}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                        </div>
-
-                        <div class="panel-footer">
-                            <button type="submit" class="btn btn-primary save">Agregar</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered">
@@ -346,7 +301,7 @@
                         {{ csrf_field() }}
                         <input type="submit" class="btn btn-danger pull-right delete-confirm" value="{{ __('Si, bórralo') }}">
                     </form>
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('Cancelar') }}</button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('Cancerlar') }}</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -354,10 +309,9 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{asset('css/user_list.css')}}">                                
-    @if(!$dataType->server_side && config('dashboard.data_tables.responsive'))
-        <link rel="stylesheet" href="{{ voyager_asset('lib/css/responsive.dataTables.min.css') }}">
-    @endif
+@if(!$dataType->server_side && config('dashboard.data_tables.responsive'))
+    <link rel="stylesheet" href="{{ voyager_asset('lib/css/responsive.dataTables.min.css') }}">
+@endif
 @stop
 
 @section('javascript')
@@ -366,9 +320,6 @@
         <script src="{{ voyager_asset('lib/js/dataTables.responsive.min.js') }}"></script>
     @endif
     <script>
-        // CSRF Token
-        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-
         $(document).ready(function () {
             @if (!$dataType->server_side)
                 var table = $('#dataTable').DataTable({!! json_encode(
@@ -419,75 +370,9 @@
                     $('.side-body').data('multilingual').init();
                 })
             @endif
-
             $('.select_all').on('click', function(e) {
                 $('input[name="row_id"]').prop('checked', $(this).prop('checked'));
             });
-
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            $("#search_users").select2({
-                language: {
-                    // You can find all of the options in the language files provided in the
-                    // build. They all must be functions that return the string that should be
-                    // displayed.
-                    inputTooShort: function () {
-                        return "Mínimo 4 caracteres";
-                    }
-                },
-                ajax: {
-                    
-                    url: "{{route('campus_users')}}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            //_token: CSRF_TOKEN,
-                            lastname: params.term, // search term
-                            page: params.page || 1,
-                        };
-                    },
-                    cache: true
-                },
-                placeholder: 'Buscar usuarios por nombre y/o apellido',
-                minimumInputLength: 2,
-                templateResult: formatRepo,
-                templateSelection: formatRepoSelection
-            });
-
-            $("#roles").select2({
-                placeholder: 'Roles a asignar',
-            });
-
-            function formatRepo (results) {
-                if (results.loading) {
-                    return results.text;
-                }
-
-                var $container = $(
-                    "<div class='select2-result-repository clearfix'>" +
-                    "<div class='select2-result-repository__avatar'><img src='" + results.profileimageurl + "' /></div>" +
-                    "<div class='select2-result-repository__meta'>" +
-                        "<div class='select2-result-repository__title'></div>" +
-                        "<div class='select2-result-repository__description'></div>" +
-                        "</div>" +
-                    "</div>" +
-                    "</div>"
-                );
-
-                $container.find(".select2-result-repository__title").text(results.fullname);
-                $container.find(".select2-result-repository__description").text(results.email);
-
-                return $container;
-            }
-
-            function formatRepoSelection (repo) {
-                return repo.fullname || repo.text;
-            }
         });
 
 

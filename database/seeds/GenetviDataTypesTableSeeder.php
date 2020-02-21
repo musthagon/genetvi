@@ -18,19 +18,19 @@ class GenetviDataTypesTableSeeder extends Seeder
         * DataRows para users
         */
         $dataType = $this->dataType('slug', 'users');
-        if (!$dataType->exists) {
+        //if (!$dataType->exists) {
             $dataType->fill([
                 'name'                  => 'users',
-                'display_name_singular' => __('voyager::seeders.data_types.user.singular'),
-                'display_name_plural'   => __('voyager::seeders.data_types.user.plural'),
+                'display_name_singular' => __('Usuario'),
+                'display_name_plural'   => __('Usuarios'),
                 'icon'                  => 'voyager-person',
-                'model_name'            => 'TCG\\Voyager\\Models\\User',
+                'model_name'            => 'App\\User',
                 'policy_name'           => 'TCG\\Voyager\\Policies\\UserPolicy',
                 'controller'            => 'App\\Http\\Controllers\\Voyager\\VoyagerUserController',
                 'generate_permissions'  => 1,
                 'description'           => '',
             ])->save();
-        }
+        //}
 
         $dataRow = $this->dataRow($dataType, 'id');
         $this->filldataRow($dataRow,'number','ID',1,0,0,0,0,0,'{}',1);
@@ -159,20 +159,22 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'nombre_corto');
         $this->filldataRow($dataRow,'text','Nombre Corto del Instrumento',1,1,1,1,1,1,'{}',3);
         $dataRow = $this->dataRow($dataType, 'habilitar');
-        $this->filldataRow($dataRow,'select_dropdown','Habilitar',1,1,1,1,1,1,
+        $this->filldataRow($dataRow,'select_dropdown','Habilitar',1,0,0,1,1,1,
         [
             "default"=>"1",
-            "options"=>["0"=>"No","1"=>"Si"]],4);
+            "options"=>["0"=>"No","1"=>"Si"],
+            "description"=>"Si no esta habilitado, los coordinadores no podrán elegir este instrumento para evaluar y si hay evaluaciones activas, se deshabilitaran (no se podrán hacer hasta que se actualice este atributo)"
+        ],4);
         $dataRow = $this->dataRow($dataType, 'descripcion');
-        $this->filldataRow($dataRow,'rich_text_box','Descripcion',1,1,1,1,1,1,["validation"=>["rule"=>"required"]],5);
+        $this->filldataRow($dataRow,'rich_text_box','Instrucciones que verán los evaluadores',1,1,1,1,1,1,["validation"=>["rule"=>"required"]],5);
         $dataRow = $this->dataRow($dataType, 'anonimo');
-        $this->filldataRow($dataRow,'select_dropdown','Anónimo',1,1,1,1,1,1,["default"=>"1","options"=>["0"=>"No","1"=>"Si"]],6);
+        $this->filldataRow($dataRow,'select_dropdown','Visibilidad de las respuestas de los evaluadores',1,0,0,1,1,1,["default"=>"1","options"=>["0"=>"No Visible","1"=>"Visible"],"description"=>"Los evaluadores veran una advertencia antes de iniciar la evaluacion que les indica si son anónimas o no sus respuestas"],6);
         $dataRow = $this->dataRow($dataType, 'puede_rechazar');
-        $this->filldataRow($dataRow,'select_dropdown','Puede Rechazar',1,1,1,1,1,1,["default"=>"0","options"=>["0"=>"No","1"=>"Si"]],7);
+        $this->filldataRow($dataRow,'select_dropdown','Formato Invitación',1,0,0,1,1,1,["default"=>"0","options"=>["0"=>"Obligatoria","1"=>"El evaluador puede aceptar/rechazar hacer la evaluación"]],7);
         $dataRow = $this->dataRow($dataType, 'invitacion_automatica');
-        $this->filldataRow($dataRow,'select_dropdown','Invitación Automática',1,1,1,1,1,1,["default"=>"1","options"=>["0"=>"No","1"=>"Si"]],8);
+        $this->filldataRow($dataRow,'select_dropdown','Invitación Automática a los usuarios con los roles a quien va dirigido este instrumento',1,0,0,1,1,1,["description"=>"Si se elige el formato manual, cuando se inicie la evaluacion de un curso, se desplegará el listado de usuarios del Campus para invitar evaluadores","default"=>"1","options"=>["0"=>"No, debe invitar de forma manual a los evaluadores","1"=>"Si"]],8);
         $dataRow = $this->dataRow($dataType, 'opciones');
-        $this->filldataRow($dataRow,'code_editor','Opciones',0,1,1,1,1,1,'{}',9);
+        $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',9);
         $dataRow = $this->dataRow($dataType, 'instrumento_belongstomany_cursos_participantes_role_relationship');
         $this->filldataRow($dataRow,'relationship','Dirigido a',0,1,1,1,1,1,["model"=>"App\\CursoParticipanteRol","table"=>"cursos_participantes_roles","type"=>"belongsToMany","column"=>"id","key"=>"id","label"=>"cvucv_name","pivot_table"=>"instrumentos_cursos_participantes_roles","pivot"=>"1","taggable"=>"0"],10);
         $dataRow = $this->dataRow($dataType, 'created_at');
@@ -244,9 +246,9 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'descripcion');
         $this->filldataRow($dataRow,'rich_text_box','Descripción',0,1,1,1,1,1,'{}',3);
         $dataRow = $this->dataRow($dataType, 'fecha_inicio');
-        $this->filldataRow($dataRow,'date','Fecha Inicio del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duraci\\u00f3n del per\\u00edodo lectivo. La fecha de inicio debe ser menor a la fecha de fin"],4);
+        $this->filldataRow($dataRow,'date','Fecha Inicio del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de inicio debe ser menor a la fecha de fin"],4);
         $dataRow = $this->dataRow($dataType, 'fecha_fin');
-        $this->filldataRow($dataRow,'date','Fecha Fin del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duraci\\u00f3n del per\\u00edodo lectivo. La fecha de fin debe ser mayor a la fecha de inicio"],5);
+        $this->filldataRow($dataRow,'date','Fecha Fin del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de fin debe ser mayor a la fecha de inicio"],5);
         $dataRow = $this->dataRow($dataType, 'opciones');
         $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',6);
         $dataRow = $this->dataRow($dataType, 'momento_evaluacion_activo_id');

@@ -19,8 +19,11 @@ use TCG\Voyager\Http\Controllers\VoyagerUserController as BaseVoyagerUserControl
 use App\Role;
 use App\User;
 
+use App\Traits\CommonFunctionsGenetvi; 
+
 class VoyagerUserController extends BaseVoyagerUserController
 {
+    use CommonFunctionsGenetvi;
     //***************************************
     //               ____
     //              |  _ \
@@ -228,6 +231,59 @@ class VoyagerUserController extends BaseVoyagerUserController
     }
 
     public function agregar_usuario_cvucv(Request $request){
-        dd($request);
+        
+        if(!isset($request) || !isset($request->users) || !isset($request->rol)){
+            return redirect()->back()->with(['message' => "Error, debe ingresar los usuarios y el rol a asignar", 'alert-type' => 'error']);
+        }
+        $usuarios   = $request->users;
+        $rol        = $request->rol;
+
+        $agregados  = 0;
+        $existentes = 0;
+        $errores    = 0;
+        foreach($usuarios as $index => $usuario){
+            //Verificamos que el usuario no existe
+            if(User::findUser($usuario) === null){
+                $new_profile = $this->cvucv_get_profile($usuario);
+                $rol_usuario = Role::existeRol($rol);
+                if (!empty($new_profile) && !empty($rol_usuario)){
+                    $params = [
+                        //'_token'            => $request->_token,
+                        User::username()    => $new_profile['username'],
+                        'cvucv_id'          => $new_profile['id'],
+                        'cvucv_lastname'    => $new_profile['lastname'],
+                        'cvucv_firstname'   => $new_profile['firstname'],
+                        'cvucv_suspended'   => $new_profile['suspended'],
+                        'email'             => $new_profile['email'],
+                        'name'              => $new_profile['firstname'],
+                        'password'          => $this->generatePassword(),
+                        'avatar'            => $new_profile['profileimageurl']
+                    ];
+                    $user = User::create($params);
+                    $user->asignarRol($rol_usuario->getID());
+                    $agregados++;
+                }else{
+                    $errores++;
+                }
+                
+            }else{
+                $existentes++;
+            }
+        }
+
+        if($errores > 0 || $existentes >0){
+            return redirect()->back()->with(['message' => " Usuarios agregados: ".$agregados." Usuarios errores: ".$errores." Usuarios existentes: ".$existentes, 'alert-type' => 'warning']);
+        }
+
+        return redirect()->back()->with(['message' => " Usuarios agregados: ".$agregados, 'alert-type' => 'success']);
+        
+        
+    }
+
+    public function generatePassword(){
+
+        $token = str_random(191);
+
+        return $token;
     }
 }

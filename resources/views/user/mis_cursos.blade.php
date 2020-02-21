@@ -22,33 +22,40 @@
   </style>
 @stop
 
+@section('page_description')
+  <h1>
+    {{$informacion_pagina['titulo']}}
+    <small>{{$informacion_pagina['descripcion']}}</small>
+  </h1>
+@stop
+
 @section('content')
 
-<!-- Main content -->
-<section class="content">
-  <div class="row">
+  <!-- Main content -->
+  <section class="content">
+    <div class="row">
 
-  @if( $cursosDocente->isEmpty())
-      <div class="col-md-12">
-        <div class="box box-default">
-          <div class="box-header with-border">
-            <i class="fa fa-bullhorn"></i>
+    @if( $cursosDocente->isEmpty())
+        <div class="col-md-12">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <i class="fa fa-bullhorn"></i>
 
-            <h3 class="box-title">Notificaciones</h3>
-          </div>
-          <!-- /.box-header -->
-          <div class="box-body">
-            <div class="callout callout-info">
-              <h4>No tienes cursos disponibles</h4>
-              <p>Si estas registrado en un curso en el Campus Virutal UCV y no se muestra aquí, comunícate con el docente de tu curso</p>
+              <h3 class="box-title">Notificaciones</h3>
             </div>
-            
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="callout callout-info">
+                <h4>No tienes cursos disponibles</h4>
+                <p>Si estas registrado en un curso en el Campus Virutal UCV y no se muestra aquí, comunícate con el docente de tu curso</p>
+              </div>
+              
+            </div>
+            <!-- /.box-body -->
           </div>
-          <!-- /.box-body -->
+          <!-- /.box -->
         </div>
-        <!-- /.box -->
-      </div>
-  @endif
+    @endif
 
     @if(!($cursosDocente->isEmpty()))
     <div class="col-xs-12">
@@ -67,35 +74,34 @@
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              @foreach($cursosDocente as $curso)
-                <tr>
-                  <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
-                  <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
-                  
-                  <td class="course_acciones">
-                    <a class="course_acciones_item" href="{{ route('curso', ['id' => $curso->id]) }}" title="Ver">
-                        <button class="btn-sm btn-primary" style="margin-right: 5px;">
-                          <i class="voyager-list"></i> Ver 
-                        </button>
-                    </a>                  
-                  </td>
-                </tr>
-              @endforeach
-                  
-          </table>
+                @foreach($cursosDocente as $curso)
+                  <tr>
+                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->id}}" target="_blank"> {{$curso->cvucv_fullname}} </a></td>
+                    <td class="course_summary">{!!$curso->cvucv_summary!!}</td>
+                    
+                    <td class="course_acciones">
+                      <a class="course_acciones_item" href="{{ route('curso', ['id' => $curso->id]) }}" title="Ver">
+                          <button class="btn-sm btn-primary" style="margin-right: 5px;">
+                            <i class="voyager-list"></i> Ver 
+                          </button>
+                      </a>                  
+                    </td>
+                  </tr>
+                @endforeach
+                    
+            </table>
 
-        </div><!-- /.box-body -->
-      </div><!-- /.box -->
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->
+      </div>
+      @endif
+
+      
     </div>
-    @endif
-
     
-  </div>
-  
 
 
-</section>
+  </section>
 @stop
 
 @section('javascript')

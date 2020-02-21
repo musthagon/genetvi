@@ -41,15 +41,10 @@ class HomeController extends Controller
         
         $user = Auth::user();
         
-        //Evaluaciones de curso pendiente
-        /*
-        bg-green
-        bg-aqua
-        bg-yellow
-        bg-red
-        */
+        $informacion_pagina['titulo']       = "Principal";
+        $informacion_pagina['descripcion']  = "Aquí se muestra un resumen de las acciones que puedes hacer en la aplicación";
 
-        return view('user.principal', compact('cursosDocente'));
+        return view('user.principal', compact('cursosDocente','informacion_pagina'));
     }
 
     public function cursos(){   
@@ -58,9 +53,10 @@ class HomeController extends Controller
 
         $cursosDocente = CursoParticipante::cursosDocente($user->getCVUCV_USER_ID());
         
-        $site['titulo'] = "Cursos";
-        $site['descripcion'] = "...";
-        return view('user.mis_cursos', compact('cursosDocente'));
+        $informacion_pagina['titulo']       = "Cursos";
+        $informacion_pagina['descripcion']  = "Aquí se muestran las acciones que puedes realizar en tus cursos";
+
+        return view('user.mis_cursos', compact('cursosDocente','informacion_pagina'));
     }
 
     /*
