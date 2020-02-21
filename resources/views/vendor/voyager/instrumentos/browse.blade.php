@@ -104,7 +104,7 @@
                                             @endif
                                         </th>
                                         @endforeach
-                                        <th class="actions text-right">{{ __('voyager::generic.actions') }}</th>
+                                        <th class="actions text-right">{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
