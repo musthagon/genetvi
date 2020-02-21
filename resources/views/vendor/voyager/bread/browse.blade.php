@@ -104,7 +104,7 @@
                                             @endif
                                         </th>
                                         @endforeach
-                                        <th class="actions text-right">{{ __('voyager::generic.actions') }}</th>
+                                        <th class="actions text-right">{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -255,10 +255,6 @@
                                                     @include('voyager::bread.partials.actions', ['action' => $action])
                                                 @endif
                                             @endforeach
-                                            
-                                            <a href="instrumentos/{{$data->id}}/constructor" title="Constructor" class="btn btn-sm btn-success pull-right" style="margin-right: 5px;">
-                                                <i class="voyager-list"></i> Constructor
-                                            </a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -305,7 +301,7 @@
                         {{ csrf_field() }}
                         <input type="submit" class="btn btn-danger pull-right delete-confirm" value="{{ __('Si, bórralo') }}">
                     </form>
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('Cancelar') }}</button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('Cancerlar') }}</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

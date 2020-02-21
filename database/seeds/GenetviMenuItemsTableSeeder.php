@@ -23,8 +23,8 @@ class GenetviMenuItemsTableSeeder extends Seeder
 
         $this->fillItem($menu->id, 'Panel Administrativo',  '', 'voyager.dashboard', '_self','voyager-boat', '#000000', null, 1);
         $RolesItem = $this->fillItem($menu->id, 'Roles','','', '_self','voyager-lock', '#000000', null, 2);
-            $this->fillItem($menu->id, 'Roles', '','voyager.roles.index', '_self','voyager-lock', '#000000', $RolesItem, 1);
-            $this->fillItem($menu->id, 'Roles en Cursos','','voyager.rol-en-cursos.index', '_self','voyager-people', '#000000', $RolesItem, 2);
+            $this->fillItem($menu->id, 'Privilegios Genetvi', '','voyager.roles.index', '_self','voyager-lock', '#000000', $RolesItem, 1);
+            $this->fillItem($menu->id, 'Privilegios en los EVA','','voyager.rol-en-cursos.index', '_self','voyager-people', '#000000', $RolesItem, 2);
         $this->fillItem($menu->id, 'Usuarios',  '', 'voyager.users.index', '_self','voyager-person', '#000000', null, 3);
         $this->fillItem($menu->id, 'Almacenamiento',  '', 'voyager.media.index', '_self','voyager-images', '#000000', null, 4);
         $toolsMenuItem = $this->fillItem($menu->id, 'Herramientas', '', '', '_self','voyager-tools', '#000000', null, 5);
@@ -39,7 +39,7 @@ class GenetviMenuItemsTableSeeder extends Seeder
             $this->fillItem($menu->id, 'Categorías','','voyager.categorias.index', '_self','', '#000000', $instrumentosMenuItem, 2);
             $this->fillItem($menu->id, 'Indicadores','','voyager.indicadores.index', '_self','', '#000000', $instrumentosMenuItem, 3);
         $EvaluacionItem = $this->fillItem($menu->id, 'Evaluación', '', '', '_self','voyager-calendar', '#0080ff', null, 7);
-            $this->fillItem($menu->id, 'Periodos Lectivos','','voyager.periodos-lectivos.index', '_self','', '#0080ff', $EvaluacionItem, 1);
+            $this->fillItem($menu->id, 'Periodos Lectivos','','voyager.periodos-lectivos.index', '_self','', '#000000', $EvaluacionItem, 1);
             $this->fillItem($menu->id, 'Momentos para las Evaluaciones','','voyager.momentos-evaluacion.index', '_self','', '#000000', $EvaluacionItem, 2);
         $this->fillItem($menu->id, 'Cursos del CVUCV',  '', 'gestion.evaluaciones', '_self','voyager-hammer', '#ffff00', null, 8);  
 
