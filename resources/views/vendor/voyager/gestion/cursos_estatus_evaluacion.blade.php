@@ -17,7 +17,52 @@
                 
             <div class="row">
                 <div class="col-md-12">
+                    
+                    
 
+                    <div class="panel panel-bordered">
+
+                        <form role="form"
+                            class="form-edit-add"
+                            action="{{ route('curso_invitar_evaluacion_curso', ['id' => $curso->id]) }}"
+                            method="POST">
+
+                            <!-- CSRF TOKEN -->
+                            {{ csrf_field() }}
+                        
+                            <div class="panel-body">
+      
+                                <div class="page-title-content">
+                                    <h1 class="page-title page-title-custom">
+                                        <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->getNombre()}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->getNombre()}}</div>
+                                    </h1>
+
+                                </div>
+
+                                <div class="form-group  col-md-12 ">
+                                    <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
+                                    <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
+                                    </select>
+                                </div>
+
+                                <div class="form-group  col-md-12 ">
+                                    <label class="control-label" for="name">Instrumentos a invitar</label>
+                                    <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
+                                        @foreach($instrumentos_manuales as $instrumento)
+                                        <option value="{{$instrumento->getID()}}">{{$instrumento->getNombre()}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="panel-footer">
+                                <button type="submit" class="btn btn-primary save">Enviar invitación para evaluar</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                    
 
                     <div class="panel panel-bordered">
                         <div class="panel-body">
@@ -44,34 +89,40 @@
                                         <tbody>
                                             @foreach($invitaciones_curso as $invitacion_index => $invitacion)
                                             <tr>
-                                                <td>
-                                                    <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$revisores[$invitacion_index]['id']}}&course={{$curso->id}}" target="_blank">
-                                                        <div class="pull-left image">
+                                                @if(isset($revisores[$invitacion_index]['id']) && isset($revisores[$invitacion_index]['profileimageurlsmall']) && $revisores[$invitacion_index]['profileimageurl'] && isset($revisores[$invitacion_index]['fullname']) && isset ($revisores[$invitacion_index]['email']))
+                                                    <td>
+                                                        <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$revisores[$invitacion_index]['id']}}&course={{$curso->id}}" target="_blank">
+                                                            <div class="pull-left image">
 
-                                                            @if( strpos( $revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')) ) !== false )
-                                                                <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT1')))}}/user/icon/f1?token={{env('CVUCV_ADMIN_TOKEN',setting('site.CVUCV_ADMIN_TOKEN'))}}" class="img-circle" alt="User Image"> 
-                                                            @else
-                                                                <img src="{{$revisores[$invitacion_index]['profileimageurl']}}" class="img-circle" alt="User Image">
-                                                            @endif
+                                                                @if( strpos( $revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1') ) !== false )
+                                                                    <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1'))}}/user/icon/f1?token={{env('CVUCV_ADMIN_TOKEN')}}" class="img-circle" alt="User Image"> 
+                                                                @else
+                                                                    <img src="{{$revisores[$invitacion_index]['profileimageurl']}}" class="img-circle" alt="User Image">
+                                                                @endif
 
-                                                        </div>{{$revisores[$invitacion_index]['fullname']}}
-                                                    </a>
-                                                </td>
+                                                            </div>{{$revisores[$invitacion_index]['fullname']}}
+                                                        </a>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        {{$revisores[$invitacion_index]['email']}}
+                                                    </td>
+                                                @else
+                                                    <td colspan="2">
+                                                        {{$invitacion->getCvucv_user_id()}}
+                                                    </td>
+                                                @endif
                                                 
                                                 <td>
-                                                    {{$revisores[$invitacion_index]['email']}}
-                                                </td>
-                                                
-                                                <td>
-                                                    {{$invitacion->instrumento->nombre}}
+                                                    {{$invitacion->instrumento->getNombre()}}
                                                 </td>
 
                                                 <td>
-                                                    {{$invitacion->estatus_invitacion->nombre}}
+                                                    {{$invitacion->estatus_invitacion->getNombre()}}
                                                 </td>
 
                                                 <td>
-                                                    {{$invitacion->tipo_invitacion->nombre}}
+                                                    {{$invitacion->tipo_invitacion->getNombre()}}
                                                 </td>
                                                 
                                                 <td class="no-sort no-click" id="bread-actions">                                               
@@ -93,7 +144,7 @@
                                                             </a>
                                                         @endif
                                                     @else
-                                                        @if(!$invitacion->instrumento->anonimo)
+                                                        @if(!$invitacion->instrumento->getAnonimo())
                                                             
 
                                                             <a href="{{ route('curso.visualizar_resultados_curso.respuesta_publica', 
@@ -121,45 +172,7 @@
                     </div>
 
 
-                    <form role="form"
-                        class="form-edit-add"
-                        action="{{ route('curso_invitar_evaluacion_curso', ['id' => $curso->id]) }}"
-                        method="POST">
-
-                        <!-- CSRF TOKEN -->
-                        {{ csrf_field() }}
-
-                        <div class="panel panel-bordered">
-                            <div class="panel-body">
-
-                                    <div class="page-title-content">
-                                        <h1 class="page-title page-title-custom">
-                                            <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->cvucv_fullname}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->nombre}}</div>
-                                        </h1>
-
-                                    </div>
-
-                                    <div class="form-group  col-md-12 ">
-                                        <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
-                                        <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group  col-md-12 ">
-                                        <label class="control-label" for="name">Instrumentos a invitar</label>
-                                        <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
-                                            @foreach($instrumentos_manuales as $instrumento)
-                                            <option value="{{$instrumento->id}}">{{$instrumento->nombre}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                            </div>
-
-                            <div class="panel-footer">
-                                <button type="submit" class="btn btn-primary save">Enviar invitación para evaluar</button>
-                            </div>
-                        </div>
-                    </form>
+                    
                 </div>
             </div>
         </div>
@@ -190,7 +203,34 @@
         $(document).ready(function () {
             var table = $('#dataTable').DataTable({!! json_encode(
                     array_merge([
-                        "language" => __('voyager::datatable'),
+                        "language" => [
+                            "sProcessing"=>    "Procesando...",
+                            "sLengthMenu"=>     "Mostrar _MENU_ registros",
+                            "sZeroRecords"=>    "No se encontraron resultados",
+                            "sEmptyTable"=>     "Ningún dato disponible en esta tabla =(",
+                            "sInfo"=>          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                            "sInfoEmpty"=>      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                            "sInfoFiltered"=>   "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix"=>    "",
+                            "sSearch"=>         "Buscar:",
+                            "sUrl"=>           "",
+                            "sInfoThousands"=>  ",",
+                            "sLoadingRecords"=> "Cargando...",
+                            "oPaginate"=> [
+                                "sFirst"=>    "Primero",
+                                "sLast"=>     "Último",
+                                "sNext"=>     "Siguiente",
+                                "sPrevious"=> "Anterior"
+                            ],
+                            "oAria"=> [
+                                "sSortAscending"=>  ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending"=> ": Activar para ordenar la columna de manera descendente"
+                            ],
+                            "buttons"=> [
+                                "copy"=> "Copiar",
+                                "colvis"=> "Visibilidad"
+                            ]
+                        ],
                         "columnDefs" => [['targets' => -1, 'searchable' =>  false, 'orderable' => false]],
                     ],
                     config('voyager.dashboard.data_tables', []))
@@ -212,8 +252,7 @@
             $('.select_all').on('click', function(e) {
                 $('input[name="row_id"]').prop('checked', $(this).prop('checked'));
             });
-
-            
+        
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -275,7 +314,9 @@
                 return repo.fullname || repo.text;
             }
             
-        
+            $("#instrumentos").select2({
+                placeholder: "Seleccione entre los instrumentos disponibles para invitación manual",
+            });
         
         });
     </script>

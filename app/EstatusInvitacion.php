@@ -16,4 +16,8 @@ class EstatusInvitacion extends Model
     public function getID(){
         return $this->id;
     }
+
+    public function getNombre(){
+        return $this->nombre;
+    }
 }
