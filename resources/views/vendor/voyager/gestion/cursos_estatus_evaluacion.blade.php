@@ -18,8 +18,6 @@
             <div class="row">
                 <div class="col-md-12">
                     
-                    
-
                     <div class="panel panel-bordered">
 
                         <form role="form"
@@ -39,13 +37,22 @@
 
                                 </div>
 
-                                <div class="form-group  col-md-12 ">
+                                <div class="form-group col-md-12 ">
                                     <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
                                     <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
                                     </select>
                                 </div>
 
-                                <div class="form-group  col-md-12 ">
+                                <div class="form-group col-md-6 ">
+                                    <label class="control-label" for="name">Momento de evalución a invitar</label>
+                                    <select id="momento_evaluacion" class="form-control select2" name="momentos_evaluacion[]" multiple required>
+                                        @foreach($momentos_evaluacion as $momento)
+                                        <option value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6 ">
                                     <label class="control-label" for="name">Instrumentos a invitar</label>
                                     <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
                                         @foreach($instrumentos_manuales as $instrumento)
@@ -63,110 +70,118 @@
 
                     </div>
                     
-
                     <div class="panel panel-bordered">
                         <div class="panel-body">
 
-                                <div class="page-title-content">
-                                    <h1 class="page-title page-title-custom">
-                                        <i class="icon voyager-settings"></i> Revisores invitados al curso {{$curso->cvucv_fullname}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->nombre}}</div>
-                                    </h1>
+                            <div class="page-title-content">
+                                <h1 class="page-title page-title-custom">
+                                    <i class="icon voyager-settings"></i>Evaluadores invitados al curso {{$curso->cvucv_fullname}}.
+                                </h1>
+                            </div>
+                        
+                            <div class="table-responsive">
+                                <table id="dataTable" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre del Evaluador</th>
+                                            <th>Correo del Evaluador</th>
+                                            <th>Instrumento asignado para evaluar</th>
+                                            <th>Periodo Lectivo</th>
+                                            <th>Momento de Evaluación</th>
+                                            <th>Estatus invitacion a evaluar</th>
+                                            <th>Tipo de invitacion</th>
+                                            <th class="actions text-right">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($invitaciones_curso as $invitacion_index => $invitacion)
+                                        <tr>
+                                            @if(isset($revisores[$invitacion_index]['id']) && isset($revisores[$invitacion_index]['profileimageurlsmall']) && $revisores[$invitacion_index]['profileimageurl'] && isset($revisores[$invitacion_index]['fullname']) && isset ($revisores[$invitacion_index]['email']))
+                                                <td>
+                                                    <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$revisores[$invitacion_index]['id']}}&course={{$curso->id}}" target="_blank">
+                                                        <div class="pull-left image">
 
-                                </div>
-                            
-                                <div class="table-responsive">
-                                    <table id="dataTable" class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Nombre</th>
-                                                <th>Correo</th>
-                                                <th>Instrumento asignado para evaluar</th>
-                                                <th>Estatus invitacion a evaluar</th>
-                                                <th>Tipo de invitacion</th>
-                                                <th class="actions text-right">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($invitaciones_curso as $invitacion_index => $invitacion)
-                                            <tr>
-                                                @if(isset($revisores[$invitacion_index]['id']) && isset($revisores[$invitacion_index]['profileimageurlsmall']) && $revisores[$invitacion_index]['profileimageurl'] && isset($revisores[$invitacion_index]['fullname']) && isset ($revisores[$invitacion_index]['email']))
-                                                    <td>
-                                                        <a href="{{env('CVUCV_GET_SITE_URL','https://campusvirtual.ucv.ve')}}/user/view.php?id={{$revisores[$invitacion_index]['id']}}&course={{$curso->id}}" target="_blank">
-                                                            <div class="pull-left image">
+                                                            @if( strpos( $revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1') ) !== false )
+                                                                <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1'))}}/user/icon/f1?token={{env('CVUCV_ADMIN_TOKEN')}}" class="img-circle" alt="User Image"> 
+                                                            @else
+                                                                <img src="{{$revisores[$invitacion_index]['profileimageurl']}}" class="img-circle" alt="User Image">
+                                                            @endif
 
-                                                                @if( strpos( $revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1') ) !== false )
-                                                                    <img src="{{env('CVUCV_GET_WEBSERVICE_ENDPOINT2',setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2'))}}/{{strtok($revisores[$invitacion_index]['profileimageurlsmall'], env('CVUCV_GET_WEBSERVICE_ENDPOINT1'))}}/user/icon/f1?token={{env('CVUCV_ADMIN_TOKEN')}}" class="img-circle" alt="User Image"> 
-                                                                @else
-                                                                    <img src="{{$revisores[$invitacion_index]['profileimageurl']}}" class="img-circle" alt="User Image">
-                                                                @endif
+                                                        </div>{{$revisores[$invitacion_index]['fullname']}}
+                                                    </a>
+                                                </td>
+                                                
+                                                <td>
+                                                    {{$revisores[$invitacion_index]['email']}}
+                                                </td>
+                                            @else
+                                                <td colspan="2">
+                                                    {{$invitacion->getCvucv_user_id()}}
+                                                </td>
+                                            @endif
+                                            
+                                            <td>
+                                                {{$invitacion->instrumento->getNombre()}}
+                                            </td>
 
-                                                            </div>{{$revisores[$invitacion_index]['fullname']}}
+                                            <td>
+                                                {{$invitacion->periodo->getNombre()}}
+                                            </td>
+
+                                            <td>
+                                                {{$invitacion->momento_evaluacion->getNombre()}}
+                                            </td>
+
+                                            <td>
+                                                {{$invitacion->estatus_invitacion->getNombre()}}
+                                            </td>
+
+                                            <td>
+                                                {{$invitacion->tipo_invitacion->getNombre()}}
+                                            </td>
+                                            
+                                            <td class="no-sort no-click" id="bread-actions">                                               
+                                                
+                                                @if(!$invitacion->invitacion_completada())
+                                                    
+                                                    
+                                                    @if(!$invitacion->invitacion_revocada())
+                                                        <a href="{{ route('curso_enviar_recordatorio', ['id' => $curso->id, 'invitacion' => $invitacion->id]) }}" title="Reenviar invitación" class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                                                            <i class="voyager-list"></i> Reenviar invitación a evaluar
                                                         </a>
-                                                    </td>
-                                                    
-                                                    <td>
-                                                        {{$revisores[$invitacion_index]['email']}}
-                                                    </td>
-                                                @else
-                                                    <td colspan="2">
-                                                        {{$invitacion->getCvucv_user_id()}}
-                                                    </td>
-                                                @endif
-                                                
-                                                <td>
-                                                    {{$invitacion->instrumento->getNombre()}}
-                                                </td>
 
-                                                <td>
-                                                    {{$invitacion->estatus_invitacion->getNombre()}}
-                                                </td>
-
-                                                <td>
-                                                    {{$invitacion->tipo_invitacion->getNombre()}}
-                                                </td>
-                                                
-                                                <td class="no-sort no-click" id="bread-actions">                                               
-                                                    
-                                                    @if(!$invitacion->invitacion_completada())
-                                                        
-                                                        
-                                                        @if(!$invitacion->invitacion_revocada())
-                                                            <a href="{{ route('curso_enviar_recordatorio', ['id' => $curso->id, 'invitacion' => $invitacion->id]) }}" title="Reenviar invitación" class="btn btn-sm btn-primary" style="margin-right: 5px;">
-                                                                <i class="voyager-list"></i> Reenviar invitación a evaluar
-                                                            </a>
-
-                                                            <a href="{{ route('curso_revocar_invitacion', ['id' => $curso->id, 'invitacion' => $invitacion->id]) }}" title="Revocar invitación" class="btn btn-sm btn-danger" style="margin-right: 5px;">
-                                                                <i class="voyager-trash"></i> Revocar invitación a evaluar
-                                                            </a>
-                                                        @else
-                                                            <a href="{{ route('curso_enviar_recordatorio', ['id' => $curso->id, 'invitacion' => $invitacion->id]) }}" title="Reenviar invitación" class="btn btn-sm btn-primary" style="margin-right: 5px;">
-                                                                <i class="voyager-list"></i> Asignar invitación a evaluar
-                                                            </a>
-                                                        @endif
+                                                        <a href="{{ route('curso_revocar_invitacion', ['id' => $curso->id, 'invitacion' => $invitacion->id]) }}" title="Revocar invitación" class="btn btn-sm btn-danger" style="margin-right: 5px;">
+                                                            <i class="voyager-trash"></i> Revocar invitación a evaluar
+                                                        </a>
                                                     @else
-                                                        @if(!$invitacion->instrumento->getAnonimo())
-                                                            
-
-                                                            <a href="{{ route('curso.visualizar_resultados_curso.respuesta_publica', 
-                                                                    ['categoria_id' => $curso->categoria, 
-                                                                    'curso_id' => $curso->id,
-                                                                    'periodo_lectivo' => $invitacion->periodo_lectivo_id,
-                                                                    'instrumento' => $invitacion->instrumento_id,
-                                                                    'user' => $invitacion->cvucv_user_id]) }}" 
-                                                                    title="Reenviar invitación" class="btn btn-sm btn-warning" style="margin-right: 5px;">
-                                                                <i class="voyager-eye"></i> Ver evaluación
-                                                            </a>
-                                                        @else
-                                                            <div class="completada">Evaluación anónima realizada satisfactoriamente</div>
-                                                        @endif
+                                                        <a href="{{ route('curso_enviar_recordatorio', ['id' => $curso->id, 'invitacion' => $invitacion->id]) }}" title="Reenviar invitación" class="btn btn-sm btn-primary" style="margin-right: 5px;">
+                                                            <i class="voyager-list"></i> Asignar invitación a evaluar
+                                                        </a>
                                                     @endif
-                                                                                         
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                @else
+                                                    @if(!$invitacion->instrumento->getAnonimo())
+                                                        
+
+                                                        <a href="{{ route('curso.visualizar_resultados_curso.respuesta_publica', 
+                                                                ['categoria_id' => $curso->categoria, 
+                                                                'curso_id' => $curso->id,
+                                                                'periodo_lectivo' => $invitacion->periodo_lectivo_id,
+                                                                'instrumento' => $invitacion->instrumento_id,
+                                                                'user' => $invitacion->cvucv_user_id]) }}" 
+                                                                title="Reenviar invitación" class="btn btn-sm btn-warning" style="margin-right: 5px;">
+                                                            <i class="voyager-eye"></i> Ver evaluación
+                                                        </a>
+                                                    @else
+                                                        <div class="completada">Evaluación anónima realizada satisfactoriamente</div>
+                                                    @endif
+                                                @endif
+                                                                                        
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                             
                         </div>
                     </div>
@@ -316,6 +331,10 @@
             
             $("#instrumentos").select2({
                 placeholder: "Seleccione entre los instrumentos disponibles para invitación manual",
+            });
+
+            $("#momento_evaluacion").select2({
+                placeholder: "Seleccione el momento de evaluación",
             });
         
         });

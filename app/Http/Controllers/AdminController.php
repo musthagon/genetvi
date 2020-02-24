@@ -12,6 +12,7 @@ use App\Categoria;
 use App\Indicador;
 use App\Invitacion;
 use App\TipoInvitacion;
+use App\MomentosEvaluacion;
 use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -815,6 +816,12 @@ class AdminController extends Controller
             return redirect()->back()->with(['message' => "Error, no se encuentra configurado el periodo lectivo actual", 'alert-type' => 'error']);
         }
 
+        //Invitaciones para el periodo lectivo actual....
+        $momentos_evaluacion = $periodo_lectivo_actual->momentos_evaluacion;
+        /*if(empty($momentos_evaluacion)){
+            return redirect()->back()->with(['message' => "Error, no se encuentra configurado ningún momento de evaluación para el periodo lectivo actual", 'alert-type' => 'error']);
+        }*/
+
         $invitaciones_curso = Invitacion::where('curso_id',$curso->id)->where('periodo_lectivo_id',$periodo_lectivo_actual->id)->get();
 
         //Buscamos los participantes
@@ -841,6 +848,7 @@ class AdminController extends Controller
         compact(
             'curso',
             'periodo_lectivo_actual',
+            'momentos_evaluacion',
             'invitaciones_curso',
             'revisores',
             'instrumentos_manuales'
@@ -897,12 +905,21 @@ class AdminController extends Controller
         return redirect()->back()->with(['message' => "Invitación a evaluar revocada", 'alert-type' => 'success']);
     }
     public function invitar_evaluacion_curso($id, Request $request){
-        
-        if(!isset($request->users)){
-            return redirect()->back()->with(['message' => "No ha seleccionado ningún usuario para invitar a evaluar", 'alert-type' => 'error']);
+        $momentos_evaluacion         = $request->momentos_evaluacion;
+        $instrumentos                = $request->instrumentos_manuales;
+        $usuarios                    = $request->users;
+        $total_invitacion_previas    = 0 ;
+        $total_invitacion            = 0 ;
+
+        if(!isset($usuarios)){
+            return redirect()->back()->with(['message' => "No ha seleccionado ningún usuario", 'alert-type' => 'error']);
         }
 
-        if(!isset($request->instrumentos_manuales)){
+        if(!isset($momentos_evaluacion)){
+            return redirect()->back()->with(['message' => "Debe ingresar al menos un momento de evaluación", 'alert-type' => 'error']);
+        }
+
+        if(!isset($instrumentos)){
             return redirect()->back()->with(['message' => "No ha seleccionado ningún instrumento", 'alert-type' => 'error']);
         }
 
@@ -911,11 +928,7 @@ class AdminController extends Controller
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
-
-        $instrumentos       = $request->instrumentos_manuales;
-        $usuarios           = $request->users;
-        $total_invitacion   = 0 ;
-
+        
         foreach($instrumentos as $instrumentoIndex => $instrumento){
 
             $instrumentoActual = Instrumento::find($instrumento);
@@ -926,22 +939,38 @@ class AdminController extends Controller
                 return redirect()->back()->with(['message' => "El instrumento: ".$instrumentoActual->nombre." no permite la invitación manual", 'alert-type' => 'error']);
             }
 
-            foreach($usuarios as $usuarioIndex => $usuario){
-
-                $periodo_lectivo = $curso->periodo_lectivo_actual();
-                $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
-
-                if(!Invitacion::invitacionPrevia($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $usuario) ){
-
-                    //se crea la invitacion
-                    Invitacion::invitarEvaluador($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momento_evaluacion_activo->getID(), $usuario, TipoInvitacion::getEstatusManual());
+            foreach($momentos_evaluacion as $momentoIndex => $momento){
+                
+                $momentoActual = MomentosEvaluacion::find($momento);
+                
+                if(empty($momentoActual)){
+                    return redirect()->back()->with(['message' => "Uno de los momentos de evaluación seleccionados no existe", 'alert-type' => 'error']);
                 }
+                foreach($usuarios as $usuarioIndex => $usuario){
 
+                    $periodo_lectivo = $curso->periodo_lectivo_actual();
+                    $momento_evaluacion_activo = $periodo_lectivo->momento_evaluacion_actual;
+    
+                    if(!Invitacion::invitacionPrevia($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momentoActual->getID(), $usuario) ){
+    
+                        //se crea la invitacion
+                        Invitacion::invitarEvaluador($curso->getID(), $instrumentoActual->getID(), $periodo_lectivo->getID(), $momentoActual->getID(), $usuario, TipoInvitacion::getEstatusManual());
+                        
+                        $total_invitacion++;
+                    }else{
+                        $total_invitacion_previas++;
+                    }
+    
+                }
             }
-            $total_invitacion = ($instrumentoIndex + 1)*($usuarioIndex + 1);
+            
         }
 
-        return redirect()->back()->with(['message' => $total_invitacion." Usuarios invitados", 'alert-type' => 'success']);
+        if($total_invitacion_previas > 0){
+            return redirect()->back()->with(['message' => $total_invitacion_previas." Usuarios con invitaciones previas y ".$total_invitacion." Usuarios invitados", 'alert-type' => 'warning']);
+        }else{
+            return redirect()->back()->with(['message' => $total_invitacion." Usuarios invitados", 'alert-type' => 'success']);
+        }
     }
     
     
