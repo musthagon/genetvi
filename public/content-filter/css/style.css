@@ -222,7 +222,8 @@ xgallery
 
 -------------------------------- */
 .cd-gallery {
-  padding: 26px 5%;
+  /*padding: 26px 5%;*/
+  padding: 0 0 0 0px;
   width: 100%;
 }
 /*.cd-gallery li {
@@ -255,7 +256,8 @@ xgallery
 }
 @media only screen and (min-width: 768px) {
   .cd-gallery {
-    padding: 40px 3%;
+    /*padding: 40px 3%;*/
+    padding: 0 0 0 0px;
   }
   .cd-gallery ul {
     text-align: justify;
@@ -272,7 +274,8 @@ xgallery
 }
 @media only screen and (min-width: 1170px) {
   .cd-gallery {
-    padding: 50px 2%;
+    /*padding: 50px 2%;*/
+    padding: 0 0 0 0px;
     float: right;
     -webkit-transition: width 0.3s;
     -moz-transition: width 0.3s;

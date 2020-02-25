@@ -82,6 +82,13 @@
         
         <!-- cd-gallery -->
 		<section class="cd-gallery">
+            @if($curso->getEvaluacionActiva() != 0)
+                <div class="analytics-container">
+                    <p style="border-radius:4px; padding:20px; background:#fff; margin:0; color:#999; text-align:center;">
+                    <code>Información</code> Las estadísticas relacionadas el periodo léctivo {{$curso->periodo_lectivo_actual()->getNombre()}} pueden variar, ya que este curso todavía está en proceso de evaluación
+                    </p>
+                </div>
+            @endif
             <section class="page-content browse container-fluid ">
                 <div class="row">
                     
