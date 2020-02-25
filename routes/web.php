@@ -68,8 +68,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('gestion/{categoria_id}/curso_{curso_id}/', 'ChartsController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');
     Route::get('gestion/{categoria_id}/curso_{curso_id}/respuesta', 'ChartsController@visualizar_resultados_curso_respuesta_publica')->name('curso.visualizar_resultados_curso.respuesta_publica');
     Route::get('gestion/curso/{id}/consultar_grafico/', 'ChartsController@consultar_grafico')->name('curso.consultar_grafico');
-    Route::get('gestion/curso/{curso_id}/consultar_grafico_indicadores/{periodo}/{instrumento}/{categoria}/{indicador}', 'ChartsController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
-    Route::get('gestion/curso/{curso_id}/consultar_tabla_indicador/{periodo}/{instrumento}/{categoria}/{indicador}', 'ChartsController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');
+    
+    //Cursos charts, dashboards, estadísticas AJAX
+    Route::get('gestion/curso/consultar_grafico_indicadores/', 'ChartsController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
+    Route::get('gestion/curso/consultar_tabla_indicador/', 'ChartsController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');
     Route::get('gestion/curso/consultar_grafico_generales/', 'ChartsController@consultar_grafico_generales')->name('curso.consultar_grafico_generales');
 
     //Evaluación de cursos

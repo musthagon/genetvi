@@ -106,6 +106,10 @@ class Categoria extends Model
         return count($likert)-1;
     }
 
+    public function getID(){
+        return $this->id;
+    }
+    
     public function getPerfil(){
         $opciones = $this->getOpciones();
 

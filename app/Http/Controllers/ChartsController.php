@@ -140,12 +140,17 @@ class ChartsController extends Controller
 
         foreach($instrumentos_collection as $instrumento_index=>$instrumento){
         foreach($instrumento->categorias as $categoria_index=>$categoria){
+            
+            //Obtenenos las opciones de la escala de likert
+            $opciones_instrumento = $categoria->getLikertType();
+
         foreach($categoria->indicadores as $indicador_index=>$indicador){
 
             if($indicador->esMedible()){
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
 
-                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] ->options([
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
+                ->options([
                     "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
                     'title'=>[
                         'text' => 'Respuestas del indicador: '.$indicador->getNombre().'<br>
@@ -156,24 +161,36 @@ class ChartsController extends Controller
                         'text' => $this->dashboards_subtitle
                     ],
                     'tooltip'=> [
-                        'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        'valueSuffix'=> ' veces'
                     ],
                     'plotOptions'=> [
-                        'pie'=> [
-                            'allowPointSelect'=> true,
-                            'cursor'=> 'pointer',
+                        'bar'=> [
                             'dataLabels'=> [
                                 'enabled'=> true,
-                                'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
                             ],
-                        ],                            
+                        ],
+                        'series'=> [
+                            'stacking'=> 'normal'
+                        ],                           
                     ],
+                    'xAxis' => [
+                        'categories' => $opciones_instrumento
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Cantidad respuestas',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                    
                 ]);
-
-                $opciones_instrumento = $categoria->getLikertType();
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
-                    ->labels($opciones_instrumento)
-                    ->load(route('curso.consultar_grafico_indicadores', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]));
+                    ->load(route('curso.consultar_grafico_indicadores', 
+                        ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()]));
             }
 
         }
@@ -197,7 +214,6 @@ class ChartsController extends Controller
         ));
 
     }
-
     public function visualizar_resultados_curso_respuesta_publica($categoria_id, $curso_id, Request $request){
         
 
@@ -257,23 +273,13 @@ class ChartsController extends Controller
             'instrumento'
         ));
     }
-    public function consultar_grafico(Request $request, $id){//Crea la data de los dashboards consultados dinamicamente fetch() JS
-        $chart = new indicadoresChart;
-
-        if(isset($request->number)){
-            $array = [3,4,(int)$request->number];
-            $array2 = [(int)$request->number,4,3];
-            $chart->dataset('Sample Test', 'bar', $array );
-            $chart->dataset('Sample Test', 'line', $array2 );
-        }else{
-            $chart->dataset('Sample Test', 'bar', [3,4,1]);
-            $chart->dataset('Sample Test', 'line', [1,4,3]);
-        }
+    public function consultar_grafico_indicadores(Request $request){//Crea la data de los dashboards consultados dinamicamente fetch() JS
+        $curso_id       = $request->curso_id;
+        $periodo_id     = $request->periodo_id;
+        $instrumento_id = $request->instrumento_id;
+        $categoria_id   = $request->categoria_id;
+        $indicador_id   = $request->indicador_id;
         
-
-        return $chart->api();
-    }
-    public function consultar_grafico_indicadores($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id){//Crea la data de los dashboards consultados dinamicamente fetch() JS
         $chart = new indicadoresChart;
 
         if(!isset($curso_id) || !isset($periodo_id) || !isset($instrumento_id) || !isset($categoria_id) || !isset($indicador_id)){
@@ -288,26 +294,35 @@ class ChartsController extends Controller
         if(empty($categoria) || empty($indicador) || empty($periodo) || empty($instrumento) || empty($curso)){
             return json_encode (json_decode ("{}"));
         }
-        //$opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
         
+        //Momentos de evaluación
+        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
+
         $opciones_instrumento = $categoria->getLikertType();
-                
-        $k=0;
-        $opciones_indicador = [];
-        foreach($opciones_instrumento as $key=>$opcion){
-            $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $indicador, $key);
-            $opciones_indicador[$k] = $valor;
-            $k++;
+          
+        foreach($momentos_evaluacion_collection as $momentoIndex => $momento){
+            $k=0;
+            $query = [];
+
+            foreach($opciones_instrumento as $key=>$opcion){
+                $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $momento, $indicador, $opcion);
+                $query[$k] = $valor;
+                $k++;
+            }
+
+            $chart->dataset($momento->getNombre(), 'bar',$query);
+            
         }
-
-        $chart->dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id, 'bar',$opciones_indicador);
-        
-        $chart->dataset($indicador->nombre.' Instrumento: '.$instrumento->id.' Periodo Lectivo: '.$periodo->id, 'line',$opciones_indicador);
-
 
         return $chart->api();
     }
-    public function consultar_tabla_indicador($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id){//Crea datatable de indicadores noMedibles Text, textarea
+    public function consultar_tabla_indicador(Request $request){//Crea datatable de indicadores noMedibles Text, textarea
+        $curso_id       = $request->curso_id;
+        $periodo_id     = $request->periodo_id;
+        $instrumento_id = $request->instrumento_id;
+        $categoria_id   = $request->categoria_id;
+        $indicador_id   = $request->indicador_id;
+        
         $result = collect();
 
         if(!isset($curso_id) || !isset($periodo_id) || !isset($instrumento_id) || !isset($categoria_id) || !isset($indicador_id)){
@@ -330,61 +345,6 @@ class ChartsController extends Controller
         
         
     }
-    /*public function consultar_grafico_generales($curso_id, $tipo){//Crea la data de los dashboards consultados dinamicamente fetch() JS
-        if(!isset($curso_id) || !isset($tipo)){
-            return json_encode (json_decode ("{}"));
-        }
-
-        //$tipo = (int)$tipo ;
-        if($tipo != "1" && $tipo != "2"){
-            
-            $chart = new indicadoresChart;
-            $chart->dataset('Sample Test', 'bar', [3,4,1]);
-            $chart->dataset('Sample Test', 'line', [1,4,3]);
-            return $chart->api();
-        }
-
-
-        $curso = Curso::find($curso_id);
-        
-        if(empty($curso)){
-            return json_encode (json_decode ("{}"));
-        }
-
-        //instrumentos con los cuales han evaluado este curso
-        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
-        
-        //periodos lectivos con los cuales han evaluado este curso
-        $periodos_collection = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
-
-        $chart = new indicadoresChart;
-        
-        
-        //Charts por indicadores de categora, en instrumento en un periodo lectivo
-        $query = [];
-        foreach($periodos_collection as $periodo_index=>$periodo){
-            foreach($instrumentos_collection as $instrumento_index=>$instrumento){
-                if($tipo == "1"){
-                    $query [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->getID())
-                        ->where('instrumento_id',$instrumento->id)
-                        ->where('curso_id',$curso->id)->count();
-
-                }elseif($tipo == "2"){
-                    $query [$periodo_index][$instrumento_index] = Evaluacion::where('periodo_lectivo_id',$periodo->getID())
-                        ->where('instrumento_id',$instrumento->id)
-                        ->where('curso_id',$curso->id)
-                        ->avg('percentil_eva');
-                }
-            }
-
-            $chart->dataset($periodo->nombre, 'bar', $query[$periodo_index]);
-            
-        }
-
-        return $chart->api();
-
-    }*/
-
     public function consultar_grafico_generales(Request $request){//Crea la data de los dashboards consultados dinamicamente fetch() JS
         $curso_id           = $request->curso;
         $tipo               = $request->tipo;
@@ -405,7 +365,7 @@ class ChartsController extends Controller
         Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
         
         //Momentos de evaluación
-        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->id);
+        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
 
         $chart = new indicadoresChart;
         
