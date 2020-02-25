@@ -73,18 +73,20 @@
 		<section class="cd-gallery">
             <section class="page-content browse container-fluid ">
                 <div class="row">
-                    @if(!empty($cantidadEvaluacionesCursoCharts))
-                    <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
-                        {!! $cantidadEvaluacionesCursoCharts->container() !!}
-                    </div>
-                    @endif
-                    @if(!empty($promedioPonderacionCurso))
-                    <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
-                        {!! $promedioPonderacionCurso->container() !!}
-                    </div>
-                    @endif
+                    
 
                     @foreach($periodos_collection as $periodo_index=>$periodo)
+                        @if(!empty($cantidadEvaluacionesCursoCharts[$periodo_index]))
+                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
+                            {!! $cantidadEvaluacionesCursoCharts[$periodo_index]->container() !!}
+                        </div>
+                        @endif
+                        @if(!empty($promedioPonderacionCurso[$periodo_index]))
+                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
+                            {!! $promedioPonderacionCurso[$periodo_index]->container() !!}
+                        </div>
+                        @endif
+
                     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
@@ -211,15 +213,16 @@
     <script src="/content-filter/js/jquery.mixitup.min.js"></script>
     <script src="/content-filter/js/main.js"></script> <!-- Resource jQuery -->
 
-
-    @if(!empty($cantidadEvaluacionesCursoCharts))
-    {!! $cantidadEvaluacionesCursoCharts->script() !!}
-    @endif
-    @if(!empty($promedioPonderacionCurso))
-    {!! $promedioPonderacionCurso->script() !!}
-    @endif
-
+    
     @foreach($periodos_collection as $periodo_index=>$periodo)
+
+        @if(!empty($cantidadEvaluacionesCursoCharts[$periodo_index]))
+        {!! $cantidadEvaluacionesCursoCharts[$periodo_index]->script() !!}
+        @endif
+        @if(!empty($promedioPonderacionCurso[$periodo_index]))
+        {!! $promedioPonderacionCurso[$periodo_index]->script() !!}
+        @endif
+
     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
     @foreach($instrumento->categorias as $categoria_index=>$categoria)
     @foreach($categoria->indicadores as $indicador_index=>$indicador)
@@ -251,6 +254,8 @@
         $(document).ready(function () {
             
             
+
+
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -315,7 +320,7 @@
                 return repo.fullname || repo.text;
             }
             
-        
+            
         
         });
     </script>
