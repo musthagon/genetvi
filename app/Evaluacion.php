@@ -199,16 +199,16 @@ class Evaluacion extends Model
         return $indicadores_collection;
     }
     //Busca el value string de las respuestas del indicador seleccionado
-    public static function respuestas_del_indicador($curso_id, $periodo_id, $instrumento_id, $categoria_id, $indicador_id){
+    public static function respuestas_del_indicador($curso_id, $periodo_lectivo_id, $instrumento_id, $categoria_id, $indicador_id){
         $valor = DB::table('evaluaciones')
             ->join('respuestas', 'evaluaciones.id', '=', 'respuestas.evaluacion_id')
             ->select('evaluaciones.*', 'respuestas.*')
             ->where('evaluaciones.curso_id',$curso_id)
             ->where('evaluaciones.instrumento_id',$instrumento_id)
-            ->where('evaluaciones.periodo_lectivo_id',$periodo_id)
+            ->where('evaluaciones.periodo_lectivo_id',$periodo_lectivo_id)
             ->where('respuestas.categoria_id',$categoria_id)
             ->where('respuestas.indicador_id',$indicador_id)
-            ->get(['value_string']);
+            ->get(['respuestas.value_string','evaluaciones.momento_evaluacion_id']);
         return $valor;
     }
 

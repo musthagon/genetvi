@@ -109,16 +109,19 @@
 
                     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
+                        @php $categoriaMedible = $categoria->esMedible();@endphp
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
-                        @if($indicador->esMedible())
+                        @if($indicador->esMedible() && $categoriaMedible)
                             <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
                                 {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
                             </div>
                         @else
                             <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} general">
                                 <div class="tabla" style="background:white;">
-                                    <div class="indicador_title" ><div>Respuestas del indicador: {{$indicador->nombre}}<br>Del Instrumento: {{$instrumento->nombre}}<br>En el periodo lectivo: {{$periodo->nombre}}</div></div>
-                                    <div class="indicador_subtitle" ><div>{{$dashboards_subtitle}}</div></div>
+                                    <div class="indicador_title highcharts-title" >
+                                        <tspan>Respuestas del indicador: {{$indicador->nombre}}<br>Del Instrumento: {{$instrumento->nombre}}<br>En el periodo lectivo: {{$periodo->nombre}}</tspan>
+                                    </div>
+                                    <div class="indicador_subtitle" >{{$dashboards_subtitle}}</div>
                                     <table id="Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}" class="table table-hover table-condensed">
                                         <thead>
                                         <tr>
@@ -252,22 +255,51 @@
 
     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
     @foreach($instrumento->categorias as $categoria_index=>$categoria)
+        @php $categoriaMedible = $categoria->esMedible();@endphp
     @foreach($categoria->indicadores as $indicador_index=>$indicador)
-        @if($indicador->esMedible())
+        @if($indicador->esMedible() && $categoriaMedible)
             {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
         @else
-        <script>
-            $(document).ready(function () {
-                var table = $('#Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}').DataTable({
-                        "processing": true,
-                        "serverSide": true,
-                        "ajax": "{{ route('curso.consultar_tabla_indicador', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]) }}",
-                        "columns": [
-                            {data: 'value_string', name: 'value_string'}
-                        ]
-                    });
-            });
-        </script>
+            <script>
+                $(document).ready(function () {
+                    var table = $('#Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}').DataTable({
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax": "{{ route('curso.consultar_tabla_indicador', ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()]) }}",
+                            "columns": [
+                                {data: 'value_string', name: 'value_string'},
+                                
+                            ],
+                            "language" : 
+                                {"sProcessing":     "Procesando...",
+                                "sLengthMenu":     "Mostrar _MENU_ registros",
+                                "sZeroRecords":    "No se encontraron resultados",
+                                "sEmptyTable":     "Ningún dato disponible en esta tabla =(",
+                                "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                                "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+                                "sInfoPostFix":    "",
+                                "sSearch":         "Buscar:",
+                                "sUrl":            "",
+                                "sInfoThousands":  ",",
+                                "sLoadingRecords": "Cargando...",
+                                "oPaginate": {
+                                    "sFirst":    "Primero",
+                                    "sLast":     "Último",
+                                    "sNext":     "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                },
+                                "buttons": {
+                                    "copy": "Copiar",
+                                    "colvis": "Visibilidad"
+                                }},
+                        });
+                });
+            </script>
         @endif
     @endforeach
     @endforeach

@@ -71,7 +71,7 @@ Route::group(['prefix' => 'admin'], function () {
     
     //Cursos charts, dashboards, estadísticas AJAX
     Route::get('gestion/curso/consultar_grafico_indicadores/', 'ChartsController@consultar_grafico_indicadores')->name('curso.consultar_grafico_indicadores');
-    Route::get('gestion/curso/consultar_tabla_indicador/', 'ChartsController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');
+    Route::get('gestion/curso/{curso_id}/consultar_tabla_indicador/{periodo}/{instrumento}/{categoria}/{indicador}', 'ChartsController@consultar_tabla_indicador')->name('curso.consultar_tabla_indicador');
     Route::get('gestion/curso/consultar_grafico_generales/', 'ChartsController@consultar_grafico_generales')->name('curso.consultar_grafico_generales');
 
     //Evaluación de cursos

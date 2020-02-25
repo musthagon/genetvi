@@ -16,7 +16,7 @@ use App\Categoria;
 use App\Indicador;
 use App\User;
 use App\Charts\indicadoresChart;
-
+use Yajra\Datatables\Datatables;
 
 use App\Traits\CommonFunctionsGenetvi; 
 
@@ -274,7 +274,7 @@ class ChartsController extends Controller
         $promedioPonderacionCurso1->load(route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
 
 
-        
+        $dashboards_subtitle = $this->dashboards_subtitle;
         return view('vendor.voyager.gestion.cursos_dashboards',
         compact(
             'curso',
@@ -394,12 +394,7 @@ class ChartsController extends Controller
 
         return $chart->api();
     }
-    public function consultar_tabla_indicador(Request $request){//Crea datatable de indicadores noMedibles Text, textarea
-        $curso_id       = $request->curso_id;
-        $periodo_id     = $request->periodo_id;
-        $instrumento_id = $request->instrumento_id;
-        $categoria_id   = $request->categoria_id;
-        $indicador_id   = $request->indicador_id;
+    public function consultar_tabla_indicador($curso_id,$periodo_id,$instrumento_id,$categoria_id,$indicador_id){//Crea datatable de indicadores noMedibles Text, textarea
         
         $result = collect();
 
