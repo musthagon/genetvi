@@ -51,19 +51,28 @@
         <div class="cd-tab-filter-wrapper">
 			<div class="cd-tab-filter">
 				<ul class="cd-filters">
+                   
 					<li class="placeholder"> 
-						<a data-type="all" href="#0">Todos</a> <!-- selected option on mobile -->
-					</li> 
+						<a data-type="all" href="#0">Todos</a><!-- selected option on mobile -->
+                    </li> 
+                    
                     <li class="filter"><a class="selected" href="#0" data-type="all">Todos</a></li>
 
                     <!-- periodos lectivos -->
+                    @php 
+                        $total = count($periodos_collection);
+                    @endphp
                     @foreach($periodos_collection as $periodo_index=>$periodo)
-                    @if(!empty($periodo))
-                        <li class="filter" data-filter=".Periodo_{{$periodo->id}}"><a href="#0" data-type="Periodo_{{$periodo->id}}">{{$periodo->nombre}}</a></li>
-                    @endif
+                        @if(!empty($periodo))
+                            <li class="filter" data-filter=".Periodo_{{$periodo->id}}">
+                                <a href="#0" class="" data-type="Periodo_{{$periodo->id}}">
+                                    {{$periodo->nombre}}
+                                </a>
+                            </li>
+                        @endif
                     @endforeach
                     
-                    <li class="filter" data-filter=".general"><a href="#0" data-type="general">Otros</a></li>
+                    <li class="filter" data-filter=".general"><a href="#0" class="" data-type="general">Otros</a></li>
 					
 				</ul> <!-- cd-filters -->
 			</div> <!-- cd-tab-filter -->
@@ -253,9 +262,6 @@
         
         $(document).ready(function () {
             
-            
-
-
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

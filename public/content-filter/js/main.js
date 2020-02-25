@@ -104,11 +104,12 @@ jQuery(document).ready(function($){
 	    	inputText = $(".cd-filter-content input[type='search']").val().toLowerCase();
 	   		// Check to see if input field is empty
 	    	if ((inputText.length) > 0) {            
-	      		$('.mix').each(function() {
+	      		$('.mix').each(function() { //Antes era solo .mix
 		        	var $this = $(this);
 		        
-		        	// add item to be filtered out if input text matches items inside the title   
-		        	if($this.attr('class').toLowerCase().match(inputText)) {
+					// add item to be filtered out if input text matches items inside the title   
+		        	//if($this.attr('class').toLowerCase().match(inputText)) {
+					if($this.find('.highcharts-title > tspan').text().toLowerCase().match(inputText)) {
 		          		$matching = $matching.add(this);
 		        	} else {
 		          		// removes any previously matched item
