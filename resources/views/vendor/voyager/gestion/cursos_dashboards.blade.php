@@ -73,6 +73,8 @@
                     @endforeach
                     
                     <li class="filter" data-filter=".general"><a href="#0" class="" data-type="general">Otros</a></li>
+
+                    
 					
 				</ul> <!-- cd-filters -->
 			</div> <!-- cd-tab-filter -->
@@ -112,11 +114,11 @@
                         @php $categoriaMedible = $categoria->esMedible();@endphp
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
                         @if($indicador->esMedible() && $categoriaMedible)
-                            <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}}">
+                            <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_evaluacion">
                                 {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
                             </div>
                         @else
-                            <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} general">
+                            <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_perfil">
                                 <div class="tabla" style="background:white;">
                                     <div class="indicador_title highcharts-title" >
                                         <tspan>Respuestas del indicador: {{$indicador->nombre}}<br>Del Instrumento: {{$instrumento->nombre}}<br>En el periodo lectivo: {{$periodo->nombre}}</tspan>
@@ -173,7 +175,22 @@
 				</div> <!-- cd-filter-block -->
 
                 
-				
+                <div class="cd-filter-block">
+					<h4>Datos de Perfil</h4>
+					
+					<div class="cd-filter-content">
+						<div class="cd-select cd-filters">
+							<select class="filter" name="selectThis" id="selectThis">
+                                <option value="">Todos</option>
+                                <option value=".datos_evaluacion">Mostrar sólo indicadores de la evaluación</option>
+                                <option value=".datos_perfil">Mostrar sólo datos de perfil</option>
+							</select>
+						</div> <!-- cd-select -->
+					</div> <!-- cd-filter-content -->
+				</div> <!-- cd-filter-block -->
+                
+
+
 				<div class="cd-filter-block">
 					<h4>Categorías de los Instrumentos</h4>
 
