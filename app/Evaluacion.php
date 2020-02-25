@@ -145,12 +145,15 @@ class Evaluacion extends Model
     }
 
     //Busca los periodos lectivos con los que han evaluado a un curso
-    public static function periodos_lectivos_de_evaluacion_del_curso($id){
+    public static function periodos_lectivos_de_evaluacion_del_curso($id, &$nombresPeriodos = []){
         $periodos_curso = Evaluacion::where('curso_id', $id)->distinct('periodo_lectivo_id')->get(['periodo_lectivo_id']);
         $periodos_collection = [];
+        $nombresPeriodos = [];
         foreach($periodos_curso as $periodo_index=>$periodo){
             $actual = PeriodoLectivo::find($periodo->periodo_lectivo_id);
+
             array_push($periodos_collection, $actual);
+            array_push($nombresPeriodos, $actual->getNombre());
         }
         return $periodos_collection;
     }
@@ -210,6 +213,12 @@ class Evaluacion extends Model
     }
 
     //Cuenta la cantidad de evaluaciones de un periodo lectivo en un momento con un instrumento de un curso
+    public static function cantidad_evaluaciones0($periodo,$instrumento,$curso){
+        return Evaluacion::where('periodo_lectivo_id',$periodo->getID())
+        ->where('instrumento_id',$instrumento->getID())
+        ->where('curso_id',$curso->getID())
+        ->count();
+    }
     public static function cantidad_evaluaciones1($periodo,$momento,$instrumento,$curso){
         return Evaluacion::where('periodo_lectivo_id',$periodo->getID())
         ->where('momento_evaluacion_id',$momento->getID())
@@ -218,6 +227,12 @@ class Evaluacion extends Model
         ->count();
     }
     //Promedio de evaluaciones de un periodo lectivo en un momento con un instrumento de un curso
+    public static function promedio_evaluaciones0($periodo,$instrumento,$curso){
+        return Evaluacion::where('periodo_lectivo_id',$periodo->getID())
+        ->where('instrumento_id',$instrumento->getID())
+        ->where('curso_id',$curso->getID())
+        ->avg('percentil_eva'); 
+    }
     public static function promedio_evaluaciones1($periodo,$momento,$instrumento,$curso){
         return Evaluacion::where('periodo_lectivo_id',$periodo->getID())
         ->where('momento_evaluacion_id',$momento->getID())

@@ -83,17 +83,28 @@
             <section class="page-content browse container-fluid ">
                 <div class="row">
                     
+                    @if(!empty($cantidadEvaluacionesCursoCharts1))
+                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
+                            {!! $cantidadEvaluacionesCursoCharts1->container() !!}
+                        </div>
+                    @endif
+                    @if(!empty($promedioPonderacionCurso1))
+                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
+                            {!! $promedioPonderacionCurso1->container() !!}
+                        </div>
+                    @endif
+
 
                     @foreach($periodos_collection as $periodo_index=>$periodo)
-                        @if(!empty($cantidadEvaluacionesCursoCharts[$periodo_index]))
-                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
-                            {!! $cantidadEvaluacionesCursoCharts[$periodo_index]->container() !!}
-                        </div>
+                        @if(!empty($cantidadEvaluacionesCursoCharts2[$periodo_index]))
+                            <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
+                                {!! $cantidadEvaluacionesCursoCharts2[$periodo_index]->container() !!}
+                            </div>
                         @endif
-                        @if(!empty($promedioPonderacionCurso[$periodo_index]))
-                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
-                            {!! $promedioPonderacionCurso[$periodo_index]->container() !!}
-                        </div>
+                        @if(!empty($promedioPonderacionCurso2[$periodo_index]))
+                            <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
+                                {!! $promedioPonderacionCurso2[$periodo_index]->container() !!}
+                            </div>
                         @endif
 
                     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
@@ -223,13 +234,20 @@
     <script src="/content-filter/js/main.js"></script> <!-- Resource jQuery -->
 
     
+    @if(!empty($cantidadEvaluacionesCursoCharts1))
+        {!! $cantidadEvaluacionesCursoCharts1->script() !!}
+    @endif
+    @if(!empty($promedioPonderacionCurso1))
+        {!! $promedioPonderacionCurso1->script() !!}
+    @endif
+
     @foreach($periodos_collection as $periodo_index=>$periodo)
 
-        @if(!empty($cantidadEvaluacionesCursoCharts[$periodo_index]))
-        {!! $cantidadEvaluacionesCursoCharts[$periodo_index]->script() !!}
+        @if(!empty($cantidadEvaluacionesCursoCharts2[$periodo_index]))
+            {!! $cantidadEvaluacionesCursoCharts2[$periodo_index]->script() !!}
         @endif
-        @if(!empty($promedioPonderacionCurso[$periodo_index]))
-        {!! $promedioPonderacionCurso[$periodo_index]->script() !!}
+        @if(!empty($promedioPonderacionCurso2[$periodo_index]))
+            {!! $promedioPonderacionCurso2[$periodo_index]->script() !!}
         @endif
 
     @foreach($instrumentos_collection as $instrumento_index=>$instrumento)
