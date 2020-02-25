@@ -19,13 +19,14 @@ use \TCG\Voyager\Models\Role;
 
 class ControllerCustomGates extends Controller
 {
-
+    protected $permissionHabilitarEvaluacionCategoria   = "habilitar_evaluacion_";
+    protected $permissionVerCategoria                   = "ver_";
+    protected $permissionSincronizarCategoria           = "sincronizar_";
+    
     /**
-     * Custom Sisgeva Gates
+     * Custom Genetvi Gates
      *
      */
-
-
     //Para revisar si el usuario es admin
     public function checkCategoryPermissionSisgeva(User $user, $permiso, $category_name ){
         $string = $category_name;
@@ -82,4 +83,39 @@ class ControllerCustomGates extends Controller
         return true;
     }
     
+    //Verifica si el usuario es admin
+    /*public function isAdminRedirect(){
+        $isAdmin = Auth::user()->hasRole('admin');
+
+        if(!$isAdmin){
+            return redirect()->route('home');
+        }
+    }*/
+    public function checkAccess_ver($curso){//Verifica si tiene acceso a visualizar la categoría del curso
+        $categoria = $curso->categoria;
+
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
+        }
+
+        $categoriaSuperPadre = $categoria->categoria_raiz;
+        
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria, $categoriaSuperPadre->getCVUCV_NAME()]  )) {    
+            return redirect()->back()->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }
+    }
+    public function checkAccess_HabilitarEvaluacion($curso){//Verifica si tiene acceso a habilitar evaluacion en la categoría del curso
+        $categoria = $curso->categoria;
+
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoria de este curso no existe", 'alert-type' => 'error']);
+        }
+
+        $categoriaSuperPadre = $categoria->categoria_raiz;
+        
+        if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionHabilitarEvaluacionCategoria, $categoriaSuperPadre->getCVUCV_NAME()]  )) {    
+            return redirect()->back()->with(['message' => "Error, acceso no autorizado para habilitar la evaluación de esta categoría", 'alert-type' => 'error']);
+        }
+    }
+
 }

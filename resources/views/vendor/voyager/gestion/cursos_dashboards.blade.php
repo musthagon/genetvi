@@ -96,7 +96,7 @@
                             <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} general">
                                 <div class="tabla" style="background:white;">
                                     <div class="indicador_title" ><div>Respuestas del indicador: {{$indicador->nombre}}<br>Del Instrumento: {{$instrumento->nombre}}<br>En el periodo lectivo: {{$periodo->nombre}}</div></div>
-                                    <div class="indicador_subtitle" ><div>Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.</div></div>
+                                    <div class="indicador_subtitle" ><div>{{$dashboards_subtitle}}</div></div>
                                     <table id="Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}" class="table table-hover table-condensed">
                                         <thead>
                                         <tr>
