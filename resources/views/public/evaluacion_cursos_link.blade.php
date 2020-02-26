@@ -103,11 +103,15 @@
       </form>
       @endif
       
-      @if($instrumento->getAnonimo())
-        <div class="anonimo">
+      
+      <div class="anonimo">
+        @if($instrumento->getAnonimo())
           Las respuestas de este instrumento son anónimas
-        </div>
-      @endif
+        @else
+          Las respuestas de este intrumento podrán ser visibles por el Sistema de Educación a Distancia SEDUCV, los coordinadores de facultad y por los profesores del curso
+        @endif
+      </div>
+      
     </div>
 
   @endif

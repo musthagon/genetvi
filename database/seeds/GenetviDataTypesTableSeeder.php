@@ -168,7 +168,7 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'descripcion');
         $this->filldataRow($dataRow,'rich_text_box','Instrucciones que verán los evaluadores',1,1,1,1,1,1,["validation"=>["rule"=>"required"]],5);
         $dataRow = $this->dataRow($dataType, 'anonimo');
-        $this->filldataRow($dataRow,'select_dropdown','Visibilidad de las respuestas de los evaluadores',1,0,0,1,1,1,["default"=>"1","options"=>["0"=>"No Visible","1"=>"Visible"],"description"=>"Los evaluadores veran una advertencia antes de iniciar la evaluacion que les indica si son anónimas o no sus respuestas"],6);
+        $this->filldataRow($dataRow,'select_dropdown','Visibilidad de las respuestas de los evaluadores',1,0,0,1,1,1,["default"=>"0","options"=>["0"=>"Respuestas Visibles","1"=>"Respuestas no Visibles"],"description"=>"Los evaluadores veran una advertencia antes de iniciar la evaluacion que les indica si son anónimas o no sus respuestas"],6);
         $dataRow = $this->dataRow($dataType, 'puede_rechazar');
         $this->filldataRow($dataRow,'select_dropdown','Formato Invitación',1,0,0,1,1,1,["default"=>"0","options"=>["0"=>"Obligatoria","1"=>"El evaluador puede aceptar/rechazar hacer la evaluación"]],7);
         $dataRow = $this->dataRow($dataType, 'invitacion_automatica');
