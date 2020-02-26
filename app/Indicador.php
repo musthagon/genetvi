@@ -53,7 +53,7 @@ class Indicador extends Model
                 if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
                     return $opciones[$this->getOpcionesEstructura($opcion_number)];
                 }
-                return ['Si' => 'Si', 'No' => 'No']; //Opciones predeterminadas
+                return ['0' => 'Si', '1' => 'No']; //Opciones predeterminadas
             break;
             case "2":
                 if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
