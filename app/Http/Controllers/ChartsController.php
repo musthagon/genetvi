@@ -60,87 +60,93 @@ class ChartsController extends Controller
         $promedioPonderacionCurso = [];
         $indicadores_collection_charts = [];
         
-
-         
-
-
-
         //Se inicializan los dashboards individuales por indicador
         foreach($periodos_collection as $periodo_index=>$periodo){
 
             //Se inicializa el Chart1. Cantidad de la evaluacion del eva
-            $cantidadEvaluacionesCursoCharts2[$periodo_index]= new indicadoresChart;
-            $cantidadEvaluacionesCursoCharts2[$periodo_index]->options([
-                'title'=>[
-                    'text' => 'Cantidad de Evaluaciones de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
-                ],
-                'subtitle'=>[
-                    'text' => $this->dashboards_subtitle
-                ],
-                'tooltip'=> [
-                    'valueSuffix'=> ' personas'
-                ],
-                'plotOptions'=> [
-                    'bar'=> [
-                        'dataLabels'=> [
-                            'enabled'=> true,
+            $request = new Request;
+            $request->tipo              = 3;
+            $request->curso             = $curso->getID();
+            $request->periodo_lectivo   = $periodo->getID();
+            if($this->consultar_grafico_generales($request) != null){
+                $cantidadEvaluacionesCursoCharts2[$periodo_index]= new indicadoresChart;
+                $cantidadEvaluacionesCursoCharts2[$periodo_index]->options([
+                    'title'=>[
+                        'text' => 'Cantidad de Evaluaciones de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
+                    ],
+                    'subtitle'=>[
+                        'text' => $this->dashboards_subtitle
+                    ],
+                    'tooltip'=> [
+                        'valueSuffix'=> ' personas'
+                    ],
+                    'plotOptions'=> [
+                        'bar'=> [
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                            ],
                         ],
+                        'series'=> [
+                            'stacking'=> 'normal'
+                        ],                       
                     ],
-                    'series'=> [
-                        'stacking'=> 'normal'
-                    ],                       
-                ],
-                'xAxis' => [
-                    'categories' => $nombreInstrumentos
-                ],
-                'yAxis'=> [
-                    'min'=> 0,
-                    'title'=> [
-                        'text'=> 'Cantidad personas que han evaluado',
-                        'align'=> 'high'
+                    'xAxis' => [
+                        'categories' => $nombreInstrumentos
                     ],
-                    'labels'=> [
-                        'overflow'=> 'justify'
-                    ]
-                ],
-            ]);
-            $cantidadEvaluacionesCursoCharts2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>3,'curso' => $curso->getID(),'periodo_lectivo' => $periodo]));
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Cantidad personas que han evaluado',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                ]);
+                $cantidadEvaluacionesCursoCharts2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>3,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
+            }
 
             //Se inicializa el Chart2. Ponderacion de la evaluacion del eva
-            $promedioPonderacionCurso2[$periodo_index] = new indicadoresChart;
-            $promedioPonderacionCurso2[$periodo_index]->options([
-                'title'=>[
-                    'text' => 'Promedio de la Ponderacion de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
-                ],
-                'subtitle'=>[
-                    'text' => $this->dashboards_subtitle
-                ],
-                'tooltip'=> [
-                    'valueSuffix'=> ' %'
-                ],
-                'plotOptions'=> [
-                    'bar'=> [
-                        'dataLabels'=> [
-                            'enabled'=> true,
-                        ],
-                    ],                                          
-                ],
-                'xAxis' => [
-                    'categories' => $nombreInstrumentos
-                ],
-                'yAxis'=> [
-                    'min'=> 0,
-                    'title'=> [
-                        'text'=> 'Promedio ponderacion del curso',
-                        'align'=> 'high'
+            $request = new Request;
+            $request->tipo              = 4;
+            $request->curso             = $curso->getID();
+            $request->periodo_lectivo   = $periodo->getID();
+            if($this->consultar_grafico_generales($request) != null){
+                $promedioPonderacionCurso2[$periodo_index] = new indicadoresChart;
+                $promedioPonderacionCurso2[$periodo_index]->options([
+                    'title'=>[
+                        'text' => 'Promedio de la Ponderacion de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
                     ],
-                    'labels'=> [
-                        'overflow'=> 'justify'
-                    ]
-                ],
-            ]);
-            $promedioPonderacionCurso2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>4,'curso' => $curso->getID(),'periodo_lectivo' => $periodo]));
-
+                    'subtitle'=>[
+                        'text' => $this->dashboards_subtitle
+                    ],
+                    'tooltip'=> [
+                        'valueSuffix'=> ' %'
+                    ],
+                    'plotOptions'=> [
+                        'bar'=> [
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                            ],
+                        ],                                          
+                    ],
+                    'xAxis' => [
+                        'categories' => $nombreInstrumentos
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Promedio ponderacion del curso',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                ]);
+                $promedioPonderacionCurso2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>4,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
+            }
 
         foreach($instrumentos_collection as $instrumento_index=>$instrumento){
         foreach($instrumento->categorias as $categoria_index=>$categoria){
@@ -156,7 +162,6 @@ class ChartsController extends Controller
             $request->instrumento_id    = $instrumento->getID();
             $request->categoria_id      = $categoria->getID();
             $request->indicador_id      = $indicador->getID();
-            //&& $this->consultar_grafico_indicadores($request) != null
             if($indicador->esMedible() && $this->consultar_grafico_indicadores($request) != null){
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
 
@@ -211,75 +216,85 @@ class ChartsController extends Controller
 
 
         //Se inicializa el Chart1. Total Cantidad de la evaluacion del eva por periodo lectivo
-        $cantidadEvaluacionesCursoCharts1= new indicadoresChart;
-        $cantidadEvaluacionesCursoCharts1->options([
-            'title'=>[
-                'text' => 'Cantidad de Evaluaciones de '.$curso->getNombre()
-            ],
-            'subtitle'=>[
-                'text' => $this->dashboards_subtitle
-            ],
-            'tooltip'=> [
-                'valueSuffix'=> ' personas'
-            ],
-            'plotOptions'=> [
-                'bar'=> [
-                    'dataLabels'=> [
-                        'enabled'=> true,
-                    ],
-                ],                     
-            ],
-            'xAxis' => [
-                'categories' => $nombresPeriodos
-            ],
-            'yAxis'=> [
-                'min'=> 0,
-                'title'=> [
-                    'text'=> 'Cantidad personas que han evaluado',
-                    'align'=> 'high'
+        $request = new Request;
+        $request->tipo       = 1;
+        $request->curso      = $curso->getID();
+        $request->periodos   = $periodos_collection;
+        if($this->consultar_grafico_generales($request) != null){
+            $cantidadEvaluacionesCursoCharts1= new indicadoresChart;
+            $cantidadEvaluacionesCursoCharts1->options([
+                'title'=>[
+                    'text' => 'Cantidad de Evaluaciones de '.$curso->getNombre()
                 ],
-                'labels'=> [
-                    'overflow'=> 'justify'
-                ]
-            ],
-        ]);
-        $cantidadEvaluacionesCursoCharts1->load(route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
-
+                'subtitle'=>[
+                    'text' => $this->dashboards_subtitle
+                ],
+                'tooltip'=> [
+                    'valueSuffix'=> ' personas'
+                ],
+                'plotOptions'=> [
+                    'bar'=> [
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                        ],
+                    ],                     
+                ],
+                'xAxis' => [
+                    'categories' => $nombresPeriodos
+                ],
+                'yAxis'=> [
+                    'min'=> 0,
+                    'title'=> [
+                        'text'=> 'Cantidad personas que han evaluado',
+                        'align'=> 'high'
+                    ],
+                    'labels'=> [
+                        'overflow'=> 'justify'
+                    ]
+                ],
+            ]);
+            $cantidadEvaluacionesCursoCharts1->load(route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
+        }
         //Se inicializa el Chart2. Total Ponderacion de la evaluacion del eva por periodo lectivo
-        $promedioPonderacionCurso1 = new indicadoresChart;
-        $promedioPonderacionCurso1->options([
-            'title'=>[
-                'text' => 'Promedio de la Ponderacion de '.$curso->getNombre()
-            ],
-            'subtitle'=>[
-                'text' => $this->dashboards_subtitle
-            ],
-            'tooltip'=> [
-                'valueSuffix'=> ' %'
-            ],
-            'plotOptions'=> [
-                'bar'=> [
-                    'dataLabels'=> [
-                        'enabled'=> true,
-                    ],
-                ],                                          
-            ],
-            'xAxis' => [
-                'categories' => $nombresPeriodos
-            ],
-            'yAxis'=> [
-                'min'=> 0,
-                'title'=> [
-                    'text'=> 'Promedio ponderacion del curso',
-                    'align'=> 'high'
+        $request = new Request;
+        $request->tipo       = 2;
+        $request->curso      = $curso->getID();
+        $request->periodos   = $periodos_collection;
+        if($this->consultar_grafico_generales($request) != null){
+            $promedioPonderacionCurso1 = new indicadoresChart;
+            $promedioPonderacionCurso1->options([
+                'title'=>[
+                    'text' => 'Promedio de la Ponderacion de '.$curso->getNombre()
                 ],
-                'labels'=> [
-                    'overflow'=> 'justify'
-                ]
-            ],
-        ]);
-        $promedioPonderacionCurso1->load(route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
-
+                'subtitle'=>[
+                    'text' => $this->dashboards_subtitle
+                ],
+                'tooltip'=> [
+                    'valueSuffix'=> ' %'
+                ],
+                'plotOptions'=> [
+                    'bar'=> [
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                        ],
+                    ],                                          
+                ],
+                'xAxis' => [
+                    'categories' => $nombresPeriodos
+                ],
+                'yAxis'=> [
+                    'min'=> 0,
+                    'title'=> [
+                        'text'=> 'Promedio ponderacion del curso',
+                        'align'=> 'high'
+                    ],
+                    'labels'=> [
+                        'overflow'=> 'justify'
+                    ]
+                ],
+            ]);
+            $promedioPonderacionCurso1->load(route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
+        }
 
         $dashboards_subtitle = $this->dashboards_subtitle;
         return view('vendor.voyager.gestion.cursos_dashboards',
@@ -473,7 +488,8 @@ class ChartsController extends Controller
         
         //Charts por indicadores de categora, en instrumento en un periodo lectivo
         $query = [];
-        
+        $countEmpty = 0;
+        $countTotal = 0;
         if($tipo == "1" || $tipo == "2"){
             //periodos lectivos con los cuales han evaluado este curso
             $periodos_collection = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->getID());
@@ -485,6 +501,11 @@ class ChartsController extends Controller
                     }elseif($tipo == "2"){
                         $query[$instrumento_index][$periodo_index] = Evaluacion::promedio_evaluaciones0($periodo,$instrumento,$curso);
                     }
+                    if($query == null){
+                        $countEmpty++;
+                    }
+                    $countTotal++;
+
                 }
                 $chart->dataset($instrumento->getNombre(), 'bar', $query[$instrumento_index]);
                 
@@ -497,16 +518,26 @@ class ChartsController extends Controller
                 return json_encode (json_decode ("{}"));
             }
             foreach($momentos_evaluacion_collection as $momentoIndex => $momento){
-                foreach($instrumentos_collection as $instrumento_index=>$instrumento){                
+                foreach($instrumentos_collection as $instrumento_index=>$instrumento){   
+
                     if($tipo == "3"){
                         $query [$instrumento_index] = Evaluacion::cantidad_evaluaciones1($periodo,$momento,$instrumento,$curso);
                     }elseif($tipo == "4"){
                         $query [$instrumento_index] = Evaluacion::promedio_evaluaciones1($periodo,$momento,$instrumento,$curso);
                     }
+                    if($query == null){
+                        $countEmpty++;
+                    }
+                    $countTotal++;
+
                 }
 
                 $chart->dataset($momento->getNombre(), 'bar', $query);
             }
+        }
+
+        if($countEmpty == $countTotal){
+            return null;
         }
                         
         return $chart->api();
