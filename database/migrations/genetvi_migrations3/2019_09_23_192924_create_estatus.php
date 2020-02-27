@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEstatusInvitaciones extends Migration
+class CreateEstatus extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateEstatusInvitaciones extends Migration
      */
     public function up()
     {
-        Schema::create('estatus_invitaciones', function (Blueprint $table) {
+        Schema::create('estatus', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('nombre_corto');
@@ -29,6 +29,6 @@ class CreateEstatusInvitaciones extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('estatus_invitaciones');
+        Schema::dropIfExists('estatus');
     }
 }

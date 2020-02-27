@@ -8,7 +8,7 @@
 
     <div id="instrucciones" >
       <div class="descripcion">
-        {!!$instrumento->getDescripcion()!!}
+        {!!$instrumento->getInstrucciones()!!}
       </div>
 
 

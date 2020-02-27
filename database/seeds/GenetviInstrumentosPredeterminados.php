@@ -102,12 +102,15 @@ class GenetviInstrumentosPredeterminados extends Seeder
         $list_instrumentos = array(
             array(
                 "nombre"        =>"Evaluación Tecnopedagógica del EVA desde la Visión Estudiante",
-                "nombre_corto"  =>"Curso como Estudiante",
-                "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma"),
+                "nombre_corto"  =>"EVA Tecnopedagógico desde la Visión Estudiante",
+                "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma",
+                "instrucciones" =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma"),
+
             array(
                 "nombre"        =>"Evaluación Tecnopedagógica del EVA desde la Visión Docente",
-                "nombre_corto"  =>"Curso como Docente",
-                "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma")
+                "nombre_corto"  =>"EVA Tecnopedagógico desde la Visión Docente",
+                "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma",
+                "instrucciones" =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los estudiantes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma")
         );
 
         //Agregamos los indicadores
@@ -140,6 +143,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
                 'nombre'        => $instrumento['nombre'],
                 'nombre_corto'  => $instrumento['nombre_corto'],
                 'descripcion'   => $instrumento['descripcion'],
+                'instrucciones' => $instrumento['instrucciones'],
                 ]);
         }
 
@@ -272,7 +276,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
 
                     /*Configuracion adicional del instrumento*/
                     $instrumento->anonimo = false;
-                    $instrumento->puede_rechazar = true;
+                    $instrumento->formato_evaluacion = true;
                     $instrumento->invitacion_automatica = false;
                     $instrumento->save();
                 }

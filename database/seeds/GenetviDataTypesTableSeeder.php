@@ -155,32 +155,35 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'id');
         $this->filldataRow($dataRow,'text','ID',1,0,0,0,0,0,'{}',1);
         $dataRow = $this->dataRow($dataType, 'nombre');
-        $this->filldataRow($dataRow,'text','Nombre',1,1,1,1,1,1,'{}',2);
+        $this->filldataRow($dataRow,'text','Nombre',1,1,1,1,1,1,["display"=>["width"=>"6"]],2);
         $dataRow = $this->dataRow($dataType, 'nombre_corto');
-        $this->filldataRow($dataRow,'text','Nombre Corto del Instrumento',1,1,1,1,1,1,'{}',3);
+        $this->filldataRow($dataRow,'text','Nombre Corto del Instrumento',1,1,1,1,1,1,["display"=>["width"=>"6"]],3);
+        $dataRow = $this->dataRow($dataType, 'descripcion');
+        $this->filldataRow($dataRow,'rich_text_box','Descripción del Instrumento',1,1,1,1,1,1,["validation"=>["rule"=>"required"]],4);
+        $dataRow = $this->dataRow($dataType, 'instrucciones');
+        $this->filldataRow($dataRow,'rich_text_box','Instrucciones que verán los evaluadores',1,1,1,1,1,1,["validation"=>["rule"=>"required"]],5);
         $dataRow = $this->dataRow($dataType, 'habilitar');
         $this->filldataRow($dataRow,'select_dropdown','Habilitar',1,0,0,1,1,1,
         [
+            "display"=>["width"=>"3"],
             "default"=>"1",
             "options"=>["0"=>"No","1"=>"Si"],
             "description"=>"Si no esta habilitado, los coordinadores no podrán elegir este instrumento para evaluar y si hay evaluaciones activas, se deshabilitaran (no se podrán hacer hasta que se actualice este atributo)"
-        ],4);
-        $dataRow = $this->dataRow($dataType, 'descripcion');
-        $this->filldataRow($dataRow,'rich_text_box','Instrucciones que verán los evaluadores',1,1,1,1,1,1,["validation"=>["rule"=>"required"]],5);
+        ],6);
         $dataRow = $this->dataRow($dataType, 'anonimo');
-        $this->filldataRow($dataRow,'select_dropdown','Visibilidad de las respuestas de los evaluadores',1,0,0,1,1,1,["default"=>"0","options"=>["0"=>"Respuestas Visibles","1"=>"Respuestas no Visibles"],"description"=>"Los evaluadores veran una advertencia antes de iniciar la evaluacion que les indica si son anónimas o no sus respuestas"],6);
-        $dataRow = $this->dataRow($dataType, 'puede_rechazar');
-        $this->filldataRow($dataRow,'select_dropdown','Formato Invitación',1,0,0,1,1,1,["default"=>"0","options"=>["0"=>"Obligatoria","1"=>"El evaluador puede aceptar/rechazar hacer la evaluación"]],7);
+        $this->filldataRow($dataRow,'select_dropdown','Visibilidad de las respuestas de los evaluadores',1,0,0,1,1,1,["display"=>["width"=>"3"],"default"=>"0","options"=>["0"=>"Respuestas Visibles","1"=>"Respuestas no Visibles"],"description"=>"Los evaluadores veran una advertencia antes de iniciar la evaluacion que les indica si son anónimas o no sus respuestas"],7);
+        $dataRow = $this->dataRow($dataType, 'formato_evaluacion');
+        $this->filldataRow($dataRow,'select_dropdown','Formato de la Evaluación',1,0,0,1,1,1,["display"=>["width"=>"3"],"default"=>"0","options"=>["0"=>"Obligatoria","1"=>"El evaluador puede aceptar/rechazar hacer la evaluación"]],8);
         $dataRow = $this->dataRow($dataType, 'invitacion_automatica');
-        $this->filldataRow($dataRow,'select_dropdown','Invitación Automática a los usuarios con los roles a quien va dirigido este instrumento',1,0,0,1,1,1,["description"=>"Si se elige el formato manual, cuando se inicie la evaluacion de un curso, se desplegará el listado de usuarios del Campus para invitar evaluadores","default"=>"1","options"=>["0"=>"No, debe invitar de forma manual a los evaluadores","1"=>"Si"]],8);
+        $this->filldataRow($dataRow,'select_dropdown','Invitación Automática a los usuarios con los roles a quien va dirigido este instrumento',1,0,0,1,1,1,["display"=>["width"=>"3"],"description"=>"Si se elige el formato manual, cuando se inicie la evaluacion de un curso, se desplegará el listado de usuarios del Campus para invitar evaluadores","default"=>"1","options"=>["0"=>"No, debe invitar de forma manual a los evaluadores","1"=>"Si"]],9);
         $dataRow = $this->dataRow($dataType, 'opciones');
-        $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',9);
+        $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',10);
         $dataRow = $this->dataRow($dataType, 'instrumento_belongstomany_cursos_participantes_role_relationship');
-        $this->filldataRow($dataRow,'relationship','Dirigido a',0,1,1,1,1,1,["model"=>"App\\CursoParticipanteRol","table"=>"cursos_participantes_roles","type"=>"belongsToMany","column"=>"id","key"=>"id","label"=>"cvucv_name","pivot_table"=>"instrumentos_cursos_participantes_roles","pivot"=>"1","taggable"=>"0"],10);
+        $this->filldataRow($dataRow,'relationship','Dirigido a',0,1,1,1,1,1,["model"=>"App\\CursoParticipanteRol","table"=>"cursos_participantes_roles","type"=>"belongsToMany","column"=>"id","key"=>"id","label"=>"cvucv_name","pivot_table"=>"instrumentos_cursos_participantes_roles","pivot"=>"1","taggable"=>"0"],11);
         $dataRow = $this->dataRow($dataType, 'created_at');
-        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',11);
+        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',12);
         $dataRow = $this->dataRow($dataType, 'updated_at');
-        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',12);
+        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',13);
         
         /**
         * DataType para indicadores
@@ -193,20 +196,22 @@ class GenetviDataTypesTableSeeder extends Seeder
         $this->filldataRow($dataRow,'text','ID',1,0,0,0,0,0,'{}',1);
         $dataRow = $this->dataRow($dataType, 'nombre');
         $this->filldataRow($dataRow,'text','Nombre del Indicador',1,1,1,1,1,1,'{}',2);
+        $dataRow = $this->dataRow($dataType, 'denominacion');
+        $this->filldataRow($dataRow,'text','Denominación del Indicador',0,1,1,1,1,1,'{}',3);
         $dataRow = $this->dataRow($dataType, 'descripcion');
-        $this->filldataRow($dataRow,'text','Descripcion',0,1,1,1,1,1,'{}',3);
+        $this->filldataRow($dataRow,'text','Descripcion',0,1,1,1,1,1,'{}',4);
         $dataRow = $this->dataRow($dataType, 'requerido');
-        $this->filldataRow($dataRow,'select_dropdown','Requerido',1,1,1,1,1,1,["default"=>"1","options"=>["0"=>"No","1"=>"Si"]],4);
+        $this->filldataRow($dataRow,'select_dropdown','Requerido',1,1,1,1,1,1,["default"=>"1","options"=>["0"=>"No","1"=>"Si"]],5);
         $dataRow = $this->dataRow($dataType, 'tipo');
-        $this->filldataRow($dataRow,'select_dropdown','Tipo',1,1,1,1,1,1,["default"=>"text","options"=>["select_dropdown"=>"Select Dropdown","select_multiple"=>"Select Multiple","text"=>"Text","text_area"=>"Text Area","likert"=>"Escala de Likert (Siempre, a veces, nunca)"]],5);
+        $this->filldataRow($dataRow,'select_dropdown','Tipo',1,1,1,1,1,1,["default"=>"text","options"=>["select_dropdown"=>"Select Dropdown","select_multiple"=>"Select Multiple","text"=>"Text","text_area"=>"Text Area","likert"=>"Escala de Likert (Siempre, a veces, nunca)"]],6);
         $dataRow = $this->dataRow($dataType, 'opciones');
-        $this->filldataRow($dataRow,'code_editor','Opciones',0,1,1,1,1,1,'{}',6);
+        $this->filldataRow($dataRow,'code_editor','Opciones',0,1,1,1,1,1,'{}',7);
         $dataRow = $this->dataRow($dataType, 'orden');
-        $this->filldataRow($dataRow,'number','Orden',0,0,0,0,0,0,'{}',7);
+        $this->filldataRow($dataRow,'number','Orden',0,0,0,0,0,0,'{}',8);
         $dataRow = $this->dataRow($dataType, 'created_at');
-        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',8);
+        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',9);
         $dataRow = $this->dataRow($dataType, 'updated_at');
-        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',9);
+        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',10);
         
         /**
         * DataType para categorias
@@ -245,18 +250,21 @@ class GenetviDataTypesTableSeeder extends Seeder
         $this->filldataRow($dataRow,'text','Nombre',1,1,1,1,1,1,'{}',2);
         $dataRow = $this->dataRow($dataType, 'descripcion');
         $this->filldataRow($dataRow,'rich_text_box','Descripción',0,1,1,1,1,1,'{}',3);
+        $dataRow = $this->dataRow($dataType, 'tipo_periodo_lectivo');
+        $this->filldataRow($dataRow,'select_dropdown','Tipo de periodo lectivo',0,1,1,1,1,1,["default"=>"Anual","options"=>["Anual"=>"Anual","Semestral"=>"Semestral","Trimestral"=>"Trimestral","Bimestral"=>"Bimestral","Otro"=>"Otro"]],4);
+        
         $dataRow = $this->dataRow($dataType, 'fecha_inicio');
-        $this->filldataRow($dataRow,'date','Fecha Inicio del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de inicio debe ser menor a la fecha de fin"],4);
+        $this->filldataRow($dataRow,'date','Fecha Inicio del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de inicio debe ser menor a la fecha de fin"],5);
         $dataRow = $this->dataRow($dataType, 'fecha_fin');
-        $this->filldataRow($dataRow,'date','Fecha Fin del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de fin debe ser mayor a la fecha de inicio"],5);
+        $this->filldataRow($dataRow,'date','Fecha Fin del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de fin debe ser mayor a la fecha de inicio"],6);
         $dataRow = $this->dataRow($dataType, 'opciones');
-        $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',6);
+        $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',7);
         $dataRow = $this->dataRow($dataType, 'momento_evaluacion_activo_id');
-        $this->filldataRow($dataRow,'text','Momento Evaluación Activo Id',0,1,1,0,0,0,'{}',7);
+        $this->filldataRow($dataRow,'text','Momento Evaluación Activo Id',0,1,1,0,0,0,'{}',8);
         $dataRow = $this->dataRow($dataType, 'created_at');
-        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',8);
+        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',9);
         $dataRow = $this->dataRow($dataType, 'updated_at');
-        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',9);
+        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',10);
 
         $dataType = $this->dataType('slug', 'rol-en-cursos');
         $this->filldataType($dataType,'cursos_participantes_roles','Rol en Cursos','Roles en Cursos','','App\\CursoParticipanteRol','',1,'');
@@ -318,7 +326,7 @@ class GenetviDataTypesTableSeeder extends Seeder
         $dataRow = $this->dataRow($dataType, 'updated_at');
         $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',12);
         $dataRow = $this->dataRow($dataType, 'invitacione_belongsto_estatus_invitacione_relationship');
-        $this->filldataRow($dataRow,'relationship','estatus_invitaciones',0,1,1,1,1,1,["model"=>"App\\\\EstatusInvitacion","table"=>"estatus_invitaciones","type"=>"belongsTo","column"=>"estatus_invitacion_id","key"=>"id","label"=>"nombre","pivot_table"=>"categorias","pivot"=>"0","taggable"=>"0"],13);
+        $this->filldataRow($dataRow,'relationship','estatus',0,1,1,1,1,1,["model"=>"App\\\\Estatus","table"=>"estatus","type"=>"belongsTo","column"=>"estatus_invitacion_id","key"=>"id","label"=>"nombre","pivot_table"=>"categorias","pivot"=>"0","taggable"=>"0"],13);
         $dataRow = $this->dataRow($dataType, 'invitacione_belongsto_tipo_invitacione_relationship');
         $this->filldataRow($dataRow,'relationship','tipo_invitaciones',0,1,1,1,1,1,["model"=>"App\\\\TipoInvitacion","table"=>"tipo_invitaciones","type"=>"belongsTo","column"=>"tipo_invitacion_id","key"=>"id","label"=>"nombre","pivot_table"=>"categorias","pivot"=>"0","taggable"=>"0"],14);
         $dataRow = $this->dataRow($dataType, 'invitacione_belongsto_instrumento_relationship');

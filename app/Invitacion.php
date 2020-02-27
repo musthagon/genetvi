@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\EstatusInvitacion;
+use App\Estatus;
 
 use App\Traits\CommonFunctionsGenetvi; 
 
@@ -57,7 +57,7 @@ class Invitacion extends Model
     }
 
     public function estatus_invitacion()    {
-        return $this->belongsTo('App\EstatusInvitacion','estatus_invitacion_id','id');
+        return $this->belongsTo('App\Estatus','estatus_invitacion_id','id');
     }
     public function tipo_invitacion()    {
         return $this->belongsTo('App\TipoInvitacion','tipo_invitacion_id','id');
@@ -168,7 +168,7 @@ class Invitacion extends Model
         
         Invitacion::create(
             Invitacion::generateToken(), 
-            EstatusInvitacion::getEstatusCreada(),
+            Estatus::getEstatusCreada(),
             $tipo_invitacion_id,
             $instrumento_id,
             $curso_id,

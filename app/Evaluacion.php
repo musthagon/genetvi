@@ -23,9 +23,9 @@ class Evaluacion extends Model
      */
     protected $table = 'evaluaciones';
 
-    protected $fillable = ['id','anonimo','respuestas','percentil_eva','instrumento_id','curso_id','periodo_lectivo_id','momento_evaluacion_id','cvucv_user_id','usuario_id','created_at','updated_at'];
+    protected $fillable = ['id','estatus_evaluacion_id','anonimo','respuestas','percentil_eva','instrumento_id','curso_id','periodo_lectivo_id','momento_evaluacion_id','cvucv_user_id','usuario_id','created_at','updated_at'];
 
-    public static function create($anonimo, $respuestas, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id,$usuario_id )   {
+    public static function create($anonimo, $respuestas, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id,$usuario_id,$estatus_evaluacion_id = null )   {
         $new = new Evaluacion();
 
         $new->anonimo               = $anonimo;
@@ -37,7 +37,7 @@ class Evaluacion extends Model
         $new->momento_evaluacion_id = $momento_evaluacion_id;
         $new->cvucv_user_id         = $cvucv_user_id;
         $new->usuario_id            = $usuario_id;
-        
+        $new->estatus_evaluacion_id = $estatus_evaluacion_id;
         $new->created_at            = \Carbon\Carbon::now();
         $new->updated_at            = \Carbon\Carbon::now();
 

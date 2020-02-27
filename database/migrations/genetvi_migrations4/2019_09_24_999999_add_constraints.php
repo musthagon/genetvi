@@ -33,6 +33,7 @@ class AddConstraints extends Migration
             $table->foreign('curso_id')->references('id')->on('cursos')->onDelete('cascade');
             $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos')->onDelete('cascade');
             $table->foreign('momento_evaluacion_id')->references('id')->on('momentos_evaluacion')->onDelete('cascade');
+            $table->foreign('estatus_evaluacion_id')->references('id')->on('estatus')->onDelete('cascade');
         });
 
         Schema::table('respuestas', function ($table) {
@@ -47,6 +48,7 @@ class AddConstraints extends Migration
 
         Schema::table('periodos_lectivos', function ($table) {
             $table->foreign('momento_evaluacion_activo_id')->references('id')->on('momentos_evaluacion')->onDelete('cascade');
+            $table->foreign('categoria_curso_id')->references('id')->on('categorias_cursos')->onDelete('cascade');
         });
 
         Schema::table('periodos_lectivos_momentos_evaluacion', function ($table) {
@@ -58,7 +60,7 @@ class AddConstraints extends Migration
             $table->foreign('instrumento_id')->references('id')->on('instrumentos')->onDelete('cascade');
             $table->foreign('curso_id')->references('id')->on('cursos')->onDelete('cascade');
             $table->foreign('periodo_lectivo_id')->references('id')->on('periodos_lectivos')->onDelete('cascade');
-            $table->foreign('estatus_invitacion_id')->references('id')->on('estatus_invitaciones')->onDelete('cascade');
+            $table->foreign('estatus_invitacion_id')->references('id')->on('estatus')->onDelete('cascade');
             $table->foreign('tipo_invitacion_id')->references('id')->on('tipo_invitaciones')->onDelete('cascade');
             $table->foreign('momento_evaluacion_id')->references('id')->on('momentos_evaluacion')->onDelete('cascade');
         });
@@ -105,6 +107,7 @@ class AddConstraints extends Migration
                 $table->dropForeign(['curso_id']);
                 $table->dropForeign(['periodo_lectivo_id']);
                 $table->dropForeign(['momento_evaluacion_id']);
+                $table->dropForeign(['estatus_evaluacion_id']);
             });
         }
     
@@ -127,6 +130,7 @@ class AddConstraints extends Migration
         if (Schema::hasColumn('periodos_lectivos', 'momento_evaluacion_activo_id')) {
             Schema::table('periodos_lectivos', function ($table) {
                 $table->dropForeign(['momento_evaluacion_activo_id']);
+                $table->dropForeign(['categoria_curso_id']);
             });
         }
 

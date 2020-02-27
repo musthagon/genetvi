@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instrumento extends Model
 {
-    protected $fillable = ['id','nombre','nombre_corto','descripcion','habilitar','anonimo','puede_rechazar','opciones','invitacion_automatica','created_at','updated_at'];
+    protected $fillable = ['id','nombre','nombre_corto','descripcion','instrucciones','habilitar','anonimo','formato_evaluacion','opciones','invitacion_automatica','created_at','updated_at'];
     /**
      * The table associated with the model.
      *
@@ -100,12 +100,16 @@ class Instrumento extends Model
         return $this->descripcion;
     }
 
+    public function getInstrucciones(){
+        return $this->instrucciones;
+    }
+
     public function getAnonimo(){
         return $this->anonimo;
     }
 
     public function getPuedeRechazar(){
-        return $this->puede_rechazar;
+        return $this->formato_evaluacion;
     }
     
 

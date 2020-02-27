@@ -17,10 +17,11 @@ class CreateInstrumentos extends Migration
             $table->bigIncrements('id');
             $table->longText('nombre');
             $table->longText('nombre_corto');
-            $table->longText('descripcion');
+            $table->longText('descripcion')->nullable();
+            $table->longText('instrucciones')->nullable();
             $table->boolean('habilitar')->default(true);
             $table->boolean('anonimo')->default(true);
-            $table->boolean('puede_rechazar')->default(false);
+            $table->boolean('formato_evaluacion')->default(false);
             $table->string('invitacion_automatica')->default(true);
             $table->longText('opciones')->nullable();
             $table->timestamps();

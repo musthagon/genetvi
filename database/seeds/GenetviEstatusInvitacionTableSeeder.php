@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\EstatusInvitacion;
+use App\Estatus;
 
 class GenetviEstatusInvitacionTableSeeder extends Seeder
 {
@@ -12,7 +12,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
      */
     public function run()
     {
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '1']);
+        $estatus = Estatus::firstOrNew(['id' => '1']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'creada',
@@ -21,7 +21,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '2']);
+        $estatus = Estatus::firstOrNew(['id' => '2']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'enviada',
@@ -30,7 +30,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '3']);
+        $estatus = Estatus::firstOrNew(['id' => '3']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'recordatorio enviado',
@@ -39,7 +39,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '4']);
+        $estatus = Estatus::firstOrNew(['id' => '4']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'aceptada',
@@ -48,7 +48,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '5']);
+        $estatus = Estatus::firstOrNew(['id' => '5']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'rechazada',
@@ -57,7 +57,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '6']);
+        $estatus = Estatus::firstOrNew(['id' => '6']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'leída',
@@ -66,7 +66,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '7']);
+        $estatus = Estatus::firstOrNew(['id' => '7']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'completada',
@@ -75,7 +75,7 @@ class GenetviEstatusInvitacionTableSeeder extends Seeder
                 ])->save();
         }
 
-        $estatus = EstatusInvitacion::firstOrNew(['id' => '8']);
+        $estatus = Estatus::firstOrNew(['id' => '8']);
         if (!$estatus->exists) {
             $estatus->fill([
                     'nombre'        => 'revocada',

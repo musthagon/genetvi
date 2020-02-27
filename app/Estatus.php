@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EstatusInvitacion extends Model
+class Estatus extends Model
 {
-    protected $table = 'estatus_invitaciones';
+    protected $table = 'estatus';
     protected $fillable = ['id', 'nombre', 'nombre_corto', 'descripcion','created_at','updated_at'];
 
     public static function getEstatusCreada(){
-        return EstatusInvitacion::where('nombre','creada')->first()->getID();
+        return Estatus::where('nombre','creada')->first()->getID();
     }
 
     public function getID(){

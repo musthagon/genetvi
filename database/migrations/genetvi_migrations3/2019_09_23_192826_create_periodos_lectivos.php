@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateIndicadores extends Migration
+class CreatePeriodosLectivos extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreateIndicadores extends Migration
      */
     public function up()
     {
-        Schema::create('indicadores', function (Blueprint $table) {
+        Schema::create('periodos_lectivos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->longText('nombre');
             $table->longText('descripcion')->nullable();
-            $table->string('tipo')->default("likert");
-            $table->boolean('requerido')->default(true);
+            $table->longText('tipo_periodo_lectivo')->nullable();
+            $table->dateTime('fecha_inicio');
+            $table->dateTime('fecha_fin');
             $table->longText('opciones')->nullable();
-            $table->integer('orden')->nullable();
+            $table->bigInteger('momento_evaluacion_activo_id')->nullable()->unsigned();
+            $table->bigInteger('categoria_curso_id')->unsigned()->nullable();   
             $table->timestamps();
         });
     }
@@ -32,6 +34,6 @@ class CreateIndicadores extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('indicadores');
+        Schema::dropIfExists('periodos_lectivos');
     }
 }

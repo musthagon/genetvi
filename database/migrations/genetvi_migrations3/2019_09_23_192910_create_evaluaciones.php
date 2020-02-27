@@ -15,6 +15,7 @@ class CreateEvaluaciones extends Migration
     {
         Schema::create('evaluaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('estatus_evaluacion_id')->unsigned()->nullable();
             $table->boolean('anonimo')->default(true);
             $table->longText('respuestas')->nullable();
             $table->float('percentil_eva', 8, 2)->unsigned()->nullable();

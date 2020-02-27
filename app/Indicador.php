@@ -12,7 +12,7 @@ class Indicador extends Model
      * @var string
      */
     protected $table = 'indicadores';
-    protected $fillable = ['id','nombre','tipo','requerido','opciones','orden','created_at','updated_at'];
+    protected $fillable = ['id','nombre','denominacion','tipo','requerido','opciones','orden','created_at','updated_at'];
 
     public function categoria(){
         return $this->belongsTo('App\CategoriaDeInstrumento','categorias_instrumento_id','id');
