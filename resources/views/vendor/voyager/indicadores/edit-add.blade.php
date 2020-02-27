@@ -73,7 +73,7 @@
 
                                     @if($row->getTranslatedAttribute('display_name') == "Opciones")
                                         <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" data-html="true" title="" data-original-title='
-                                            Para indicadores select dropdown y select multiple el formato es el siguiente: {"opciones" : ["Opcion1", "Opcion2", "Opcion3"], "predeterminado" : "1" }
+                                            Para indicadores select dropdown y select multiple el formato es el siguiente: {"opciones" : ["Opcion1", "Opcion2", "Opcion3"], "predeterminado" : "0" } y se puede agregar la opción "medible" : true/false en caso que no se requiere que el indicador afecta la evalucación
                                         '
                                         ></span>
                                     @endif

@@ -8,10 +8,10 @@
                     data-placeholder="{{$indicador->getNombre()}}">
                     <option></option>
                     @foreach($indicador->getOpciones(1) as $key => $opcion)
-                        @if (old($indicador->getID()) == $key)
-                            <option value="{{$key}}" selected>{{$opcion}}</option>
+                        @if (old($indicador->getID()) == $opcion)
+                            <option value="{{$opcion}}" selected>{{$opcion}}</option>
                         @else
-                            <option value="{{$key}}" 
+                            <option value="{{$opcion}}" 
                                 @if( $indicador->getOpciones(2)  == $key)
                                 selected 
                                 @endif>

@@ -8,9 +8,9 @@
                     data-placeholder="{{$indicador->getNombre()}}"
                     multiple>
                     @foreach($indicador->getOpciones(1) as $key => $opcion)
-                        <option value="{{$key}}"
-                            @if((collect(old($indicador->getID()))->contains($key))) selected 
-                            @elseif( collect(old($indicador->getID()))->isEmpty() && $indicador->getOpciones(2)  == $key)selected @endif>
+                        <option value="{{$opcion}}"
+                            @if((collect(old($indicador->getID()))->contains($opcion))) selected 
+                                @elseif( collect(old($indicador->getID()))->isEmpty() && $indicador->getOpciones(2)  == $key)selected @endif>
                             {{$opcion}}
                         </option>
                     @endforeach

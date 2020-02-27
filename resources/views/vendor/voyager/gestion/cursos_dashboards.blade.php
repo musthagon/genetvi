@@ -120,6 +120,7 @@
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                         @php $categoriaMedible = $categoria->esMedible();@endphp
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
+                        @if(!empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]))
                         @if($indicador->esMedible() && $categoriaMedible)
                             <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_evaluacion">
                                 {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
@@ -140,6 +141,7 @@
                                     </table>
                                 </div>
                             </div>
+                        @endif
                         @endif
                     @endforeach
                     @endforeach
@@ -281,6 +283,7 @@
     @foreach($instrumento->categorias as $categoria_index=>$categoria)
         @php $categoriaMedible = $categoria->esMedible();@endphp
     @foreach($categoria->indicadores as $indicador_index=>$indicador)
+        @if(!empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]))
         @if($indicador->esMedible() && $categoriaMedible)
             {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
         @else
@@ -324,6 +327,7 @@
                         });
                 });
             </script>
+        @endif
         @endif
     @endforeach
     @endforeach

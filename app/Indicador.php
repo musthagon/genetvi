@@ -30,6 +30,14 @@ class Indicador extends Model
         return $this->tipo;
     }
 
+    public function esLikert(){
+        $tipo_indicador = $this->getTipo();
+        if ($tipo_indicador == "likert") {
+            return true;
+        }
+        return false;
+    }
+
     public function getRequerido(){
         return $this->requerido;
     }
@@ -42,37 +50,10 @@ class Indicador extends Model
         return false;
     }
 
-    public function getOpciones($opcion_number = 0){//Retornamos las opciones del indicador que se escriben en el code-editor
-        $opciones = []; //Opciones predeterminadas
-        if($this->opciones != null){
-            $opciones = json_decode($this->opciones,true);
-        }
-        
-        switch ($opcion_number) {
-            case "1":
-                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
-                    return $opciones[$this->getOpcionesEstructura($opcion_number)];
-                }
-                return ['0' => 'Si', '1' => 'No']; //Opciones predeterminadas
-            break;
-            case "2":
-                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
-                    return $opciones[$this->getOpcionesEstructura($opcion_number)];
-                }
-                return null; //Opciones predeterminadas
-            break;
-            case "3":
-                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
-                    return $opciones[$this->getOpcionesEstructura($opcion_number)];
-                }
-                return true; //Opciones predeterminadas
-            break;
-        }
-
-        return $opciones;
-    }
-
-    public function getOpcionesEstructura($number){//Retornamos los campos de las opciones del indicador del code-editor 
+    //Parametros configurables
+    //Retornamos los campos de las opciones del indicador del code-editor 
+    //Para indicadores select dropdown y select multiple el formato es el siguiente: {"opciones" : ["Opcion1", "Opcion2", "Opcion3"], "predeterminado" : "0" } y se puede agregar la opción "medible" : true/false en caso que no se requiere que el indicador afecta la evalucación
+    public function getOpcionesEstructura($number){
 
         switch ($number) {
             case "1":
@@ -89,6 +70,47 @@ class Indicador extends Model
         return null;
     }
 
+    //Retornamos las opciones del indicador que se escriben en el code-editor
+    public function getOpciones($opcion_number = 0){
+        $opciones = []; //Opciones predeterminadas
+
+        //Si el campo opciones esta vacio
+        if($this->opciones != null){
+            $opciones = json_decode($this->opciones,true);
+        }
+
+        switch ($opcion_number) {
+            case "1":
+                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                    if(is_array($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                        return $opciones[$this->getOpcionesEstructura($opcion_number)];
+                    }
+                }
+                return ['Si','No']; 
+            break;
+            case "2":
+                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                    if(is_numeric ($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                        return $opciones[$this->getOpcionesEstructura($opcion_number)];
+                    }
+                }
+                //return null; 
+                return 0;
+            break;
+            case "3":
+                if(isset($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                    if(is_bool($opciones[$this->getOpcionesEstructura($opcion_number)])){
+                        return $opciones[$this->getOpcionesEstructura($opcion_number)];
+                    }
+                }
+                return true; 
+            break;
+        }
+
+        return $opciones;
+    }
+
+    
     public function esMedible(){//Verificamos si el indicador es una pregunta abierta o cerrada, para poder graficarlo
         $tipo_indicador = $this->getTipo();
         if ($tipo_indicador == "likert" ||

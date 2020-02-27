@@ -150,7 +150,14 @@ class ChartsController extends Controller
 
         foreach($categoria->indicadores as $indicador_index=>$indicador){
 
-            if($indicador->esMedible()){
+            $request = new Request;
+            $request->curso_id          = $curso->getID();
+            $request->periodo_id        = $periodo->getID();
+            $request->instrumento_id    = $instrumento->getID();
+            $request->categoria_id      = $categoria->getID();
+            $request->indicador_id      = $indicador->getID();
+            //&& $this->consultar_grafico_indicadores($request) != null
+            if($indicador->esMedible() && $this->consultar_grafico_indicadores($request) != null){
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
 
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
@@ -194,7 +201,7 @@ class ChartsController extends Controller
                 ]);
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
                     ->load(route('curso.consultar_grafico_indicadores', 
-                        ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()]));
+                        ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()])); 
             }
 
         }
@@ -359,10 +366,11 @@ class ChartsController extends Controller
         $indicador_id   = $request->indicador_id;
         
         $chart = new indicadoresChart;
-
+        
         if(!isset($curso_id) || !isset($periodo_id) || !isset($instrumento_id) || !isset($categoria_id) || !isset($indicador_id)){
             return json_encode (json_decode ("{}"));
         }
+        
         $curso          = Curso::find($curso_id);
         $instrumento    = Instrumento::find($instrumento_id);
         $periodo        = PeriodoLectivo::find($periodo_id);
@@ -376,22 +384,42 @@ class ChartsController extends Controller
         //Momentos de evaluación
         $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
 
-        $opciones_instrumento = $categoria->getLikertType();
-          
+        if($indicador->esMedible() && $indicador->esLikert()){
+            $opciones_instrumento = $categoria->getLikertType();
+        }elseif($indicador->esMedible() && !$indicador->esLikert()){
+            $opciones_instrumento = $indicador->getOpciones(1);   
+        }else{
+            return null;
+        }
+
+        $countEmpty = 0;
+        $countTotal = 0;
+
         foreach($momentos_evaluacion_collection as $momentoIndex => $momento){
             $k=0;
             $query = [];
 
+            
             foreach($opciones_instrumento as $key=>$opcion){
                 $valor = Evaluacion::cantidad_respuestas_para_indicador($curso, $instrumento, $periodo, $momento, $indicador, $opcion);
+                
                 $query[$k] = $valor;
+                if($valor == null){
+                    $countEmpty++;
+                }
+                $countTotal++;
                 $k++;
+                
             }
 
             $chart->dataset($momento->getNombre(), 'bar',$query);
             
         }
-
+        
+        if($countEmpty == $countTotal){
+            return null;
+        }
+        
         return $chart->api();
     }
     public function consultar_tabla_indicador($curso_id,$periodo_id,$instrumento_id,$categoria_id,$indicador_id){//Crea datatable de indicadores noMedibles Text, textarea
