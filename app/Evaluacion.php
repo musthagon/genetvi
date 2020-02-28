@@ -213,15 +213,33 @@ class Evaluacion extends Model
         return $valor;
     }
 
-    //Cuenta la cantidad de evaluaciones de un periodo lectivo en un momento con un instrumento de un curso
+    //Cuenta la cantidad de evaluaciones de un periodo lectivo en un momento con un instrumento de un curso SIN RECHAZAR
     public static function cantidad_evaluaciones0($periodo,$instrumento,$curso){
-        return Evaluacion::where('periodo_lectivo_id',$periodo->getID())
+        return Evaluacion::where('estatus_evaluacion_id','!=',Estatus::getEstatusRechazada())
+        ->where('periodo_lectivo_id',$periodo->getID())
         ->where('instrumento_id',$instrumento->getID())
         ->where('curso_id',$curso->getID())
         ->count();
     }
     public static function cantidad_evaluaciones1($periodo,$momento,$instrumento,$curso){
-        return Evaluacion::where('periodo_lectivo_id',$periodo->getID())
+        return Evaluacion::where('estatus_evaluacion_id','!=',Estatus::getEstatusRechazada())
+        ->where('periodo_lectivo_id',$periodo->getID())
+        ->where('momento_evaluacion_id',$momento->getID())
+        ->where('instrumento_id',$instrumento->getID())
+        ->where('curso_id',$curso->getID())
+        ->count();
+    }
+    //Cuenta la cantidad de evaluaciones de un periodo lectivo en un momento con un instrumento de un curso RECHAZADAS
+    public static function cantidad_evaluaciones00($periodo,$instrumento,$curso){
+        return Evaluacion::where('estatus_evaluacion_id',Estatus::getEstatusRechazada())
+        ->where('periodo_lectivo_id',$periodo->getID())
+        ->where('instrumento_id',$instrumento->getID())
+        ->where('curso_id',$curso->getID())
+        ->count();
+    }
+    public static function cantidad_evaluaciones11($periodo,$momento,$instrumento,$curso){
+        return Evaluacion::where('estatus_evaluacion_id',Estatus::getEstatusRechazada())
+        ->where('periodo_lectivo_id',$periodo->getID())
         ->where('momento_evaluacion_id',$momento->getID())
         ->where('instrumento_id',$instrumento->getID())
         ->where('curso_id',$curso->getID())

@@ -107,6 +107,50 @@ class ChartsController extends Controller
                 $cantidadEvaluacionesCursoCharts2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>3,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
             }
 
+            //Se inicializa el Chart1. Cantidad de la evaluacion del eva Rechazadas
+            $request = new Request;
+            $request->tipo              = 3;
+            $request->curso             = $curso->getID();
+            $request->periodo_lectivo   = $periodo->getID();
+            if($this->consultar_grafico_generales($request) != null){
+                $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]= new indicadoresChart;
+                $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]->options([
+                    'title'=>[
+                        'text' => 'Cantidad de Evaluaciones Rechazadas de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
+                    ],
+                    'subtitle'=>[
+                        'text' => $this->dashboards_subtitle
+                    ],
+                    'tooltip'=> [
+                        'valueSuffix'=> ' personas'
+                    ],
+                    'plotOptions'=> [
+                        'bar'=> [
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                            ],
+                        ],
+                        'series'=> [
+                            'stacking'=> 'normal'
+                        ],                       
+                    ],
+                    'xAxis' => [
+                        'categories' => $nombreInstrumentos
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Cantidad personas que han rechazado evaluar',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                ]);
+                $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>6,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
+            }
+
             //Se inicializa el Chart2. Ponderacion de la evaluacion del eva
             $request = new Request;
             $request->tipo              = 4;
@@ -255,6 +299,48 @@ class ChartsController extends Controller
             ]);
             $cantidadEvaluacionesCursoCharts1->load(route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
         }
+
+        //Se inicializa el Chart1. Total Cantidad de la evaluacion del eva por periodo lectivo Rechazadas
+        $request = new Request;
+        $request->tipo       = 1;
+        $request->curso      = $curso->getID();
+        $request->periodos   = $periodos_collection;
+        if($this->consultar_grafico_generales($request) != null){
+            $cantidadEvaluacionesRechazadasCursoCharts1= new indicadoresChart;
+            $cantidadEvaluacionesRechazadasCursoCharts1->options([
+                'title'=>[
+                    'text' => 'Cantidad de Evaluaciones Rechazadas del '.$curso->getNombre()
+                ],
+                'subtitle'=>[
+                    'text' => $this->dashboards_subtitle
+                ],
+                'tooltip'=> [
+                    'valueSuffix'=> ' personas'
+                ],
+                'plotOptions'=> [
+                    'bar'=> [
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                        ],
+                    ],                     
+                ],
+                'xAxis' => [
+                    'categories' => $nombresPeriodos
+                ],
+                'yAxis'=> [
+                    'min'=> 0,
+                    'title'=> [
+                        'text'=> 'Cantidad personas que han rechazado evaluar',
+                        'align'=> 'high'
+                    ],
+                    'labels'=> [
+                        'overflow'=> 'justify'
+                    ]
+                ],
+            ]);
+            $cantidadEvaluacionesRechazadasCursoCharts1->load(route('curso.consultar_grafico_generales', ['tipo'=>5,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
+        }
+
         //Se inicializa el Chart2. Total Ponderacion de la evaluacion del eva por periodo lectivo
         $request = new Request;
         $request->tipo       = 2;
@@ -307,8 +393,10 @@ class ChartsController extends Controller
             'indicadores_collection',
             'indicadores_collection_charts',
             'cantidadEvaluacionesCursoCharts1',
+            'cantidadEvaluacionesRechazadasCursoCharts1',
             'promedioPonderacionCurso1',
             'cantidadEvaluacionesCursoCharts2',
+            'cantidadEvaluacionesRechazadasCursoCharts2',
             'promedioPonderacionCurso2',
             'dashboards_subtitle'
         ));
@@ -490,7 +578,7 @@ class ChartsController extends Controller
         $query = [];
         $countEmpty = 0;
         $countTotal = 0;
-        if($tipo == "1" || $tipo == "2"){
+        if($tipo == "1" || $tipo == "2" || $tipo == "5"){
             //periodos lectivos con los cuales han evaluado este curso
             $periodos_collection = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->getID());
             foreach($instrumentos_collection as $instrumento_index=>$instrumento){
@@ -500,7 +588,10 @@ class ChartsController extends Controller
                         $query[$instrumento_index][$periodo_index] = Evaluacion::cantidad_evaluaciones0($periodo,$instrumento,$curso);
                     }elseif($tipo == "2"){
                         $query[$instrumento_index][$periodo_index] = Evaluacion::promedio_evaluaciones0($periodo,$instrumento,$curso);
+                    }elseif($tipo == "5"){
+                        $query[$instrumento_index][$periodo_index] = Evaluacion::cantidad_evaluaciones00($periodo,$instrumento,$curso);
                     }
+
                     if($query == null){
                         $countEmpty++;
                     }
@@ -510,7 +601,7 @@ class ChartsController extends Controller
                 $chart->dataset($instrumento->getNombre(), 'bar', $query[$instrumento_index]);
                 
             }
-        }elseif($tipo == "3" || $tipo == "4"){
+        }elseif($tipo == "3" || $tipo == "4" || $tipo == "6"){
             //Momentos de evaluación
             $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
             $periodo  = PeriodoLectivo::find($periodo_lectivo_id);
@@ -524,6 +615,8 @@ class ChartsController extends Controller
                         $query [$instrumento_index] = Evaluacion::cantidad_evaluaciones1($periodo,$momento,$instrumento,$curso);
                     }elseif($tipo == "4"){
                         $query [$instrumento_index] = Evaluacion::promedio_evaluaciones1($periodo,$momento,$instrumento,$curso);
+                    }elseif($tipo == "6"){
+                        $query [$instrumento_index] = Evaluacion::cantidad_evaluaciones11($periodo,$momento,$instrumento,$curso);
                     }
                     if($query == null){
                         $countEmpty++;

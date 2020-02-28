@@ -97,6 +97,13 @@
                             {!! $cantidadEvaluacionesCursoCharts1->container() !!}
                         </div>
                     @endif
+
+                    @if(!empty($cantidadEvaluacionesRechazadasCursoCharts1))
+                        <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
+                            {!! $cantidadEvaluacionesRechazadasCursoCharts1->container() !!}
+                        </div>
+                    @endif
+
                     @if(!empty($promedioPonderacionCurso1))
                         <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix general">
                             {!! $promedioPonderacionCurso1->container() !!}
@@ -108,6 +115,11 @@
                         @if(!empty($cantidadEvaluacionesCursoCharts2[$periodo_index]))
                             <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
                                 {!! $cantidadEvaluacionesCursoCharts2[$periodo_index]->container() !!}
+                            </div>
+                        @endif
+                        @if(!empty($cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]))
+                            <div class="chartTarget col-xs-12 col-sm-12 col-md-12 mix Periodo_{{$periodo->id}} general">
+                                {!! $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]->container() !!}
                             </div>
                         @endif
                         @if(!empty($promedioPonderacionCurso2[$periodo_index]))
@@ -266,6 +278,9 @@
     @if(!empty($cantidadEvaluacionesCursoCharts1))
         {!! $cantidadEvaluacionesCursoCharts1->script() !!}
     @endif
+    @if(!empty($cantidadEvaluacionesCursoCharts1))
+        {!! $cantidadEvaluacionesRechazadasCursoCharts1->script() !!}
+    @endif
     @if(!empty($promedioPonderacionCurso1))
         {!! $promedioPonderacionCurso1->script() !!}
     @endif
@@ -274,6 +289,9 @@
 
         @if(!empty($cantidadEvaluacionesCursoCharts2[$periodo_index]))
             {!! $cantidadEvaluacionesCursoCharts2[$periodo_index]->script() !!}
+        @endif
+        @if(!empty($cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]))
+            {!! $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]->script() !!}
         @endif
         @if(!empty($promedioPonderacionCurso2[$periodo_index]))
             {!! $promedioPonderacionCurso2[$periodo_index]->script() !!}
