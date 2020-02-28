@@ -4,9 +4,9 @@
             <div class="form-group2">
                 <input type="text" class="form-control" 
                     style="width: 100%;" 
-                    name="{{$indicador->getID()}}"
+                    name='campo{{$indicador->getID()}}_{{$categoria->getID()}}'
                     placeholder="{{$indicador->getNombre()}}"
-                    value="{{old($indicador->getID())}}"/>
+                    value=""/>
             </div>
         </div>
     </div>

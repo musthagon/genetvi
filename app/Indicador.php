@@ -153,6 +153,8 @@ class Indicador extends Model
             $percentil_value_opciones = $percentil_value_opciones - 1;
         }
         
+        if($percentil_value_opciones <= 0){ return 0; }
+        
         return $percentil_value_opciones;
     }
 

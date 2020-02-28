@@ -123,9 +123,9 @@ class PublicController extends Controller
         $CategoriasInstrumento       = $categorias["instrumento"];
         
         $instrumento_categorias = $CategoriasPerfilInstrumento;
-        foreach($instrumento_categorias as $categorias){
-            foreach($categorias->indicadoresOrdenados() as $indicador){
-                if(!isset($request->{($indicador->id)}) && $indicador->getRequerido() ){  
+        foreach($instrumento_categorias as $categoria){
+            foreach($categoria->indicadoresOrdenados() as $indicador){
+                if(!isset($request->{('campo'.$indicador->getID().'_'.$categoria->getID())}) && $indicador->getRequerido() ){  
                     return redirect()
                         ->back()
                         ->withInput()
@@ -272,9 +272,9 @@ class PublicController extends Controller
 
         $instrumento_categorias = $CategoriasInstrumento;
 
-        foreach($instrumento_categorias as $categorias){
-            foreach($categorias->indicadoresOrdenados() as $indicador){
-                if(!isset($request->{($indicador->id)}) && $indicador->getRequerido() ){  
+        foreach($instrumento_categorias as $categoria){
+            foreach($categoria->indicadoresOrdenados() as $indicador){
+                if(!isset($request->{('campo'.$indicador->getID().'_'.$categoria->getID())}) && $indicador->getRequerido() ){  
                     return redirect()
                         ->back()
                         ->withInput()
@@ -490,7 +490,7 @@ class PublicController extends Controller
             $categoria_likert_cantidad_opciones = $categoria->getLikertCantidadOpciones();
 
             foreach($categoria->indicadoresOrdenados() as $indicador){
-                if(isset($request->{($indicador->id)} )){
+                if(isset($request->{('campo'.$indicador->getID().'_'.$categoria->getID())} )){
 
                     $valorIndicador = $indicador->pivot->valor_porcentual;
                     $percentil_value_categoria = ($valorIndicador * $valorCategoria) / 100;
@@ -509,7 +509,7 @@ class PublicController extends Controller
                             $percentil_value_opciones = count($opciones)-1;
                         }
                         
-                        $value_percentil_request  = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $opciones);
+                        $value_percentil_request  = $indicador->percentilValueRequest($request->{('campo'.$indicador->getID().'_'.$categoria->getID())}, $percentil_value_opciones, $opciones);
 
                         $percentil_indicador_actual =($percentil_value_categoria/$percentil_value_opciones) * $value_percentil_request;
                         $this->percentil_total_eva = $this->percentil_total_eva + $percentil_indicador_actual;
@@ -517,13 +517,13 @@ class PublicController extends Controller
                     
                     $categoria_field[$j]['indicador_nombre']= $indicador->nombre;
                     if($indicador->getTipo() != "select_multiple"){
-                        $categoria_field[$j]['value_string']    = $request->{($indicador->id)};
+                        $categoria_field[$j]['value_string']    = $request->{('campo'.$indicador->getID().'_'.$categoria->getID())};
                     }else{
-                        $categoria_field[$j]['value_string']    = json_encode($request->{($indicador->id)});;
+                        $categoria_field[$j]['value_string']    = json_encode($request->{('campo'.$indicador->getID().'_'.$categoria->getID())});;
                     }
                     $categoria_field[$j]['value_percentil'] = $percentil_indicador_actual;
-                    $categoria_field[$j]['indicador_id']    = $indicador->id;
-                    $categoria_field[$j]['categoria_id']    = $categoria->id;
+                    $categoria_field[$j]['indicador_id']    = $indicador->getID();
+                    $categoria_field[$j]['categoria_id']    = $categoria->getID();
 
                     $j++;
                 }

@@ -86,7 +86,7 @@
                             @endif
                           <div>  
 
-                          <label for="{{$indicador->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
+                          <label for="campo{{$indicador->getID()}}_{{$categoria->getID()}}@if($indicador->multipleField())[]@endif" class="likert-legend error">El campo es requerido</label>
                           
                         </legend>
                       </td>
@@ -154,7 +154,7 @@
                     @foreach($instrumento->categorias as $categoria)
                     @foreach($categoria->indicadores as $indicador)
                       @if($indicador->getRequerido())
-                        '{{$indicador->id}}@if($indicador->multipleField())[]@endif' : {required :true},
+                        'campo{{$indicador->getID()}}_{{$categoria->getID()}}@if($indicador->multipleField())[]@endif' : {required :true},
                       @endif
                     @endforeach
                     @endforeach               
