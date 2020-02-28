@@ -142,28 +142,18 @@ class Indicador extends Model
         return $cantidad_opciones;
     }
 
-    public function percentilValueRequest($string_request, $percentilValueOpciones, $likertOpciones){
-        $opcionValue = $percentilValueOpciones;
-        if($opcionValue == 0){ return 0; }
+    public function percentilValueRequest($string_request, $percentil_value_opciones, $opciones){
 
-        if($this->getTipo() == "likert"){
-            foreach($likertOpciones as $key => $opcion){
-                if($string_request == $opcion){
-                    break;
-                }
-                $opcionValue = $opcionValue - 1;
+        if($percentil_value_opciones <= 0){ return 0; }
+
+        foreach($opciones as $key => $opcion){
+            if($string_request == $opcion){
+                break;
             }
-        }else{
-            foreach($this->getOpciones(1) as $key => $opcion){
-                if($string_request == $key){
-    
-                    break;
-                }
-                $opcionValue = $opcionValue - 1;
-            }
+            $percentil_value_opciones = $percentil_value_opciones - 1;
         }
-
-        return $opcionValue;
+        
+        return $percentil_value_opciones;
     }
 
     public function indicadorOpciones($likert){

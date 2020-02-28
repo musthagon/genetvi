@@ -46,11 +46,12 @@ class Evaluacion extends Model
         return $new;
     }
 
-    public function actualizarEvaluacion($respuestas, $percentil_eva,$cvucv_user_id,$usuario_id ){
+    public function actualizarEvaluacion($respuestas, $percentil_eva,$cvucv_user_id,$usuario_id, $estatus){
         $this->respuestas            = $respuestas;
         $this->percentil_eva         = $percentil_eva;
         $this->cvucv_user_id         = $cvucv_user_id;
         $this->usuario_id            = $usuario_id;
+        $this->estatus_evaluacion_id = $estatus;
         $this->save();
     }
 

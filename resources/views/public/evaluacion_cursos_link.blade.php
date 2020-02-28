@@ -14,9 +14,17 @@
 
       <!-- Instru -->
       @if(!empty($instrumento))
+
+      @if( $edit || empty($CategoriasPerfilInstrumento) )
       <form id="wizard1" class=""
-        action="{{ $edit ? route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()]) : route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()]) }}" 
+        action="{{ route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()])  }}" 
         method="POST">
+      @else
+      <form id="wizard1" class=""
+        action="{{ route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()]) }}" 
+        method="POST">
+      @endif
+      
 
         <!-- PUT Method if we are editing -->
         @if($edit)
@@ -28,7 +36,7 @@
 
         @php 
           $categorias = array();
-          if(isset($CategoriasPerfilInstrumento) && !$edit){
+          if(isset($CategoriasPerfilInstrumento) && !$edit && !empty($CategoriasPerfilInstrumento)){
             $categorias = $CategoriasPerfilInstrumento;
           }elseif(isset($CategoriasInstrumento)){
             $categorias = $CategoriasInstrumento;

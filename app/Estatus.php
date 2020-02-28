@@ -13,6 +13,18 @@ class Estatus extends Model
         return Estatus::where('nombre','creada')->first()->getID();
     }
 
+    public static function getEstatusAceptada(){
+        return Estatus::where('nombre','aceptada')->first()->getID();
+    }
+
+    public static function getEstatusRechazada(){
+        return Estatus::where('nombre','rechazada')->first()->getID();
+    }
+
+    public static function getEstatusCompletada(){
+        return Estatus::where('nombre','completada')->first()->getID();
+    }
+
     public function getID(){
         return $this->id;
     }

@@ -9,6 +9,7 @@ use App\Evaluacion;
 use App\Respuesta;
 use App\Invitacion;
 use App\MomentosEvaluacion;
+use App\Estatus;
 
 class PublicController extends Controller
 {
@@ -154,7 +155,7 @@ class PublicController extends Controller
         }
 
         $this->caculoPercentil($request, $instrumento_categorias);
-        
+
         //Guardamos la evaluacion realizada
         $anonimo = $instrumento->getAnonimo();
 
@@ -170,9 +171,17 @@ class PublicController extends Controller
             $invitacion->getUsuario_id()
         );
         if(!empty($evaluacion)){
-            return $this->message("Error, no se puede reenviar la peticion, intente de nuevo mas tarde", "error");
+            return $this->message("Error, no se puede reenviar la peticion, actualice la página", "error");
         }
-
+        
+        //Acepto a realizar la evaluacion?
+        $acepto = false;
+        if($instrumento->getPuedeRechazar() && isset($request->aceptar)){
+            if($request->aceptar == "on"){
+                $acepto = true;
+            }
+        }
+        
         $evaluacion = Evaluacion::create(
             $anonimo, 
             $token,//$this->respuestas_save, 
@@ -182,7 +191,8 @@ class PublicController extends Controller
             $periodo_lectivo->getID(), 
             $momento_evaluacion->getID(), 
             $invitacion->getCvucv_user_id() , 
-            $invitacion->getUsuario_id()  ) ;
+            $invitacion->getUsuario_id(),
+            ($instrumento->getPuedeRechazar() && !$acepto ? Estatus::getEstatusRechazada() : Estatus::getEstatusAceptada() ) ) ;
 
         //Guardamos las respuestas ya procesadas / calculadas
         foreach($this->respuestas as $respuesta){
@@ -200,43 +210,20 @@ class PublicController extends Controller
         }
 
         //Actualizamos el estatus de la invitacion
-        $acepto = true;
-        if($instrumento->getPuedeRechazar() && isset($request->aceptar)){
-            if($request->aceptar == "on"){
-                $invitacion->actualizar_estatus_aceptada(true);
-            }else{
-                $invitacion->actualizar_estatus_aceptada(false);
-                $acepto = false;
-            }
-        }elseif($instrumento->getPuedeRechazar()){
-            $invitacion->actualizar_estatus_aceptada(false);
-            $acepto = false;
-        }else{
-            $invitacion->actualizar_estatus_aceptada(true);
-        }
-        
+        $invitacion->actualizar_estatus_aceptada($acepto);
+
         unset($request);
 
         if($instrumento->getPuedeRechazar() && !$acepto){
             return $this->message("Hasta la próxima!", "warning");
-        }else{
-            /*$edit = true;
-            return view('public.evaluacion_cursos_link', 
-            compact(
-            'invitacion',
-            'curso', 
-            'instrumento',
-            'CategoriasInstrumento',
-            'periodo_lectivo',
-            'momento_evaluacion',
-            'edit'));*/
-            
+        }else{            
             return redirect()->route('evaluacion_link', ['token' => $token]);
         }
 
         
     }
     public function evaluacion_procesar2($token, $invitacion_id,Request $request){
+
         $invitacion     = Invitacion::where('id',$invitacion_id)->first();
         
         if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
@@ -284,6 +271,7 @@ class PublicController extends Controller
         $CategoriasInstrumento       = $categorias["instrumento"];
 
         $instrumento_categorias = $CategoriasInstrumento;
+
         foreach($instrumento_categorias as $categorias){
             foreach($categorias->indicadoresOrdenados() as $indicador){
                 if(!isset($request->{($indicador->id)}) && $indicador->getRequerido() ){  
@@ -332,11 +320,27 @@ class PublicController extends Controller
             $invitacion->getUsuario_id()
         );
 
-        $evaluacion->actualizarEvaluacion(
+        //Generalmente entra aqui cuando el instrumento no tiene categoria perfil
+        if(empty($evaluacion)){
+            $evaluacion = Evaluacion::create(
+            $anonimo, 
+            $this->respuestas_save, 
+            $this->percentil_total_eva, 
+            $instrumento->getID(), 
+            $curso->getID(), 
+            $periodo_lectivo->getID(), 
+            $momento_evaluacion->getID(), 
+            ($anonimo ? NULL : $invitacion->getCvucv_user_id()), 
+            ($anonimo ? NULL : $invitacion->getUsuario_id()),
+            Estatus::getEstatusCompletada()) ;
+        }else{
+            $evaluacion->actualizarEvaluacion(
             $this->respuestas_save, 
             $this->percentil_total_eva, 
             ($anonimo ? NULL : $invitacion->getCvucv_user_id()) , 
-            ($anonimo ? NULL : $invitacion->getUsuario_id())  ) ;
+            ($anonimo ? NULL : $invitacion->getUsuario_id()),
+            Estatus::getEstatusCompletada()  ) ;
+        }
 
         //Guardamos las respuestas ya procesadas / calculadas
         foreach($this->respuestas as $respuesta){
@@ -495,8 +499,17 @@ class PublicController extends Controller
                         $percentil_indicador_actual = -1;
                     }else{
 
-                        $percentil_value_opciones = $categoria_likert_cantidad_opciones; //Cantidad de opciones
-                        $value_percentil_request  = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $categoria_likertOpciones);
+                        //Cantidad de opciones
+                        if($indicador->getTipo() == "likert"){
+                            $opciones = $categoria_likertOpciones;
+                            $percentil_value_opciones = $categoria_likert_cantidad_opciones; 
+                            
+                        }else{
+                            $opciones = $indicador->getOpciones(1);
+                            $percentil_value_opciones = count($opciones)-1;
+                        }
+                        
+                        $value_percentil_request  = $indicador->percentilValueRequest($request->{($indicador->id)}, $percentil_value_opciones, $opciones);
 
                         $percentil_indicador_actual =($percentil_value_categoria/$percentil_value_opciones) * $value_percentil_request;
                         $this->percentil_total_eva = $this->percentil_total_eva + $percentil_indicador_actual;
