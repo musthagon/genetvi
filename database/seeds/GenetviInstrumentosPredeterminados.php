@@ -203,13 +203,11 @@ class GenetviInstrumentosPredeterminados extends Seeder
 
                 if ($actual->nombre == "Dimensión Académica - Componente Docencia (Docentes)") {
                     
-                    $cantidad = 100/count($indicadores[2]);
+                    $cantidad = 100/  (count($indicadores[2]) + count($indicadores[5]));
                     foreach($indicadores[2] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
                         $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
                     }
-
-                    $cantidad = 100/count($indicadores[5]);
                     foreach($indicadores[5] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
                         $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
@@ -218,13 +216,11 @@ class GenetviInstrumentosPredeterminados extends Seeder
 
                 if ($actual->nombre == "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas (Docentes)") {
 
-                    $cantidad = 100/count($indicadores[4]);
+                    $cantidad = 100/ (count($indicadores[4]) + count($indicadores[6]));
                     foreach($indicadores[4] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
                         $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
                     }
-
-                    $cantidad = 100/count($indicadores[6]);
                     foreach($indicadores[6] as $indicador){
                         $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
                         $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
