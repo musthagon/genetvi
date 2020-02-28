@@ -144,7 +144,16 @@ class Categoria extends Model
         return false;
               
     }
+    public function tieneIndicadoresLikert(){
 
+        foreach($this->indicadores as $indicador){
+            if($indicador->esLikert()){
+                return true;
+            }
+        }
+        return false;
+              
+    }
     public function getNombre(){
         return $this->nombre;
     }

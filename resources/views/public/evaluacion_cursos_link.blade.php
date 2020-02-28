@@ -59,9 +59,13 @@
                   <th class='responses'>
                     <table class='likert-table'>
                       <tr>
-                        @foreach($categoria->getLikertType() as $opcion)
-                          <th class='response'>{{$opcion}}</th>
-                        @endforeach
+                        @if($categoria->tieneIndicadoresLikert())
+                          @foreach($categoria->getLikertType() as $opcion)
+                            <th class='response'>{{$opcion}}</th>
+                          @endforeach
+                        @else
+                          Opciones de Respuesta
+                        @endif
                       </tr>
                     </table>
                   </th>
