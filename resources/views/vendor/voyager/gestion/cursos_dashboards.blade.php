@@ -132,12 +132,13 @@
                     @foreach($instrumento->categorias as $categoria_index=>$categoria)
                         @php $categoriaMedible = $categoria->esMedible();@endphp
                     @foreach($categoria->indicadores as $indicador_index=>$indicador)
-                        @if(!empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]))
-                        @if($indicador->esMedible() && $categoriaMedible)
+                        
+
+                        @if( !empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]) && $indicador->esMedible() && $categoriaMedible)
                             <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_evaluacion">
                                 {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
-                            </div>
-                        @else
+                            </div>                                
+                        @elseif(!$indicador->esMedible())
                             <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_perfil">
                                 <div class="tabla" style="background:white;">
                                     <div class="indicador_title highcharts-title" >
@@ -154,7 +155,8 @@
                                 </div>
                             </div>
                         @endif
-                        @endif
+
+
                     @endforeach
                     @endforeach
                     @endforeach
@@ -301,13 +303,13 @@
     @foreach($instrumento->categorias as $categoria_index=>$categoria)
         @php $categoriaMedible = $categoria->esMedible();@endphp
     @foreach($categoria->indicadores as $indicador_index=>$indicador)
-        @if(!empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]))
-        @if($indicador->esMedible() && $categoriaMedible)
+        
+        @if(!empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]) && $indicador->esMedible() && $categoriaMedible)
             {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
-        @else
+        @elseif(!$indicador->esMedible())
             <script>
                 $(document).ready(function () {
-                    var table = $('#Periodo_{{$periodo->id}}Instrumento_{{$instrumento->id}}Categoria_{{$categoria->id}}Indicador_{{$indicador->id}}').DataTable({
+                    var table = $('#Periodo_{{$periodo->getID()}}Instrumento_{{$instrumento->getID()}}Categoria_{{$categoria->getID()}}Indicador_{{$indicador->getID()}}').DataTable({
                             "processing": true,
                             "serverSide": true,
                             "ajax": "{{ route('curso.consultar_tabla_indicador', ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()]) }}",
@@ -346,7 +348,7 @@
                 });
             </script>
         @endif
-        @endif
+
     @endforeach
     @endforeach
     @endforeach
