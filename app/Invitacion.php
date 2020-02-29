@@ -174,18 +174,24 @@ class Invitacion extends Model
     }
 
     public static function invitarEvaluador($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id, $tipo_invitacion_id){
-        
-        return Invitacion::create(
-            Invitacion::generateToken(), 
-            Estatus::getEstatusCreada(),
-            $tipo_invitacion_id,
-            $instrumento_id,
-            $curso_id,
-            $periodo_lectivo_id,
-            $momento_evaluacion_activo_id,
-            $participante_id,
-            1
-        );
+       
+        $new = new Invitacion();
+
+        $new->token                     = Invitacion::generateToken();
+        $new->estatus_invitacion_id     = Estatus::getEstatusCreada();
+        $new->tipo_invitacion_id        = $tipo_invitacion_id;
+        $new->instrumento_id            = $instrumento_id;
+        $new->curso_id                  = $curso_id;
+        $new->periodo_lectivo_id        = $periodo_lectivo_id;
+        $new->momento_evaluacion_id     = $momento_evaluacion_activo_id;
+        $new->cvucv_user_id             = $participante_id;
+        $new->cantidad_recordatorios    = 2;
+        $new->created_at                = \Carbon\Carbon::now();
+        $new->updated_at                = \Carbon\Carbon::now();
+
+        $new->save();
+
+        return $new;
     }
 
     public static function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico

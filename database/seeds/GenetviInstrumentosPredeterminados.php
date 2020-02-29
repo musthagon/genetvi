@@ -132,9 +132,13 @@ class GenetviInstrumentosPredeterminados extends Seeder
         );
 
         //Creamos los indicadores
-        foreach($indicadores as $Grupoindicadores){
+        foreach($indicadores as $indexKey => $Grupoindicadores){
             foreach($Grupoindicadores as $indicador => $tipo){
                 $indicador = Indicador::firstOrCreate(['nombre' => $indicador, 'tipo' => $tipo]);  
+            }
+            if($indexKey == 7){
+                $indicador->requerido = false;
+                $indicador->save();
             }
         }
         //Creamos las categorías
@@ -158,7 +162,19 @@ class GenetviInstrumentosPredeterminados extends Seeder
                     $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
                 }
                 
-                if($actual->nombre == "Dimensión Tecnológica - Componente Campus Virtual y Herramientas Tecnológicas (Docentes)") {
+                if ($indexKey == 5) {
+                    $actual->indicadores()->detach();
+                    $cantidad = 100/  (count($indicadores[2]) + count($indicadores[5]));
+                    foreach($indicadores[2] as $indicador => $tipo){
+                        $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
+                        $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
+                    }
+                    foreach($indicadores[5] as $indicador => $tipo){
+                        $indicador = Indicador::where(['nombre' => $indicador])->first() ; 
+                        $actual->indicadores()->attach($indicador, ['valor_porcentual'=> $cantidad]);
+                    }
+                }
+                if($indexKey == 6) {
                     $actual->indicadores()->detach();
                     $cantidad = 100/ (count($indicadores[4]) + count($indicadores[6]));
                     foreach($indicadores[4] as $indicador => $tipo){

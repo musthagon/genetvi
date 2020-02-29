@@ -20,10 +20,8 @@ class PublicController extends Controller
     protected $respuestas;
 
     public function evaluacion(Request $request){
-        
         $token          = $request->token;
-        $invitacion     = Invitacion::where('token',$token)->first();
-        
+
         $preview = true;
         $preview2 = true;
         if(!isset($request->preview)){$preview = false;}
@@ -35,8 +33,12 @@ class PublicController extends Controller
             if($invitacion === null){
                 //se crea la invitacion para preview
                 $invitacion = Invitacion::invitarEvaluador($curso, $instrumento, $periodo_lectivo, $momentoActual, $usuario, TipoInvitacion::getEstatusManual());
-            }      
+            }
+            $token = $invitacion->getToken();
         }
+        
+        $invitacion     = Invitacion::where('token',$token)->first();
+        
         
         if (!$preview && is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
             return $this->message("Error, invitación para evaluar curso inválida", "error");

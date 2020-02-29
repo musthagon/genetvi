@@ -209,11 +209,6 @@ class InstrumentoController extends VoyagerBaseController
         // Check permission
         $this->authorize('read', $dataTypeContent);
 
-        // Check if BREAD is Translatable
-        $isModelTranslatable = is_bread_translatable($dataTypeContent);
-
-        $view = 'voyager::bread.read';
-
         return redirect()->route('evaluacion_link', ['token'=>'preview','preview'=>true,'instrumento'=>$id]);
 
     }
