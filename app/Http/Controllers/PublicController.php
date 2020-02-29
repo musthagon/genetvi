@@ -8,8 +8,10 @@ use App\Curso;
 use App\Evaluacion;
 use App\Respuesta;
 use App\Invitacion;
+use App\TipoInvitacion;
 use App\MomentosEvaluacion;
 use App\Estatus;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class PublicController extends Controller
 {
@@ -17,17 +19,32 @@ class PublicController extends Controller
     protected $percentil_total_eva;
     protected $respuestas;
 
-    public function evaluacion($token){
-
+    public function evaluacion(Request $request){
+        
+        $token          = $request->token;
         $invitacion     = Invitacion::where('token',$token)->first();
         
-        if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
+        $preview = true;
+        $preview2 = true;
+        if(!isset($request->preview)){$preview = false;}
+        if(!isset($request->preview2)){$preview2 = false;}
+
+        if($preview && !$preview2){
+            $curso      = null; $periodo_lectivo = null; $momentoActual= null; $usuario = null; $instrumento = $request->instrumento;
+            $invitacion = Invitacion::invitacionPrevia2($curso, $request->instrumento, $periodo_lectivo, $momentoActual, $usuario);
+            if($invitacion === null){
+                //se crea la invitacion para preview
+                $invitacion = Invitacion::invitarEvaluador($curso, $instrumento, $periodo_lectivo, $momentoActual, $usuario, TipoInvitacion::getEstatusManual());
+            }      
+        }
+        
+        if (!$preview && is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
             return $this->message("Error, invitación para evaluar curso inválida", "error");
         }
-        if ($invitacion->invitacion_revocada()){ //Invitación revocada
+        if(!$preview && $invitacion->invitacion_revocada()){ //Invitación revocada
             return $this->message("Error, invitación revocada", "error");
         }
-        if($invitacion->invitacion_completada()){
+        if(!$preview && $invitacion->invitacion_completada()){
             return $this->message("Ya evaluaste este curso", "error");
         }
 
@@ -36,22 +53,22 @@ class PublicController extends Controller
         $periodo_lectivo    = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
-        if (empty($curso)){ 
+        if (!$preview && empty($curso)){ 
             return $this->message("Error, el curso no esta disponible en este momento", "error");
         }
         if (empty($instrumento)){ 
             return $this->message("Error, el instrumento no esta disponible en este momento", "error");
         }
-        if (empty($periodo_lectivo)){ 
+        if (!$preview && empty($periodo_lectivo)){ 
             return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
         }
-        if(empty($momento_evaluacion)){
+        if (!$preview && empty($momento_evaluacion)){
             return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
         }
         if(!$instrumento->esValido()){
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
         }
-        if($instrumento->getPuedeRechazar() && $invitacion->invitacion_rechazada()){
+        if(!$preview && $instrumento->getPuedeRechazar() && $invitacion->invitacion_rechazada()){
             return $this->message("Rechazaste evaluar este curso", "error");
         }
 
@@ -60,13 +77,14 @@ class PublicController extends Controller
         $CategoriasInstrumento = $categorias["instrumento"];
 
         //Actualizamos el estatus de la invitacion
-        if($invitacion->invitacion_aceptada()){
+        
+        if( (!$preview && $invitacion->invitacion_aceptada() && $instrumento->getPuedeRechazar()) || ($preview && $preview2) ){
             $edit = true;
         }else{
             $invitacion->actualizar_estatus_leida();
             $edit = false;
         }
-        
+
         return view('public.evaluacion_cursos_link', 
         compact(
         'invitacion',
@@ -76,15 +94,18 @@ class PublicController extends Controller
         'CategoriasInstrumento',
         'periodo_lectivo',
         'momento_evaluacion',
-        'edit'));
+        'edit',
+        'preview'));
                 
     }
-    public function evaluacion_procesar1($token, $invitacion_id,Request $request){
+    public function evaluacion_procesar1($token, $invitacion_id,$preview = false,Request $request){
+        
         $invitacion     = Invitacion::where('id',$invitacion_id)->first();
         
         if (is_null($invitacion) || empty($invitacion) || strlen($invitacion) < 1 || $invitacion == null){ 
             return $this->message("Error, invitación para evaluar curso inválida", "error");
         }
+        
         if (!$invitacion->checkToken($token)){ //Invitación revocada
             return $this->message("Error, invitación erronea", "error");
         }
@@ -94,28 +115,28 @@ class PublicController extends Controller
         if($invitacion->invitacion_completada()){
             return $this->message("Ya evaluaste este curso", "error");
         }
-
+        
         $curso              = $invitacion->curso;
         $instrumento        = $invitacion->instrumento;
         $periodo_lectivo    = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
-
-        if (empty($curso)){ 
+        
+        if (!$preview && empty($curso)){ 
             return $this->message("Error, el curso no esta disponible en este momento", "error");
         }
         if (empty($instrumento)){ 
             return $this->message("Error, el instrumento no esta disponible en este momento", "error");
         }
-        if (empty($periodo_lectivo)){ 
+        if (!$preview && empty($periodo_lectivo)){ 
             return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
         }
-        if(empty($momento_evaluacion)){
+        if(!$preview && empty($momento_evaluacion)){
             return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
         }
         if(!$instrumento->esValido()){
             return $this->message("Error, el instrumento de evaluación no se encuentra disponible en este momento, intente más tarde", "error");
         }
-
+        
         //Verificamos que los campos del request no esten vacíos
         //No puede haber indicadores repetidos
         $categorias                  = $instrumento->categoriasCodificadasInstrumento();
@@ -135,6 +156,24 @@ class PublicController extends Controller
             }
         }
         
+        //Acepto a realizar la evaluacion?
+        $acepto = false;
+        if($instrumento->getPuedeRechazar() && isset($request->aceptar)){
+            if($request->aceptar == "on"){
+                $acepto = true;
+            }
+        }
+
+        if($preview){
+            unset($request);
+
+            if($instrumento->getPuedeRechazar() && !$acepto){
+                return $this->message("Hasta la próxima!", "warning");
+            }else{            
+                return redirect()->route('evaluacion_link', ['token' => $token,'preview' => true, 'preview2' => true]);
+            }
+        }
+
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
 
@@ -174,13 +213,7 @@ class PublicController extends Controller
             return $this->message("Error, no se puede reenviar la peticion, actualice la página", "error");
         }
         
-        //Acepto a realizar la evaluacion?
-        $acepto = false;
-        if($instrumento->getPuedeRechazar() && isset($request->aceptar)){
-            if($request->aceptar == "on"){
-                $acepto = true;
-            }
-        }
+        
         
         $evaluacion = Evaluacion::create(
             $anonimo, 
@@ -222,7 +255,7 @@ class PublicController extends Controller
 
         
     }
-    public function evaluacion_procesar2($token, $invitacion_id,Request $request){
+    public function evaluacion_procesar2($token, $invitacion_id,$preview = false,Request $request){
 
         $invitacion     = Invitacion::where('id',$invitacion_id)->first();
         
@@ -245,16 +278,16 @@ class PublicController extends Controller
         $periodo_lectivo    = $invitacion->periodo;
         $momento_evaluacion = $invitacion->momento_evaluacion;
 
-        if (empty($curso)){ 
+        if (!$preview && empty($curso)){ 
             return $this->message("Error, el curso no esta disponible en este momento", "error");
         }
         if (empty($instrumento)){ 
             return $this->message("Error, el instrumento no esta disponible en este momento", "error");
         }
-        if (empty($periodo_lectivo)){ 
+        if (!$preview && empty($periodo_lectivo)){ 
             return $this->message("Error, el periodo lectivo no esta disponible en este momento", "error");
         }
-        if(empty($momento_evaluacion)){
+        if(!$preview && empty($momento_evaluacion)){
             return $this->message("Error, el momento de evaluacion no esta disponible en este momento", "error");
         }
         if(!$instrumento->esValido()){
@@ -282,6 +315,12 @@ class PublicController extends Controller
                 }
 
             }
+        }
+
+        if($preview){
+            unset($request);
+
+            return $this->message("Evaluacion al curso Nombre del Curso realizada satisfactoriamente", "success");
         }
         
         $categoria_raiz             = $curso->categoria->categoria_raiz;

@@ -16,15 +16,15 @@ class CreateInvitaciones extends Migration
         Schema::create('invitaciones', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('token', 191)->unique();
-            $table->bigInteger('estatus_invitacion_id')->unsigned();
-            $table->bigInteger('tipo_invitacion_id')->unsigned();
+            $table->bigInteger('estatus_invitacion_id')->unsigned()->nullable();
+            $table->bigInteger('tipo_invitacion_id')->unsigned()->nullable();
             $table->bigInteger('instrumento_id')->unsigned();
-            $table->bigInteger('curso_id')->unsigned();
-            $table->bigInteger('periodo_lectivo_id')->unsigned();
-            $table->bigInteger('momento_evaluacion_id')->unsigned();
-            $table->bigInteger('cvucv_user_id')->unsigned();
+            $table->bigInteger('curso_id')->unsigned()->nullable();
+            $table->bigInteger('periodo_lectivo_id')->unsigned()->nullable();
+            $table->bigInteger('momento_evaluacion_id')->unsigned()->nullable();
+            $table->bigInteger('cvucv_user_id')->unsigned()->nullable();
             $table->integer('usuario_id')->unsigned()->nullable();
-            $table->integer('cantidad_recordatorios')->default(0);
+            $table->integer('cantidad_recordatorios')->default(0)->nullable();
             $table->timestamps();
         });
     }

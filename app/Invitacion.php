@@ -163,10 +163,19 @@ class Invitacion extends Model
         }
         return true;
     }
+    public static function invitacionPrevia2($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id ){
+        return Invitacion::where('instrumento_id', $instrumento_id)
+        ->where('momento_evaluacion_id', $momento_evaluacion_activo_id)
+        ->where('periodo_lectivo_id', $periodo_lectivo_id)
+        ->where('curso_id', $curso_id)
+        ->where('cvucv_user_id', $participante_id)
+        ->first();
+
+    }
 
     public static function invitarEvaluador($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id, $tipo_invitacion_id){
         
-        Invitacion::create(
+        return Invitacion::create(
             Invitacion::generateToken(), 
             Estatus::getEstatusCreada(),
             $tipo_invitacion_id,

@@ -2,9 +2,9 @@
 
 @section('content')
 
-  @if(isset($curso) && isset($instrumento) && isset($invitacion) && isset($CategoriasPerfilInstrumento) && isset($CategoriasInstrumento))
+  @if(isset($instrumento) && isset($invitacion) && isset($CategoriasPerfilInstrumento) && isset($CategoriasInstrumento))
 
-    <h2>Evaluación de {{$curso->getNombre()}}</h2>
+    <h2>Evaluación de @if (isset($curso)) {{$curso->getNombre()}} @else Nombre del Curso @endif</h2>
 
     <div id="instrucciones" >
       <div class="descripcion">
@@ -15,16 +15,9 @@
       <!-- Instru -->
       @if(!empty($instrumento))
 
-      @if( $edit || empty($CategoriasPerfilInstrumento) )
       <form id="wizard1" class=""
-        action="{{ route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()])  }}" 
+        action="{{ $edit || empty($CategoriasPerfilInstrumento) ? route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID(), 'preview' => $preview]) : route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID(), 'preview' => $preview])  }}" 
         method="POST">
-      @else
-      <form id="wizard1" class=""
-        action="{{ route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID()]) }}" 
-        method="POST">
-      @endif
-      
 
         <!-- PUT Method if we are editing -->
         @if($edit)

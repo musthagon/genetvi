@@ -214,11 +214,8 @@ class InstrumentoController extends VoyagerBaseController
 
         $view = 'voyager::bread.read';
 
-        if (view()->exists("voyager::$slug.read")) {
-            $view = "voyager::$slug.read";
-        }
+        return redirect()->route('evaluacion_link', ['token'=>'preview','preview'=>true,'instrumento'=>$id]);
 
-        return Voyager::view($view, compact('dataType', 'dataTypeContent', 'isModelTranslatable', 'isSoftDeleted'));
     }
 
     //***************************************
