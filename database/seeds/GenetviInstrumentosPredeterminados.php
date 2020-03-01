@@ -15,9 +15,7 @@ class GenetviInstrumentosPredeterminados extends Seeder
      */
     public function run()
     {
-        Indicador::query()->delete();
-        Categoria::query()->delete();
-        Instrumento::query()->delete();
+        
 
         //Indicadores - Dimensión Perfil de Usuario
         $indicadores[0]=array(
@@ -130,6 +128,15 @@ class GenetviInstrumentosPredeterminados extends Seeder
                 "descripcion"   =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los docentes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma",
                 "instrucciones" =>"El presente instrumento está diseñado para realizar la Evaluación de los Entornos Virtuales de Aprendizaje del Campus Virtual-UCV dirigido a los docentes de la Universidad. Está conformado por tres (3) secciones a saber: Perfil de Usuario, Dimensión Académica, Dimensión Tecnológica; con un total de veintidós (22) interrogantes. Mediante este instrumento se determinará en qué nivel el EVA responde satisfactoriamente a cada uno de los aspectos evaluados desde las respectivas dimensiones. Con el objeto de medir y analizar el servicio que se presta a través de esta plataforma")
         );
+
+        //Limpiamos la data
+        foreach($list_instrumentos as  $instrumento){
+            $instrumento = Instrumento::where([
+                'nombre'        => $instrumento['nombre'],
+                'nombre_corto'  => $instrumento['nombre_corto']
+                ])->first();
+            if($instrumento != null ){$instrumento->delete();}
+        }
 
         //Creamos los indicadores
         foreach($indicadores as $indexKey => $Grupoindicadores){
