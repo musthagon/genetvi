@@ -3,15 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Instrumento;
+
 use App\Curso;
-use App\CategoriaDeCurso;
 use App\CursoParticipante;
 use App\Evaluacion;
-use App\Respuesta;
-use App\PeriodoLectivo;
-use App\Categoria;
-use App\Indicador;
+use App\Invitacion;
 use App\User;
 use App\Charts\indicadoresChart;
 use Illuminate\Support\Facades\Auth;
@@ -39,12 +35,16 @@ class HomeController extends Controller
      */
     public function index(){   
         
-        $user = Auth::user();
-        
+        $user                = Auth::user();
+        $user_id             = $user->getCVUCV_USER_ID();
+        $cursosDocente       = CursoParticipante::cursosDocente($user_id );
+        $evaluacionesPendientes = Invitacion::invitaciones_pendientes_de_un_usuario($user_id);
+        //$evaluacionesUsuario = Invitacion::invitaciones_de_un_usuario($user_id);
+
         $informacion_pagina['titulo']       = "Principal";
         $informacion_pagina['descripcion']  = "Aquí se muestra un resumen de las acciones que puedes hacer en la aplicación";
 
-        return view('user.principal', compact('cursosDocente','informacion_pagina'));
+        return view('home.principal', compact('cursosDocente','evaluacionesPendientes','informacion_pagina'));
     }
 
     public function cursos(){   
@@ -52,11 +52,11 @@ class HomeController extends Controller
         $user = Auth::user();
 
         $cursosDocente = CursoParticipante::cursosDocente($user->getCVUCV_USER_ID());
-        
+
         $informacion_pagina['titulo']       = "Cursos";
         $informacion_pagina['descripcion']  = "Aquí se muestran las acciones que puedes realizar en tus cursos";
 
-        return view('user.mis_cursos', compact('cursosDocente','informacion_pagina'));
+        return view('home.mis_cursos', compact('cursosDocente','informacion_pagina'));
     }
 
     public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
@@ -210,7 +210,7 @@ class HomeController extends Controller
         $promedioPonderacionCurso->load($api);
 
         
-        return view('user.cursos_dashboards_test',
+        return view('home.cursos_dashboards_test',
         compact(
             'curso',
             'periodos_collection',

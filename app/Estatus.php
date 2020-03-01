@@ -25,6 +25,18 @@ class Estatus extends Model
         return Estatus::where('nombre','completada')->first()->getID();
     }
 
+    public static function getEstatusLeida(){
+        return Estatus::where('nombre','leída')->first()->getID();
+    }
+
+    public static function getEstatusRevocada(){
+        return Estatus::where('nombre','revocada')->first()->getID();
+    }
+
+    public static function getEstatusRecordatorio(){
+        return Estatus::where('nombre','recordatorio enviado')->first()->getID();
+    }
+
     public function getID(){
         return $this->id;
     }

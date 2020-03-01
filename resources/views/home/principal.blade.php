@@ -35,36 +35,38 @@
       
 
       <div class="row">
-          <div class="col-lg-6 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-aqua">
-              <div class="inner">
-                <h3>150</h3>
+          @if( isset($cursosDocente) && $cursosDocente->isEmpty())
+            <div class="col-lg-6 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-aqua">
+                <div class="inner">
+                  <h3>{{count($cursosDocente)}}</h3>
 
-                <p>Mis cursos</p>
+                  <p>Mis cursos</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-bag"></i>
+                </div>
+                <a href="#" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-bag"></i>
-              </div>
-              <a href="#" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
             </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-6 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-yellow">
-              <div class="inner">
-                <h3>44</h3>
+          @endif
+          @if( isset($evaluacionesPendientes) && $evaluacionesPendientes->isEmpty() )
+            <div class="col-lg-6 col-xs-6">
+              <!-- small box -->
+              <div class="small-box bg-yellow">
+                <div class="inner">
+                  <h3>{{count($evaluacionesPendientes)}}</h3>
 
-                <p>Evaluaciones de cursos que tengo pendiente</p>
+                  <p>Evaluaciones de cursos que tengo pendiente</p>
+                </div>
+                <div class="icon">
+                  <i class="ion ion-person-add"></i>
+                </div>
+                <a href="#" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
               </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a href="#" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
             </div>
-          </div>
-          <!-- ./col -->
+          @endif
       </div>
 
       {!!setting('sitio.instrucciones')!!}

@@ -172,6 +172,17 @@ class Invitacion extends Model
         ->first();
 
     }
+    public static function invitaciones_de_un_usuario( $participante_id ){
+        return Invitacion::where('cvucv_user_id', $participante_id)->get();
+    }
+    public static function invitaciones_pendientes_de_un_usuario( $participante_id ){
+        return Invitacion::where('cvucv_user_id', $participante_id)
+        ->orWhere('estatus_invitacion_id', Estatus::getEstatusCreada())
+        ->orWhere('estatus_invitacion_id', Estatus::getEstatusAceptada())
+        ->orWhere('estatus_invitacion_id', Estatus::getEstatusLeida())
+        ->orWhere('estatus_invitacion_id', Estatus::getEstatusRecordatorio())
+        ->get();
+    }
 
     public static function invitarEvaluador($curso_id, $instrumento_id, $periodo_lectivo_id, $momento_evaluacion_activo_id, $participante_id, $tipo_invitacion_id){
        
