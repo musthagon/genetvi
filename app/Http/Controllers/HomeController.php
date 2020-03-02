@@ -70,6 +70,18 @@ class HomeController extends Controller
         return view('home.mis_invitaciones_evaluar', compact('evaluacionesPendientes','evaluacionesRestantes','informacion_pagina'));
     }
 
+    public function sincronizar_mis_cursos(){
+
+        //Usamos el Trait para sincronizar con el campus
+        $mis_cursos = $this->sync_user_courses();
+
+        if(empty($mis_cursos)){
+            return redirect()->route('mis_cursos')->with(['message' => "No se puede conectar con el Campus Virtual, intente más tarde", 'alert-type' => 'error']);
+        }
+
+        return redirect()->route('mis_cursos')->with(['message' => count($mis_cursos). " Cursos sincronizados", 'alert-type' => 'success']);
+    }
+
     public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
         $curso = Curso::find($curso_id);
         

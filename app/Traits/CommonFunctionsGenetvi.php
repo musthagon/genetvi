@@ -408,7 +408,7 @@ trait CommonFunctionsGenetvi
     public function sync_user_courses(){
         $user = Auth::user();
         //Consultamos los cursos del usuario
-        $cursos_cvucv = $this->cvucv_get_users_courses($user->cvucv_id);
+        $cursos_cvucv = $this->cvucv_get_users_courses($user->getCVUCV_USER_ID());
         
         if(!empty($cursos_cvucv)){
             foreach($cursos_cvucv as $data){
@@ -455,5 +455,7 @@ trait CommonFunctionsGenetvi
             }
             
         }
+
+        return $cursos_cvucv;
     }
 }

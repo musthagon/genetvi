@@ -36,6 +36,7 @@ Route::post('/evaluar_curso/id/{token}/procesar2/{invitacion}/{preview}', 'Publi
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/mis_cursos', 'HomeController@cursos')->name('mis_cursos');
 Route::get('/mis_invitaciones_evaluar', 'HomeController@evaluaciones')->name('mis_invitaciones_evaluar');
+Route::get('/mis_cursos/sincronizar', 'HomeController@sincronizar_mis_cursos')->name('sincronizar_mis_cursos');
 
 //Cursos dashboards
 Route::get('/mis_cursos/visualizar_{id}', 'HomeController@visualizar_resultados_curso')->name('curso');

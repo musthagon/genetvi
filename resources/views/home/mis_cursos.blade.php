@@ -26,7 +26,14 @@
   <h1>
     {{$informacion_pagina['titulo']}}
     <small>{{$informacion_pagina['descripcion']}}</small>
+    <a class="" href="{{route('sincronizar_mis_cursos')}}" title="Ver">
+      <button class="btn-sm btn-success" style="margin-right: 5px;">
+        <i class="voyager-list"></i> Sincronizar mis cursos con el CVCV 
+      </button>
+  </a>
   </h1>
+
+  
 @stop
 
 @section('content')

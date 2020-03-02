@@ -158,4 +158,5 @@ class User extends \TCG\Voyager\Models\User
         $this->role_id = $rol;
         $this->save();
     }
+
 }
