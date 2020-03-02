@@ -67,6 +67,17 @@ class CursoParticipante extends Model
         return $cursosDocente;
     }
 
+    public static function tieneAccesoCurso($userid,$curso_id){
+        $estaMatriculadoDocente = CursoParticipante::where('cvucv_user_id', $userid)
+        ->where('cvucv_curso_id',$curso_id)
+        ->where('cvucv_rol_id','!=',CursoParticipanteRol::getRolEstudiante())
+        ->first();   
+
+        if(empty($estaMatriculadoDocente) ){
+            return false;
+        } 
+        return true;
+    }
     
 
 }

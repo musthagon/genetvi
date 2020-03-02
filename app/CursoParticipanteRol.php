@@ -23,4 +23,8 @@ class CursoParticipanteRol extends Model
         return $this->hasMany('App\Curso','categoria_id','id');
     }
 
+    public static function getRolEstudiante(){
+        return Estatus::where('cvucv_shortname','student')->first()->getID();
+    }
+
 }

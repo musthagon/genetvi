@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use App\Curso;
 use App\CursoParticipante;
 use App\Evaluacion;
 use App\Invitacion;
 use App\User;
 use App\Charts\indicadoresChart;
-use Illuminate\Support\Facades\Auth;
+
 
 use App\Traits\CommonFunctionsGenetvi; 
 
@@ -82,22 +83,18 @@ class HomeController extends Controller
         return redirect()->route('mis_cursos')->with(['message' => count($mis_cursos). " Cursos sincronizados", 'alert-type' => 'success']);
     }
 
-    public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
+    //Crea la vista del dashboard/graficos del curso
+    public function visualizar_resultados_curso($curso_id){
         $curso = Curso::find($curso_id);
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        //Tiene permitido acceder?
-        $user = Auth::user();
-        $estaMatriculadoDocente = CursoParticipante::where('cvucv_user_id', $user->cvucv_id)
-        ->where('cvucv_curso_id',$curso->id)
-        ->where('cvucv_rol_id','!=',5)
-        ->first();        
-        if(empty($estaMatriculadoDocente) ){
-            return redirect('/mis_cursos')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
-        }
+        
+        //Tiene permitido acceder a la categoria?
+        Gate::allows('tieneAccesoVisualizarCurso',[$curso]);
+        
 
         //instrumentos con los cuales han evaluado este curso
         Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
@@ -233,7 +230,7 @@ class HomeController extends Controller
         $promedioPonderacionCurso->load($api);
 
         
-        return view('home.cursos_dashboards_test',
+        return view('home.cursos_dashboards',
         compact(
             'curso',
             'periodos_collection',
