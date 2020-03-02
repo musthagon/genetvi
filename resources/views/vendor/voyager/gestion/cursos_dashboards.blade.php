@@ -1,16 +1,16 @@
 @extends('voyager::master')
 
-@section('page_title', __($curso->cvucv_fullname))
+@section('page_title', __($curso->getNombre()))
 
 @section('page_header')
     <div class="container-fluid">
         <h1 class="page-title">
-            <i class="icon voyager-settings"></i> {{$curso->cvucv_fullname}}
+            <i class="icon voyager-settings"></i> {{$curso->getNombre()}}
         </h1>  
         
         <div class="container-fluid">
             <form class="form-edit-add" 
-                action="{{ route('curso.visualizar_resultados_curso.respuesta_publica', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->id]) }}" 
+                action="{{ route('curso.visualizar_resultados_curso.respuesta_publica', ['categoria_id' => $curso->categoria, 'curso_id' => $curso->getID()]) }}" 
                 method="GET">
 
                 <div class="form-group  col-sm-6 col-md-3 ">
@@ -64,9 +64,9 @@
                     @endphp
                     @foreach($periodos_collection as $periodo_index=>$periodo)
                         @if(!empty($periodo))
-                            <li class="filter" data-filter=".Periodo_{{$periodo->id}}">
-                                <a href="#0" class="" data-type="Periodo_{{$periodo->id}}">
-                                    {{$periodo->nombre}}
+                            <li class="filter" data-filter=".Periodo_{{$periodo->getID()}}">
+                                <a href="#0" class="" data-type="Periodo_{{$periodo->getID()}}">
+                                    {{$periodo->getNombre()}}
                                 </a>
                             </li>
                         @endif
@@ -384,7 +384,7 @@
                     data: function (params) {
                         return {
                             lastname: params.term, // search term
-                            curso_id: {{$curso->id}},
+                            curso_id: {{$curso->getID()}},
                             periodo_lectivo_id: $("#periodos_lectivos").val(),
                             instrumento_id: $("#instrumentos").val(),
                             page: params.page || 1,

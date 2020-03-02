@@ -12,12 +12,16 @@ use App\Invitacion;
 use App\User;
 use App\Charts\indicadoresChart;
 
+use App\Http\ChartsController;
+
 
 use App\Traits\CommonFunctionsGenetvi; 
+use App\Traits\CommonFunctionsCharts;
 
 class HomeController extends Controller
 {
     use CommonFunctionsGenetvi;
+    use CommonFunctionsCharts;
     /**
      * Create a new controller instance.
      *
@@ -96,64 +100,215 @@ class HomeController extends Controller
         Gate::allows('tieneAccesoVisualizarCurso',[$curso]);
         
 
-        //instrumentos con los cuales han evaluado este curso
-        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection, $nombreInstrumentos);
-        //instrumentos con los cuales han evaluado este curso2
-        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
+        //instrumentos con los cuales han evaluado este curso publicos
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->getID(), $instrumentos_collection, $nombreInstrumentos);
+        //instrumentos con los cuales han evaluado este curso2 anonimos
+        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->getID(), $instrumentos_collection2, $nombreInstrumentos2, 1);
         
         //periodos lectivos con los cuales han evaluado este curso
-        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
+        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->getID(),$nombresPeriodos);
 
         //categorias con los cuales han evaluado este curso
-        $categorias_collection      = Evaluacion::categorias_de_evaluacion_del_curso($curso->id);
+        $categorias_collection      = Evaluacion::categorias_de_evaluacion_del_curso($curso->getID());
         
         //indicadores con los cuales han evaluado este curso
-        $indicadores_collection     = Evaluacion::indicadores_de_evaluacion_del_curso($curso->id);
+        $indicadores_collection     = Evaluacion::indicadores_de_evaluacion_del_curso($curso->getID());
 
-        $indicadores_collection_charts = [];
-
-        //Chart1. Cantidad personas que han evaluado el eva
-        //Chart2. Ponderacion de la evaluacion del eva
         $cantidadEvaluacionesCursoCharts = [];
         $promedioPonderacionCurso = [];
+        $indicadores_collection_charts = [];
+        
+        //Se inicializan los dashboards individuales por indicador
         foreach($periodos_collection as $periodo_index=>$periodo){
-        foreach($instrumentos_collection as $instrumento_index=>$instrumento){
-        foreach($instrumento->categorias as $categoria_index=>$categoria){
-        foreach($categoria->indicadores as $indicador_index=>$indicador){
 
-            if($indicador->esMedible()){
-                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
-
-                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] ->options([
-                    "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+            //Se inicializa el Chart1. Cantidad de la evaluacion del eva
+            $request = new Request;
+            $request->tipo              = 3;
+            $request->curso             = $curso->getID();
+            $request->periodo_lectivo   = $periodo->getID();
+            if($this->consultar_grafico_generales($request) != null){
+                $cantidadEvaluacionesCursoCharts2[$periodo_index]= new indicadoresChart;
+                $cantidadEvaluacionesCursoCharts2[$periodo_index]->options([
                     'title'=>[
-                        'text' => 'Respuestas del indicador: '.$indicador->nombre.'<br>
-                                    Del Instrumento: '.$instrumento->nombre.'<br>
-                                    En el periodo lectivo: '.$periodo->nombre
+                        'text' => 'Cantidad de Evaluaciones de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
                     ],
                     'subtitle'=>[
-                        'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
+                        'text' => $this->dashboards_subtitle
                     ],
                     'tooltip'=> [
-                        'pointFormat'=> '{series.name}: <b>{point.percentage:.1f}%</b>'
+                        'valueSuffix'=> ' personas'
                     ],
                     'plotOptions'=> [
-                        'pie'=> [
-                            'allowPointSelect'=> true,
-                            'cursor'=> 'pointer',
+                        'bar'=> [
                             'dataLabels'=> [
                                 'enabled'=> true,
-                                'format'=> '<b>{point.name}</b>: {point.percentage:.1f} %'
                             ],
-                        ],                            
+                        ],
+                        'series'=> [
+                            'stacking'=> 'normal'
+                        ],                       
+                    ],
+                    'xAxis' => [
+                        'categories' => $nombreInstrumentos
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Cantidad personas que han evaluado',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
                     ],
                 ]);
+                $cantidadEvaluacionesCursoCharts2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>3,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
+            }
 
-                $api = route('curso.consultar_grafico_indicadores', ['curso' => $curso->id, 'periodo' => $periodo->id, 'instrumento' => $instrumento->id, 'categoria' => $categoria->id, 'indicador' => $indicador->id]);
+            //Se inicializa el Chart1. Cantidad de la evaluacion del eva Rechazadas
+            $request = new Request;
+            $request->tipo              = 3;
+            $request->curso             = $curso->getID();
+            $request->periodo_lectivo   = $periodo->getID();
+            if($this->consultar_grafico_generales($request) != null){
+                $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]= new indicadoresChart;
+                $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]->options([
+                    'title'=>[
+                        'text' => 'Cantidad de Evaluaciones Rechazadas de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
+                    ],
+                    'subtitle'=>[
+                        'text' => $this->dashboards_subtitle
+                    ],
+                    'tooltip'=> [
+                        'valueSuffix'=> ' personas'
+                    ],
+                    'plotOptions'=> [
+                        'bar'=> [
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                            ],
+                        ],
+                        'series'=> [
+                            'stacking'=> 'normal'
+                        ],                       
+                    ],
+                    'xAxis' => [
+                        'categories' => $nombreInstrumentos
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Cantidad personas que han rechazado evaluar',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                ]);
+                $cantidadEvaluacionesRechazadasCursoCharts2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>6,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
+            }
 
-                $opciones_instrumento = $indicador->indicadorOpciones($categoria->likertOpciones());
+            //Se inicializa el Chart2. Ponderacion de la evaluacion del eva
+            $request = new Request;
+            $request->tipo              = 4;
+            $request->curso             = $curso->getID();
+            $request->periodo_lectivo   = $periodo->getID();
+            if($this->consultar_grafico_generales($request) != null){
+                $promedioPonderacionCurso2[$periodo_index] = new indicadoresChart;
+                $promedioPonderacionCurso2[$periodo_index]->options([
+                    'title'=>[
+                        'text' => 'Promedio de la Ponderacion de '.$curso->getNombre().', en el periodo lectivo: '.$periodo->getNombre()
+                    ],
+                    'subtitle'=>[
+                        'text' => $this->dashboards_subtitle
+                    ],
+                    'tooltip'=> [
+                        'valueSuffix'=> ' %'
+                    ],
+                    'plotOptions'=> [
+                        'bar'=> [
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                            ],
+                        ],                                          
+                    ],
+                    'xAxis' => [
+                        'categories' => $nombreInstrumentos
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Promedio ponderacion del curso',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                ]);
+                $promedioPonderacionCurso2[$periodo_index]->load(route('curso.consultar_grafico_generales', ['tipo'=>4,'curso' => $curso->getID(),'periodo_lectivo' => $periodo->getID()]));
+            }
+
+        foreach($instrumentos_collection as $instrumento_index=>$instrumento){
+        foreach($instrumento->categorias as $categoria_index=>$categoria){
+            
+            //Obtenenos las opciones de la escala de likert
+            $opciones_instrumento = $categoria->getLikertType();
+
+        foreach($categoria->indicadores as $indicador_index=>$indicador){
+
+            $request = new Request;
+            $request->curso_id          = $curso->getID();
+            $request->periodo_id        = $periodo->getID();
+            $request->instrumento_id    = $instrumento->getID();
+            $request->categoria_id      = $categoria->getID();
+            $request->indicador_id      = $indicador->getID();
+            if($indicador->esMedible() && $this->consultar_grafico_indicadores($request) != null){
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index] = new indicadoresChart;
+
                 $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
-                    ->labels(array_keys($opciones_instrumento))->load($api);
+                ->options([
+                    "color"=>["#90ed7d", "#7cb5ec", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                    'title'=>[
+                        'text' => 'Respuestas del indicador: '.$indicador->getNombre().'<br>
+                                    Del Instrumento: '.$instrumento->getNombre().'<br>
+                                    En el periodo lectivo: '.$periodo->getNombre()
+                    ],
+                    'subtitle'=>[
+                        'text' => $this->dashboards_subtitle
+                    ],
+                    'tooltip'=> [
+                        'valueSuffix'=> ' veces'
+                    ],
+                    'plotOptions'=> [
+                        'bar'=> [
+                            'dataLabels'=> [
+                                'enabled'=> true,
+                            ],
+                        ],
+                        'series'=> [
+                            'stacking'=> 'normal'
+                        ],                           
+                    ],
+                    'xAxis' => [
+                        'categories' => $opciones_instrumento
+                    ],
+                    'yAxis'=> [
+                        'min'=> 0,
+                        'title'=> [
+                            'text'=> 'Cantidad respuestas',
+                            'align'=> 'high'
+                        ],
+                        'labels'=> [
+                            'overflow'=> 'justify'
+                        ]
+                    ],
+                    
+                ]);
+                $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]
+                    ->load(route('curso.consultar_grafico_indicadores', 
+                        ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()])); 
             }
 
         }
@@ -161,75 +316,132 @@ class HomeController extends Controller
         }
         }
 
-        $cantidadEvaluacionesCursoCharts= new indicadoresChart;
-        $cantidadEvaluacionesCursoCharts->labels($nombreInstrumentos);
-        $cantidadEvaluacionesCursoCharts->options([
-            'title'=>[
-                'text' => 'Cantidad de Evaluaciones de '.$curso->cvucv_fullname
-            ],
-            'subtitle'=>[
-                'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-            ],
-            'tooltip'=> [
-                'valueSuffix'=> ' personas'
-            ],
-            'plotOptions'=> [
-                'bar'=> [
-                    'dataLabels'=> [
-                        'enabled'=> true,
-                    ],
-                ],                            
-            ],
-            'yAxis'=> [
-                'min'=> 0,
-                'title'=> [
-                    'text'=> 'Cantidad personas que evaluaron',
-                    'align'=> 'high'
+
+        //Se inicializa el Chart1. Total Cantidad de la evaluacion del eva por periodo lectivo
+        $request = new Request;
+        $request->tipo       = 1;
+        $request->curso      = $curso->getID();
+        $request->periodos   = $periodos_collection;
+        if($this->consultar_grafico_generales($request) != null){
+            $cantidadEvaluacionesCursoCharts1= new indicadoresChart;
+            $cantidadEvaluacionesCursoCharts1->options([
+                'title'=>[
+                    'text' => 'Cantidad de Evaluaciones de '.$curso->getNombre()
                 ],
-                'labels'=> [
-                    'overflow'=> 'justify'
-                ]
-            ],
-        ]);
-
-        $api = route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->id]);
-        $cantidadEvaluacionesCursoCharts->load($api);
-
-        $promedioPonderacionCurso = new indicadoresChart;
-        $promedioPonderacionCurso->labels($nombreInstrumentos);        
-        $promedioPonderacionCurso->options([
-            'title'=>[
-                'text' => 'Promedio de la Ponderacion de '.$curso->cvucv_fullname
-            ],
-            'subtitle'=>[
-                'text' => 'Fuente: SISGEVA ©2019 Sistema de Educación a Distancia de la Universidad Central de Venezuela.'
-            ],
-            'tooltip'=> [
-                'valueSuffix'=> ' %'
-            ],
-            'plotOptions'=> [
-                'bar'=> [
-                    'dataLabels'=> [
-                        'enabled'=> true,
-                    ],
-                ],                            
-            ],
-            'yAxis'=> [
-                'min'=> 0,
-                'title'=> [
-                    'text'=> 'Promedio ponderacion del curso',
-                    'align'=> 'high'
+                'subtitle'=>[
+                    'text' => $this->dashboards_subtitle
                 ],
-                'labels'=> [
-                    'overflow'=> 'justify'
-                ]
-            ],
-        ]);
-        
-        $api = route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->id]);
-        $promedioPonderacionCurso->load($api);
+                'tooltip'=> [
+                    'valueSuffix'=> ' personas'
+                ],
+                'plotOptions'=> [
+                    'bar'=> [
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                        ],
+                    ],                     
+                ],
+                'xAxis' => [
+                    'categories' => $nombresPeriodos
+                ],
+                'yAxis'=> [
+                    'min'=> 0,
+                    'title'=> [
+                        'text'=> 'Cantidad personas que han evaluado',
+                        'align'=> 'high'
+                    ],
+                    'labels'=> [
+                        'overflow'=> 'justify'
+                    ]
+                ],
+            ]);
+            $cantidadEvaluacionesCursoCharts1->load(route('curso.consultar_grafico_generales', ['tipo'=>1,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
+        }
 
-        
+        //Se inicializa el Chart1. Total Cantidad de la evaluacion del eva por periodo lectivo Rechazadas
+        $request = new Request;
+        $request->tipo       = 1;
+        $request->curso      = $curso->getID();
+        $request->periodos   = $periodos_collection;
+        if($this->consultar_grafico_generales($request) != null){
+            $cantidadEvaluacionesRechazadasCursoCharts1= new indicadoresChart;
+            $cantidadEvaluacionesRechazadasCursoCharts1->options([
+                'title'=>[
+                    'text' => 'Cantidad de Evaluaciones Rechazadas del '.$curso->getNombre()
+                ],
+                'subtitle'=>[
+                    'text' => $this->dashboards_subtitle
+                ],
+                'tooltip'=> [
+                    'valueSuffix'=> ' personas'
+                ],
+                'plotOptions'=> [
+                    'bar'=> [
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                        ],
+                    ],                     
+                ],
+                'xAxis' => [
+                    'categories' => $nombresPeriodos
+                ],
+                'yAxis'=> [
+                    'min'=> 0,
+                    'title'=> [
+                        'text'=> 'Cantidad personas que han rechazado evaluar',
+                        'align'=> 'high'
+                    ],
+                    'labels'=> [
+                        'overflow'=> 'justify'
+                    ]
+                ],
+            ]);
+            $cantidadEvaluacionesRechazadasCursoCharts1->load(route('curso.consultar_grafico_generales', ['tipo'=>5,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
+        }
+
+        //Se inicializa el Chart2. Total Ponderacion de la evaluacion del eva por periodo lectivo
+        $request = new Request;
+        $request->tipo       = 2;
+        $request->curso      = $curso->getID();
+        $request->periodos   = $periodos_collection;
+        if($this->consultar_grafico_generales($request) != null){
+            $promedioPonderacionCurso1 = new indicadoresChart;
+            $promedioPonderacionCurso1->options([
+                'title'=>[
+                    'text' => 'Promedio de la Ponderacion de '.$curso->getNombre()
+                ],
+                'subtitle'=>[
+                    'text' => $this->dashboards_subtitle
+                ],
+                'tooltip'=> [
+                    'valueSuffix'=> ' %'
+                ],
+                'plotOptions'=> [
+                    'bar'=> [
+                        'dataLabels'=> [
+                            'enabled'=> true,
+                        ],
+                    ],                                          
+                ],
+                'xAxis' => [
+                    'categories' => $nombresPeriodos
+                ],
+                'yAxis'=> [
+                    'min'=> 0,
+                    'title'=> [
+                        'text'=> 'Promedio ponderacion del curso',
+                        'align'=> 'high'
+                    ],
+                    'labels'=> [
+                        'overflow'=> 'justify'
+                    ]
+                ],
+            ]);
+            $promedioPonderacionCurso1->load(route('curso.consultar_grafico_generales', ['tipo'=>2,'curso' => $curso->getID(),'periodos' => $periodos_collection]));
+        }
+
+        $dashboards_subtitle = $this->dashboards_subtitle;
+
         return view('home.cursos_dashboards',
         compact(
             'curso',
@@ -239,8 +451,13 @@ class HomeController extends Controller
             'categorias_collection',
             'indicadores_collection',
             'indicadores_collection_charts',
-            'cantidadEvaluacionesCursoCharts',
-            'promedioPonderacionCurso'
+            'cantidadEvaluacionesCursoCharts1',
+            'cantidadEvaluacionesRechazadasCursoCharts1',
+            'promedioPonderacionCurso1',
+            'cantidadEvaluacionesCursoCharts2',
+            'cantidadEvaluacionesRechazadasCursoCharts2',
+            'promedioPonderacionCurso2',
+            'dashboards_subtitle'
         ));
 
     }
