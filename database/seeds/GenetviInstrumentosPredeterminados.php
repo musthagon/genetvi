@@ -131,11 +131,22 @@ class GenetviInstrumentosPredeterminados extends Seeder
 
         //Limpiamos la data
         foreach($list_instrumentos as  $instrumento){
-            $instrumento = Instrumento::where([
-                'nombre'        => $instrumento['nombre'],
-                'nombre_corto'  => $instrumento['nombre_corto']
-                ])->first();
-            if($instrumento != null ){$instrumento->delete();}
+            $actual = Instrumento::where('nombre', $instrumento['nombre'])->first();
+            if($actual != null ){$actual->delete();}
+        }
+        foreach($categorias1 as  $nombreCorto => $categoria){
+            $actual = Categoria::where(['nombre' => $categoria,'nombre_corto' => $nombreCorto])->first();
+            if($actual != null ){$actual->delete();}
+        }
+        foreach($categorias2 as  $nombreCorto => $categoria){
+            $actual = Categoria::where(['nombre' => $categoria,'nombre_corto' => $nombreCorto])->first();
+            if($actual != null ){$actual->delete();}
+        }
+        foreach($indicadores as $indexKey => $Grupoindicadores){
+            foreach($Grupoindicadores as $indicador => $tipo){
+                $actual = Indicador::where(['nombre' => $indicador, 'tipo' => $tipo])->first();
+                if($actual != null ){$actual->delete();}
+            }
         }
 
         //Creamos los indicadores

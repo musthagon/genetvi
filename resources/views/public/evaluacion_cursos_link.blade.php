@@ -15,9 +15,15 @@
       <!-- Instru -->
       @if(!empty($instrumento))
 
+      @if ( $preview )
       <form id="wizard1" class=""
         action="{{ $edit || empty($CategoriasPerfilInstrumento) ? route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID(), 'preview' => $preview]) : route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID(), 'preview' => $preview])  }}" 
         method="POST">
+      @else
+      <form id="wizard1" class=""
+        action="{{ $edit || empty($CategoriasPerfilInstrumento) ? route('evaluacion_link_procesar2', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID(), 'preview' => 0]) : route('evaluacion_link_procesar1', ['token' => $invitacion->getToken(), 'invitacion' => $invitacion->getID(), 'preview' => 0])  }}" 
+        method="POST">
+      @endif
 
         <!-- PUT Method if we are editing -->
         @if($edit)
