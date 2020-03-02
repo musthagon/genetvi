@@ -46,9 +46,9 @@ class User extends \TCG\Voyager\Models\User
     public static function username(){
         return 'cvucv_username';
     }
-    protected static function password(){
+    /*protected static function password(){
         return 'password';
-    }
+    }*/
 
     public static function findUser($id){
         $param = 'cvucv_id';

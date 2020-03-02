@@ -79,11 +79,23 @@
                 @foreach($evaluacionesPendientes as $invitacion)
                   <tr>
                     @php $curso = $invitacion->curso; @endphp
-                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> {{$curso->getNombre()}}</a></td>
-                    <td class="course_summary">{!!$curso->getDescripcion()!!}</td>
+                    <td>
+                      @if (isset($curso))
+                        <a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> 
+                          {{ isset($curso) ? $curso->getNombre() : 'Nombre del Curso' }}
+                        </a>
+                      @else
+                        {{ isset($curso) ? $curso->getNombre() : 'Nombre del Curso' }}
+                      @endif
+                    </td>
+                    <td class="course_summary">{!! isset($curso) ? $curso->getDescripcion() : 'Descripción del Curso'!!}</td>
                     @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
                     <td> 
-                      Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
+                      @if( isset($periodo) && isset($momento_evaluacion) && isset($instrumento) )
+                        Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
+                      @else
+                        Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}} en el periodo léctivo XXXX en el momento de evaluación XXXX
+                      @endif
                     </td>
                     <td class="course_estatus">
                       {{$invitacion->estatus_invitacion->getNombre()}}  

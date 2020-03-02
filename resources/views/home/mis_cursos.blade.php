@@ -26,7 +26,7 @@
   <h1>
     {{$informacion_pagina['titulo']}}
     <small>{{$informacion_pagina['descripcion']}}</small>
-    <a class="" href="{{route('sincronizar_mis_cursos')}}" title="Ver">
+    <a class="" href="{{route('sincronizar_mis_cursos')}}" title="Esta función consulta tus cursos como docente en el Campus y los sincroniza con GENETVI para mostrarlos en esta página">
       <button class="btn-sm btn-success" style="margin-right: 5px;">
         <i class="voyager-list"></i> Sincronizar mis cursos con el CVCV 
       </button>
