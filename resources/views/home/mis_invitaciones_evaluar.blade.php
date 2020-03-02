@@ -57,7 +57,7 @@
         </div>
     @endif
 
-    
+    @if( isset($evaluacionesPendientes) && !$evaluacionesPendientes->isEmpty())
     <div class="col-xs-12">
       <div class="box">
         <div class="box-header">
@@ -107,8 +107,55 @@
 
       
     </div>
-    
+    @endif
 
+    @if(isset($evaluacionesRestantes) && !$evaluacionesRestantes->isEmpty())
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Evaluaciones Anteriores</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+
+          <table id="cursos-data-table2" class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Nombre del Curso</th>
+                <th>Descripción del Curso</th>
+                <th>Descripción de la Invitación</th>
+                <th>Estatus de la Evaluación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+                @foreach($evaluacionesRestantes as $invitacion)
+                  <tr>
+                    @php $curso = $invitacion->curso; @endphp
+                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> {{$curso->getNombre()}}</a></td>
+                    <td class="course_summary">{!!$curso->getDescripcion()!!}</td>
+                    @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
+                    <td> 
+                      Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
+                    </td>
+                    <td class="course_estatus">
+                      {{$invitacion->estatus_invitacion->getNombre()}}  
+                    </td>
+                    <td class="course_acciones">
+                                        
+                    </td>
+                  </tr>
+                @endforeach
+                    
+            </table>
+
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->
+      </div>
+      
+
+      
+    </div>
+    @endif
 
   </section>
 @stop

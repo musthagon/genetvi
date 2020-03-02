@@ -63,11 +63,11 @@ class HomeController extends Controller
         $user                = Auth::user();
         $user_id             = $user->getCVUCV_USER_ID();
         $evaluacionesPendientes = Invitacion::invitaciones_pendientes_de_un_usuario($user_id);
-
+        $evaluacionesRestantes  = Invitacion::invitaciones_restantes_de_un_usuario($user_id);
         $informacion_pagina['titulo']       = "Evaluaciones";
         $informacion_pagina['descripcion']  = "Aquí se muestran las evaluaciones de cursos que tienes pendientes";
 
-        return view('home.mis_invitaciones_evaluar', compact('evaluacionesPendientes','informacion_pagina'));
+        return view('home.mis_invitaciones_evaluar', compact('evaluacionesPendientes','evaluacionesRestantes','informacion_pagina'));
     }
 
     public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso
