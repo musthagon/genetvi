@@ -304,20 +304,6 @@ class AdminController extends Controller
         if (!isset($request->instrumentos)){
             $categoria->instrumentos_habilitados()->detach();
         }else{
-            foreach($request->instrumentos as $instrumento){
-                if($instrumento == 'null'){
-                    $categoria->instrumentos_habilitados()->detach();
-                    break;
-                }else{
-                    $categoria->instrumentos_habilitados()->attach($instrumento);
-                }
-            }
-        }
-
-
-        if (!isset($request->instrumentos)){
-            $categoria->instrumentos_habilitados()->detach();
-        }else{
             foreach($request->instrumentos as $instrumentoRequest){
                 if($instrumento == 'null'){
                     $categoria->instrumentos_habilitados()->detach();
@@ -331,8 +317,6 @@ class AdminController extends Controller
             }
         }
 
-
-        
         return redirect()->route('gestion.evaluaciones')->with(['message' => "Instrumentos habilitados para esta categoría", 'alert-type' => 'success']);
 
     }
@@ -455,6 +439,7 @@ class AdminController extends Controller
         //Instrumentos de matriculacion manuak
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
+
         $instrumentos_manuales = [];
         foreach($instrumentos_habilitados as $instrumento){
             if(!$instrumento->getInvitacionAutomatica()){ //Instrumentos de matriculacion manual
