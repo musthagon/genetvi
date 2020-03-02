@@ -35,7 +35,7 @@
       
 
       <div class="row">
-          @if( isset($cursosDocente) && $cursosDocente->isEmpty())
+          @if( isset($cursosDocente) && !$cursosDocente->isEmpty())
             <div class="col-lg-6 col-xs-6">
               <!-- small box -->
               <div class="small-box bg-aqua">
@@ -47,11 +47,11 @@
                 <div class="icon">
                   <i class="ion ion-bag"></i>
                 </div>
-                <a href="#" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('mis_cursos') }}" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
               </div>
             </div>
           @endif
-          @if( isset($evaluacionesPendientes) && $evaluacionesPendientes->isEmpty() )
+          @if( isset($evaluacionesPendientes) && !$evaluacionesPendientes->isEmpty() )
             <div class="col-lg-6 col-xs-6">
               <!-- small box -->
               <div class="small-box bg-yellow">
@@ -63,7 +63,7 @@
                 <div class="icon">
                   <i class="ion ion-person-add"></i>
                 </div>
-                <a href="#" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
+                <a href="{{ route('mis_invitaciones_evaluar') }}" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
               </div>
             </div>
           @endif
@@ -75,14 +75,6 @@
 @stop
 
 @section('javascript')
-
-  <script type="text/javascript"  src="/js/jquery.steps.js"></script>
-  <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
-  
-  <!-- SlimScroll -->
-  <script src="/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
-  <!-- FastClick -->
-  <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
   <script>
     $(function (){
       
@@ -90,6 +82,4 @@
 
     });
   </script>
-
-
 @stop

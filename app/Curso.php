@@ -116,6 +116,9 @@ class Curso extends Model
     public function getNombre(){
         return $this->cvucv_fullname;
     }
+    public function getDescripcion(){
+        return $this->cvucv_summary;
+    }
 
     public function getID(){
         return $this->id;

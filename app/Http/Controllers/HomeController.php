@@ -39,7 +39,6 @@ class HomeController extends Controller
         $user_id             = $user->getCVUCV_USER_ID();
         $cursosDocente       = CursoParticipante::cursosDocente($user_id );
         $evaluacionesPendientes = Invitacion::invitaciones_pendientes_de_un_usuario($user_id);
-        //$evaluacionesUsuario = Invitacion::invitaciones_de_un_usuario($user_id);
 
         $informacion_pagina['titulo']       = "Principal";
         $informacion_pagina['descripcion']  = "Aquí se muestra un resumen de las acciones que puedes hacer en la aplicación";
@@ -49,14 +48,26 @@ class HomeController extends Controller
 
     public function cursos(){   
         
-        $user = Auth::user();
-
-        $cursosDocente = CursoParticipante::cursosDocente($user->getCVUCV_USER_ID());
+        $user                = Auth::user();
+        $user_id             = $user->getCVUCV_USER_ID();
+        $cursosDocente       = CursoParticipante::cursosDocente($user_id);
 
         $informacion_pagina['titulo']       = "Cursos";
         $informacion_pagina['descripcion']  = "Aquí se muestran las acciones que puedes realizar en tus cursos";
 
         return view('home.mis_cursos', compact('cursosDocente','informacion_pagina'));
+    }
+
+    public function evaluaciones(){   
+        
+        $user                = Auth::user();
+        $user_id             = $user->getCVUCV_USER_ID();
+        $evaluacionesPendientes = Invitacion::invitaciones_pendientes_de_un_usuario($user_id);
+
+        $informacion_pagina['titulo']       = "Evaluaciones";
+        $informacion_pagina['descripcion']  = "Aquí se muestran las evaluaciones de cursos que tienes pendientes";
+
+        return view('home.mis_invitaciones_evaluar', compact('evaluacionesPendientes','informacion_pagina'));
     }
 
     public function visualizar_resultados_curso($curso_id){//Crea la vista del dashboard/graficos del curso

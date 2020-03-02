@@ -35,7 +35,7 @@
   <section class="content">
     <div class="row">
 
-    @if( !isset($cursosDocente) || $cursosDocente->isEmpty() )
+    @if( !isset($evaluacionesPendientes) || $evaluacionesPendientes->isEmpty())
         <div class="col-md-12">
           <div class="box box-default">
             <div class="box-header with-border">
@@ -46,8 +46,8 @@
             <!-- /.box-header -->
             <div class="box-body">
               <div class="callout callout-info">
-                <h4>No tienes cursos disponibles</h4>
-                <p>Si estas registrado en un curso en el Campus Virutal UCV y no se muestra aquí, comunícate con el docente de tu curso</p>
+                <h4>No tienes evaluaciones pendientes</h4>
+                <p>Cuando tengas invitaciones a realizar alguna evaluación de un curso, se mostrarán aquí</p>
               </div>
               
             </div>
@@ -55,11 +55,13 @@
           </div>
           <!-- /.box -->
         </div>
-    @else
+    @endif
+
+    
     <div class="col-xs-12">
       <div class="box">
         <div class="box-header">
-          <h3 class="box-title">Mis Cursos con rol Docente</h3>
+          <h3 class="box-title">Evaluaciones Pendientes</h3>
         </div>
         <!-- /.box-header -->
         <div class="box-body">
@@ -69,16 +71,25 @@
               <tr>
                 <th>Nombre del Curso</th>
                 <th>Descripción del Curso</th>
+                <th>Descripción de la Invitación</th>
+                <th>Estatus de la Evaluación</th>
                 <th>Acciones</th>
               </tr>
             </thead>
-                @foreach($cursosDocente as $curso)
+                @foreach($evaluacionesPendientes as $invitacion)
                   <tr>
-                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> {{$curso->getNombre()}} </a></td>
+                    @php $curso = $invitacion->curso; @endphp
+                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> {{$curso->getNombre()}}</a></td>
                     <td class="course_summary">{!!$curso->getDescripcion()!!}</td>
-                    
+                    @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
+                    <td> 
+                      Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
+                    </td>
+                    <td class="course_estatus">
+                      {{$invitacion->estatus_invitacion->getNombre()}}  
+                    </td>
                     <td class="course_acciones">
-                      <a class="course_acciones_item" href="{{ route('curso', ['id' => $curso->getID()]) }}" title="Ver">
+                      <a class="course_acciones_item" target="_blank" href="{{ route('evaluacion_link', ['token' => $invitacion->getToken()]) }}" title="Ver">
                           <button class="btn-sm btn-primary" style="margin-right: 5px;">
                             <i class="voyager-list"></i> Ver 
                           </button>
@@ -92,7 +103,7 @@
           </div><!-- /.box-body -->
         </div><!-- /.box -->
       </div>
-      @endif
+      
 
       
     </div>
