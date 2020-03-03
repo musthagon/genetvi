@@ -233,11 +233,11 @@ class LoginController extends Controller
      */
     public function username()
     {
-        return User::username();
+        return User::getUsernameField();
     }
     public function password()
     {
-        return User::password();
+        return User::getPasswordField();
     }
 
     /**

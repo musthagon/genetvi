@@ -46,6 +46,12 @@ class User extends \TCG\Voyager\Models\User
     public static function username(){
         return 'cvucv_username';
     }
+    public static function getUsernameField(){
+        return 'cvucv_username';
+    }
+    protected static function getPasswordField(){
+        return 'password';
+    }
     /*protected static function password(){
         return 'password';
     }*/
