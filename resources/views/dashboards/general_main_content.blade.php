@@ -91,7 +91,7 @@
                         <div class="chartTarget col-xs-12 col-sm-12 col-md-6 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_evaluacion">
                             {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->container() !!}
                         </div>                                
-                    @elseif(!$indicador->esMedible())
+                    @else
                         <div class="chartTarget col-md-12 mix Periodo_{{$periodo->id}} Instrumento_{{$instrumento->id}} Categoria_{{$categoria->id}} Indicador_{{$indicador->id}} datos_perfil">
                             <div class="tabla" style="background:white;">
                                 <div class="indicador_title highcharts-title" >
@@ -200,6 +200,6 @@
     </div> <!-- cd-filter -->
 
     <a href="#0" class="cd-filter-trigger">Filtros</a>
-    
+
 </main> <!-- cd-main-content -->
     
