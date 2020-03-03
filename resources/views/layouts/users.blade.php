@@ -42,6 +42,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Select2 -->
   <link rel="stylesheet" href="{{asset('adminlte/bower_components/select2/dist/css/select2.min.css')}}">
 
+  <link rel='stylesheet' href='/css/foundation.min.css'>
   @yield('css')
 
   <link rel="stylesheet" href="{{asset('css/general.css')}}">
