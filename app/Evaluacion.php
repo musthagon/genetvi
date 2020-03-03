@@ -71,6 +71,10 @@ class Evaluacion extends Model
         return $this->hasMany('App\Respuesta','evaluacion_id','id');
     }
 
+    public function getID(){
+        return $this->id;
+    }
+    
     public static function cantidad_evaluaciones_realizadas ($instrumento_id, $curso_id, $user_id, $categoria_raiz_periodo_lectivo){
         $intentos = Evaluacion::where('instrumento_id', $instrumento_id)
                             ->where('curso_id', $curso_id)

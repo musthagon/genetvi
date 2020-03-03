@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Respuesta;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Indicador extends Model
@@ -168,5 +170,59 @@ class Indicador extends Model
             }
         }
         return [];
+    }
+
+    public function getValorMáximoRespuesta($respuesta_id){
+        $valor = -1;
+        
+        $respuesta = Respuesta::where('id',$respuesta_id)->first();
+
+        if( empty($respuesta) ){ return $valor; }
+
+        $evaluacion = $respuesta->evaluacion;
+        $categoria  = $respuesta->categoria;
+        
+        if( empty($evaluacion) || empty($categoria) ){ return $valor; }
+
+        $instrumento = $evaluacion->instrumento;
+
+        if( empty($instrumento) ){ return $valor; }
+
+
+        foreach($instrumento->categorias as $categoriaActual){
+            
+            if($categoriaActual->getID() == $categoria->getID()){
+                
+                $valorCategoria                     = $categoriaActual->pivot->valor_porcentual;
+                $categoria_likertOpciones           = $categoriaActual->getLikertType();
+                $categoria_likert_cantidad_opciones = $categoriaActual->getLikertCantidadOpciones();
+
+                foreach($categoriaActual->indicadores as $indicadorActual){
+                    
+                    
+                    if($indicadorActual->getID() == $this->getID()){
+                        
+                        $valorIndicador                     = $indicadorActual->pivot->valor_porcentual;
+                        $percentil_value_categoria          = ($valorIndicador * $valorCategoria) / 100;
+
+                        if($this->getTipo() == "likert"){
+                            $opciones = $categoria_likertOpciones;
+                            $percentil_value_opciones = $categoria_likert_cantidad_opciones; 
+                            
+                        }else{
+                            $opciones = $this->getOpciones(1);
+                            $percentil_value_opciones = count($opciones)-1;
+                        }
+        
+                        $percentil_indicador_actual =($percentil_value_categoria/$percentil_value_opciones) * $percentil_value_opciones;
+
+                        return number_format($percentil_indicador_actual, 2, '.', ' ');
+                    }
+                }
+                
+            }
+        }
+
+        return $valor;
     }
 }

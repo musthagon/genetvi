@@ -1,26 +1,49 @@
-@extends('voyager::master')
-
-@section('page_title', __($curso->cvucv_fullname))
-
-@section('page_header')
-    <div class="container-fluid">
-        <h1 class="page-title">
-            <i class="icon voyager-settings"></i> {{$curso->cvucv_fullname}}
-        </h1>  
-        
-        @include('dashboards.revisiones_publicas')
-
-    </div>
-@stop
+@extends('layouts.users')
 
 @section('content')
+    <div class="container-fluid">
+        <h2 class="page-header">
+            <i class="fa fa-globe"></i> {{$curso->getNombre()}}
+        </h2>
+        
+        @include('dashboards.revisiones_publicas')
+    
+    
+    </div>
+
+
     @include('dashboards.revisiones_publicas_tabla')
+
+    
 @stop
 
 
 @section('css')
     <link rel="stylesheet" href="/css/user_list.css">
     <style>
+        
+        .page-title {
+            display: inline-block;
+            height: auto;
+            font-size: 18px;
+            height: 100px;
+            line-height: 43px;
+            margin-top: 3px;
+            padding-top: 28px;
+            color: #555;
+            position: relative;
+            padding-left: 75px;
+            margin-bottom: 0;
+            font-weight: 700;
+            margin-right: 20px;
+        }
+        .page-title>i {
+            font-size: 36px;
+            position: absolute;
+            top: 30px;
+            left: 25px;
+            margin-right: 10px;
+        }
         .page-title-content{
             display: flex;
             justify-content: space-between;
@@ -34,7 +57,7 @@
 @stop
 
 @section('javascript')
-                                          
+    
     <script>
         var table = $('#dataTable').DataTable({!! json_encode(
             array_merge([

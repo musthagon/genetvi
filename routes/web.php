@@ -40,7 +40,7 @@ Route::get('/mis_cursos/sincronizar', 'HomeController@sincronizar_mis_cursos')->
 
 //Cursos dashboards
 Route::get('/mis_cursos/visualizar_{id}', 'HomeController@visualizar_resultados_curso')->name('curso');
-
+Route::get('/mis_cursos/{categoria_id}/curso_{curso_id}/respuesta', 'HomeController@visualizar_resultados_curso_respuesta_publica')->name('mis_cursos.visualizar_resultados_curso.respuesta_publica');
 /*
 |--------------------------------------------------------------------------
 | Voyager Routes

@@ -122,7 +122,7 @@ class ControllerCustomGates extends Controller
         //Tiene permitido acceder?
         $user = Auth::user();
 
-        if( !CursoParticipante::tieneAccesoCurso($user->getCVUCV_USER_ID(), $curso); ){
+        if( !CursoParticipante::tieneAccesoCurso($user->getCVUCV_USER_ID(), $curso) ){
             return redirect('/mis_cursos')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
         }
     }

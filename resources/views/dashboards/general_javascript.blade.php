@@ -1,16 +1,16 @@
 <!-- ChartJS 
 <script src="/js/chart.js@2.8.0.js"></script>-->
 <!-- HighCharts -->
-<script src="/Highcharts-7.2.0/highcharts.js"></script>
-<script src="/Highcharts-7.2.0/modules/exporting.js"></script>
-<script src="/Highcharts-7.2.0/modules/export-data.js"></script>
+<script src="{{asset('Highcharts-7.2.0/highcharts.js')}} "></script>
+<script src="{{asset('Highcharts-7.2.0/modules/exporting.js')}} "></script>
+<script src="{{asset('Highcharts-7.2.0/modules/export-data.js')}} "></script>
 <!-- eCharts 
 <script src="/eCharts/echarts.min.js"></script>-->
 
 <!-- Content Filter-->
-<script src="/content-filter/js/modernizr.js"></script> <!-- Modernizr -->
-<script src="/content-filter/js/jquery.mixitup.min.js"></script>
-<script src="/content-filter/js/main.js"></script> <!-- Resource jQuery -->
+<script src="{{asset('content-filter/js/modernizr.js')}} "></script> <!-- Modernizr -->
+<script src="{{asset('content-filter/js/jquery.mixitup.min.js')}} "></script>
+<script src=" {{asset('content-filter/js/main.js')}} "></script> <!-- Resource jQuery -->
     
 @if(!empty($cantidadEvaluacionesCursoCharts1))
     {!! $cantidadEvaluacionesCursoCharts1->script() !!}
@@ -89,77 +89,4 @@
 @endforeach
 @endforeach
 
-<script>
-    // CSRF Token
-    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    
-    $(document).ready(function () {
-        
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $("#periodos_lectivos").select2({
-            placeholder: 'Seleccionar periodo lectivo a consultar',
-        });
-
-        $("#search_users").select2({
-            language: {
-                /*inputTooShort: function () {
-                    return "Mínimo 4 caracteres";
-                }*/
-            },
-            ajax: {
-                
-                url: "{{route('campus_users_by_ids')}}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        lastname: params.term, // search term
-                        curso_id: {{$curso->getID()}},
-                        periodo_lectivo_id: $("#periodos_lectivos").val(),
-                        instrumento_id: $("#instrumentos").val(),
-                        page: params.page || 1,
-                    };
-                },
-                cache: true
-            },
-            placeholder: 'Ver revisiones públicas',
-            minimumInputLength: 0,
-            templateResult: formatRepo,
-            templateSelection: formatRepoSelection
-        });
-
-        function formatRepo (results) {
-            if (results.loading) {
-                return results.text;
-            }
-
-            var $container = $(
-                "<div class='select2-result-repository clearfix'>" +
-                "<div class='select2-result-repository__avatar'><img src='" + results.profileimageurl + "' /></div>" +
-                "<div class='select2-result-repository__meta'>" +
-                    "<div class='select2-result-repository__title'></div>" +
-                    "<div class='select2-result-repository__description'></div>" +
-                    "</div>" +
-                "</div>" +
-                "</div>"
-            );
-
-            $container.find(".select2-result-repository__title").text(results.fullname);
-            $container.find(".select2-result-repository__description").text(results.email);
-
-            return $container;
-        }
-
-        function formatRepoSelection (repo) {
-            return repo.fullname || repo.text;
-        }
-        
-        
-    
-    });
-</script>
+@include('dashboards.revisiones_publicas_javascript')

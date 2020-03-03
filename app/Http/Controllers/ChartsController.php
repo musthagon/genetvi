@@ -59,6 +59,8 @@ class ChartsController extends Controller
             $promedioPonderacionCurso2,
             $dashboards_subtitle);
         
+        $ruta_revisiones_publicas = 'curso.visualizar_resultados_curso.respuesta_publica';
+
         return view('vendor.voyager.gestion.cursos_dashboards',
         compact(
             'curso',
@@ -74,57 +76,38 @@ class ChartsController extends Controller
             'cantidadEvaluacionesCursoCharts2',
             'cantidadEvaluacionesRechazadasCursoCharts2',
             'promedioPonderacionCurso2',
-            'dashboards_subtitle'
+            'dashboards_subtitle',
+            'ruta_revisiones_publicas'
         ));
 
     }
     public function visualizar_resultados_curso_respuesta_publica($categoria_id, $curso_id, Request $request){
         
-
         $curso = Curso::find($curso_id);
-
-        if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user)){
-            return redirect()->back()->with(['message' => "Faltan campos obligatorios", 'alert-type' => 'error']);
-        }
         
         if(empty($curso)){
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
-        if(!$curso->es_categoria_del_curso($categoria_id)){
-            return redirect()->back()->with(['message' => "La dependencia del curso es incorrecta", 'alert-type' => 'error']);
-        }
 
-        
-        $periodo_lectivo_id = $request->periodo_lectivo;
-        $instrumento_id     = $request->instrumento;
-        $usuario_id         = $request->user;
+        //Tiene permitido acceder a la categoria?
+        Gate::allows('checkAccess_ver',[$curso]);
 
-        $periodo_lectivo = PeriodoLectivo::find($periodo_lectivo_id);
-        $instrumento = Instrumento::find($instrumento_id);
+        $this->construior_resultados_curso_respuesta_publica(
+            $categoria_id, 
+            $curso_id, 
+            $request,
+            $curso,
+            $periodos_collection,
+            $instrumentos_collection2,
+            $evaluacion,
+            $usuario_id,
+            $periodo_lectivo,
+            $instrumento
+        );
 
-        if(empty($periodo_lectivo)){
-            return redirect()->back()->with(['message' => "El periodo lectivo no existe", 'alert-type' => 'error']);
-        }
+        $usuario = $this->cvucv_get_profile( $usuario_id );
 
-        if(empty($instrumento)){
-            return redirect()->back()->with(['message' => "El instrumento no existe", 'alert-type' => 'error']);
-        }
-
-        if($instrumento->getAnonimo()){
-            return redirect()->back()->with(['message' => "Las respuestas de este instrumento son anónimas", 'alert-type' => 'error']);
-        }
-
-        $evaluacion = Evaluacion::buscar_evaluacion($curso->id, $periodo_lectivo_id, $instrumento_id, $usuario_id);
-        if(empty($evaluacion)){
-            return redirect()->back()->with(['message' => "Error, este usuario no ha evaluado este curso", 'alert-type' => 'error']);
-        }
-        //instrumentos con los cuales han evaluado este curso2
-        Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
-        
-        //periodos lectivos con los cuales han evaluado este curso
-        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
-
-        $usuario = $this->cvucv_get_profile($usuario_id );
+        $ruta_revisiones_publicas = 'curso.visualizar_resultados_curso.respuesta_publica';
 
         return view('vendor.voyager.gestion.cursos_evaluaciones_publicas',
         compact(
@@ -134,7 +117,8 @@ class ChartsController extends Controller
             'evaluacion',
             'usuario',
             'periodo_lectivo',
-            'instrumento'
+            'instrumento',
+            'ruta_revisiones_publicas'
         ));
     }
     

@@ -95,7 +95,6 @@ class HomeController extends Controller
             return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
         }
 
-        
         //Tiene permitido acceder a la categoria?
         Gate::allows('tieneAccesoVisualizarCurso',[$curso]);
         
@@ -114,6 +113,8 @@ class HomeController extends Controller
             $cantidadEvaluacionesRechazadasCursoCharts2,
             $promedioPonderacionCurso2,
             $dashboards_subtitle);
+        
+        $ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
 
         return view('home.cursos_dashboards',
         compact(
@@ -130,9 +131,51 @@ class HomeController extends Controller
             'cantidadEvaluacionesCursoCharts2',
             'cantidadEvaluacionesRechazadasCursoCharts2',
             'promedioPonderacionCurso2',
-            'dashboards_subtitle'
+            'dashboards_subtitle',
+            'ruta_revisiones_publicas'
         ));
 
+    }
+
+    public function visualizar_resultados_curso_respuesta_publica($categoria_id, $curso_id, Request $request){
+        
+        $curso = Curso::find($curso_id);
+        
+        if(empty($curso)){
+            return redirect()->back()->with(['message' => "El curso no existe", 'alert-type' => 'error']);
+        }
+
+        //Tiene permitido acceder a la categoria?
+        Gate::allows('tieneAccesoVisualizarCurso',[$curso]);
+        
+        $this->construior_resultados_curso_respuesta_publica(
+            $categoria_id, 
+            $curso_id, 
+            $request,
+            $curso,
+            $periodos_collection,
+            $instrumentos_collection2,
+            $evaluacion,
+            $usuario_id,
+            $periodo_lectivo,
+            $instrumento
+        );
+
+        $usuario = $this->cvucv_get_profile( $usuario_id );
+
+        $ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
+
+        return view('home.cursos_evaluaciones_publicas',
+        compact(
+            'curso',
+            'periodos_collection',
+            'instrumentos_collection2',
+            'evaluacion',
+            'usuario',
+            'periodo_lectivo',
+            'instrumento',
+            'ruta_revisiones_publicas'
+        ));
     }
 
 }

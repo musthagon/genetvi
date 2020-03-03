@@ -34,8 +34,27 @@ class Respuesta extends Model
     public function evaluacion(){
         return $this->belongsTo('App\Evaluacion','evaluacion_id','id');
     }
+    public function indicador(){
+        return $this->belongsTo('App\Indicador','indicador_id','id');
+    }
     public function categoria(){
         return $this->belongsTo('App\Categoria','categoria_id','id');
+    }
+
+    public function getID(){
+        return $this->id;
+    }
+
+    public function get_value_string(){
+        return $this->value_string;
+    }
+
+    public function get_value_percentil(){
+        return $this->value_percentil;
+    }
+
+    public function get_indicador_nombre(){
+        return $this->indicador_nombre;
     }
 
 }
