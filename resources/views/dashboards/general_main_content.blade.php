@@ -42,7 +42,7 @@
                 </p>
             </div>
         @endif
-        <section class="page-content browse container-fluid ">
+        <section class="page-content browse  ">
             <div class="row">
                 
                 @if(!empty($cantidadEvaluacionesCursoCharts1))

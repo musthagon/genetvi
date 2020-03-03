@@ -1,20 +1,21 @@
 @extends('layouts.users')
 
+@section('page_description')
+  <h1>
+    {{$informacion_pagina['titulo']}}
+    <small>{{$informacion_pagina['descripcion']}}</small>
+  </h1>
+@stop
+
 @section('content')
     <div class="container-fluid">
-        <h2 class="page-header">
-            <i class="fa fa-globe"></i> {{$curso->getNombre()}}
-        </h2>
         
         @include('dashboards.revisiones_publicas')
     
-    
     </div>
-
 
     @include('dashboards.general_main_content')
 
-    
 @stop
 
 

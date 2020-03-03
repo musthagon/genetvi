@@ -398,7 +398,7 @@ trait CommonFunctionsGenetvi
             return response()->json($results);
         }
 
-        return $response;
+        return [];
     
     }
 

@@ -9,22 +9,22 @@
 
                         <div class="page-title-content">
                             <h1 class="page-title page-title-custom">
-                                <i class="icon voyager-settings"></i><i class="icon fa fa-commenting-o" aria-hidden="true"></i> <div>Evaluación de {{$usuario['fullname']}}</div>
+                                <i class="icon voyager-settings"></i><i class="icon fa fa-commenting-o" aria-hidden="true"></i> <div>Evaluación de @if(isset($usuario['fullname'])){{ $usuario['fullname']}}@endif</div>
                                 <div>
-                                    Periodo Lectivo: {{$periodo_lectivo->nombre}}, Instrumento: {{$instrumento->nombre}}
+                                    Periodo Lectivo: {{$periodo_lectivo->getNombre()}}, Instrumento: {{$instrumento->getNombre()}}
                                 </div>
                                 <div>
-                                    Valoración: {{$evaluacion->percentil_eva}}%
+                                    Valoración: {{$evaluacion->get_percentil_eva()}}% / 100%
                                 </div>
                                 
                             </h1>
                             <div class="">
                                     <div class="select2-result-repository__avatar">
-                                        <img src="{{$usuario['profileimageurl']}}">
+                                        <img src="@if(isset($usuario['profileimageurl'])){{$usuario['profileimageurl']}}@endif">
                                     </div>
                                     <div class="select2-result-repository__meta">
-                                        <div class="select2-result-repository__title">{{$usuario['fullname']}}</div>
-                                        <div class="select2-result-repository__description">{{$usuario['email']}}</div>
+                                        <div class="select2-result-repository__title">      @if(isset($usuario['fullname'])){{$usuario['fullname']}}@endif</div>
+                                        <div class="select2-result-repository__description">@if(isset($usuario['email'])){{$usuario['email']}}@endif</div>
                                     </div>
                                 </div>
                         </div>

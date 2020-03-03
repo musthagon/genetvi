@@ -41,3 +41,9 @@ blockquote, blockquote p {
   line-height: 1.6;
   color: #000000;
 }
+
+div.dataTables_wrapper div.dataTables_filter label {
+  font-weight: normal;
+  white-space: nowrap;
+  text-align: right;
+}

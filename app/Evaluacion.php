@@ -25,6 +25,10 @@ class Evaluacion extends Model
 
     protected $fillable = ['id','estatus_evaluacion_id','anonimo','respuestas','percentil_eva','instrumento_id','curso_id','periodo_lectivo_id','momento_evaluacion_id','cvucv_user_id','usuario_id','created_at','updated_at'];
 
+    public function get_percentil_eva(){
+        return $this->percentil_eva;
+    }
+
     public static function create($anonimo, $respuestas, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id,$usuario_id,$estatus_evaluacion_id = null )   {
         $new = new Evaluacion();
 

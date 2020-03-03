@@ -35,7 +35,7 @@
   <section class="content">
     <div class="row">
 
-    @if( !isset($evaluacionesPendientes) || $evaluacionesPendientes->isEmpty())
+      @if( !isset($evaluacionesPendientes) || $evaluacionesPendientes->isEmpty())
         <div class="col-md-12">
           <div class="box box-default">
             <div class="box-header with-border">
@@ -55,120 +55,113 @@
           </div>
           <!-- /.box -->
         </div>
-    @endif
+      @endif
 
-    @if( isset($evaluacionesPendientes) && !$evaluacionesPendientes->isEmpty())
-    <div class="col-xs-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Evaluaciones Pendientes</h3>
-        </div>
-        <!-- /.box-header -->
-        <div class="box-body">
+      @if( isset($evaluacionesPendientes) && !$evaluacionesPendientes->isEmpty())
+      <div class="col-xs-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Evaluaciones Pendientes</h3>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
 
-          <table id="cursos-data-table2" class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Nombre del Curso</th>
-                <th>Descripción del Curso</th>
-                <th>Descripción de la Invitación</th>
-                <th>Estatus de la Evaluación</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-                @foreach($evaluacionesPendientes as $invitacion)
-                  <tr>
-                    @php $curso = $invitacion->curso; @endphp
-                    <td>
-                      @if (isset($curso))
-                        <a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> 
+            <table id="cursos-data-table1" class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Nombre del Curso</th>
+                  <th>Descripción del Curso</th>
+                  <th>Descripción de la Invitación</th>
+                  <th>Estatus de la Evaluación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+                  @foreach($evaluacionesPendientes as $invitacion)
+                    <tr>
+                      @php $curso = $invitacion->curso; @endphp
+                      <td>
+                        @if (isset($curso))
+                          <a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> 
+                            {{ isset($curso) ? $curso->getNombre() : 'Nombre del Curso' }}
+                          </a>
+                        @else
                           {{ isset($curso) ? $curso->getNombre() : 'Nombre del Curso' }}
-                        </a>
-                      @else
-                        {{ isset($curso) ? $curso->getNombre() : 'Nombre del Curso' }}
-                      @endif
-                    </td>
-                    <td class="course_summary">{!! isset($curso) ? $curso->getDescripcion() : 'Descripción del Curso'!!}</td>
-                    @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
-                    <td> 
-                      @if( isset($periodo) && isset($momento_evaluacion) && isset($instrumento) )
+                        @endif
+                      </td>
+                      <td class="course_summary">{!! isset($curso) ? $curso->getDescripcion() : 'Descripción del Curso'!!}</td>
+                      @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
+                      <td> 
+                        @if( isset($periodo) && isset($momento_evaluacion) && isset($instrumento) )
+                          Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
+                        @else
+                          Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}} en el periodo léctivo XXXX en el momento de evaluación XXXX
+                        @endif
+                      </td>
+                      <td class="course_estatus">
+                        {{$invitacion->estatus_invitacion->getNombre()}}  
+                      </td>
+                      <td class="course_acciones">
+                        <a class="course_acciones_item" target="_blank" href="{{ route('evaluacion_link', ['token' => $invitacion->getToken()]) }}" title="Ver">
+                            <button class="btn-sm btn-primary" style="margin-right: 5px;">
+                              <i class="voyager-list"></i> Ver 
+                            </button>
+                        </a>                  
+                      </td>
+                    </tr>
+                  @endforeach
+                      
+            </table>
+
+          </div><!-- /.box-body -->
+        </div><!-- /.box -->
+      </div>
+      @endif
+
+      @if(isset($evaluacionesRestantes) && !$evaluacionesRestantes->isEmpty())
+      <div class="col-xs-12">
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Evaluaciones Anteriores</h3>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+
+            <table id="cursos-data-table2" class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Nombre del Curso</th>
+                  <th>Descripción del Curso</th>
+                  <th>Descripción de la Invitación</th>
+                  <th>Estatus de la Evaluación</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+                  @foreach($evaluacionesRestantes as $invitacion)
+                    <tr>
+                      @php $curso = $invitacion->curso; @endphp
+                      <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> {{$curso->getNombre()}}</a></td>
+                      <td class="course_summary">{!!$curso->getDescripcion()!!}</td>
+                      @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
+                      <td> 
                         Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
-                      @else
-                        Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}} en el periodo léctivo XXXX en el momento de evaluación XXXX
-                      @endif
-                    </td>
-                    <td class="course_estatus">
-                      {{$invitacion->estatus_invitacion->getNombre()}}  
-                    </td>
-                    <td class="course_acciones">
-                      <a class="course_acciones_item" target="_blank" href="{{ route('evaluacion_link', ['token' => $invitacion->getToken()]) }}" title="Ver">
-                          <button class="btn-sm btn-primary" style="margin-right: 5px;">
-                            <i class="voyager-list"></i> Ver 
-                          </button>
-                      </a>                  
-                    </td>
-                  </tr>
-                @endforeach
-                    
+                      </td>
+                      <td class="course_estatus">
+                        {{$invitacion->estatus_invitacion->getNombre()}}  
+                      </td>
+                      <td class="course_acciones">
+                                          
+                      </td>
+                    </tr>
+                  @endforeach
+                      
             </table>
 
           </div><!-- /.box-body -->
         </div><!-- /.box -->
       </div>
-      
+      @endif
 
-      
     </div>
-    @endif
-
-    @if(isset($evaluacionesRestantes) && !$evaluacionesRestantes->isEmpty())
-    <div class="col-xs-12">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Evaluaciones Anteriores</h3>
-        </div>
-        <!-- /.box-header -->
-        <div class="box-body">
-
-          <table id="cursos-data-table2" class="table table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Nombre del Curso</th>
-                <th>Descripción del Curso</th>
-                <th>Descripción de la Invitación</th>
-                <th>Estatus de la Evaluación</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-                @foreach($evaluacionesRestantes as $invitacion)
-                  <tr>
-                    @php $curso = $invitacion->curso; @endphp
-                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/course/view.php?id='.$curso->getID()}}" target="_blank"> {{$curso->getNombre()}}</a></td>
-                    <td class="course_summary">{!!$curso->getDescripcion()!!}</td>
-                    @php $instrumento = $invitacion->instrumento; $periodo = $invitacion->periodo; $momento_evaluacion = $invitacion->momento_evaluacion; @endphp
-                    <td> 
-                      Invitacion a evaluar con el instrumento {{$instrumento->getNombre()}}, en el periodo léctivo {{$periodo->getNombre()}} en {{$momento_evaluacion->getNombre()}}
-                    </td>
-                    <td class="course_estatus">
-                      {{$invitacion->estatus_invitacion->getNombre()}}  
-                    </td>
-                    <td class="course_acciones">
-                                        
-                    </td>
-                  </tr>
-                @endforeach
-                    
-            </table>
-
-          </div><!-- /.box-body -->
-        </div><!-- /.box -->
-      </div>
-      
-
-      
-    </div>
-    @endif
-
   </section>
 @stop
 
@@ -182,19 +175,41 @@
   <!-- FastClick -->
   <script src="/adminlte/bower_components/fastclick/lib/fastclick.js"></script>
   <script>
-    $(function (){
-      
+    var table = $('#cursos-data-table2, #cursos-data-table1').DataTable({!! json_encode(
+            array_merge([
+                "language" => [
+                    "sProcessing"=>    "Procesando...",
+                    "sLengthMenu"=>     "Mostrar _MENU_ registros",
+                    "sZeroRecords"=>    "No se encontraron resultados",
+                    "sEmptyTable"=>     "Ningún dato disponible en esta tabla =(",
+                    "sInfo"=>          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty"=>      "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered"=>   "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix"=>    "",
+                    "sSearch"=>         "Buscar:",
+                    "sUrl"=>           "",
+                    "sInfoThousands"=>  ",",
+                    "sLoadingRecords"=> "Cargando...",
+                    "oPaginate"=> [
+                        "sFirst"=>    "Primero",
+                        "sLast"=>     "Último",
+                        "sNext"=>     "Siguiente",
+                        "sPrevious"=> "Anterior"
+                    ],
+                    "oAria"=> [
+                        "sSortAscending"=>  ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending"=> ": Activar para ordenar la columna de manera descendente"
+                    ],
+                    "buttons"=> [
+                        "copy"=> "Copiar",
+                        "colvis"=> "Visibilidad"
+                    ]
+                ],
+                "columnDefs" => [['targets' => -1, 'searchable' =>  false, 'orderable' => false]],
+            ],
+            config('voyager.dashboard.data_tables', []))
+        , true) !!});
 
-      $('#cursos-data-table, #cursos-data-table2').DataTable({
-        'paging'      : false,
-        'lengthChange': false,
-        'searching'   : false,
-        'ordering'    : true,
-        'info'        : false,
-        'autoWidth'   : false
-      })
-
-    });
   </script>
 
 

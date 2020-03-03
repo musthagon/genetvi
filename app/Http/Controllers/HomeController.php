@@ -115,7 +115,11 @@ class HomeController extends Controller
             $dashboards_subtitle);
         
         $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
+
         $ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
+
+        $informacion_pagina['titulo']       = "Estadísticas del Curso ".$curso->getNombre();
+        $informacion_pagina['descripcion']  = "Aquí se muestran algunas estadísticas referente a la evaluación de este curso";
 
         return view('home.cursos_dashboards',
         compact(
@@ -134,7 +138,8 @@ class HomeController extends Controller
             'promedioPonderacionCurso2',
             'dashboards_subtitle',
             'ruta_revisiones_publicas',
-            'momentos_evaluacion_collection'
+            'momentos_evaluacion_collection',
+            'informacion_pagina'
         ));
 
     }
@@ -168,6 +173,9 @@ class HomeController extends Controller
 
         $ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
 
+        $informacion_pagina['titulo']       = "Respuesta Públicas a la Evaluación del Curso ".$curso->getNombre();
+        $informacion_pagina['descripcion']  = "Aquí se muestran las respuestas públicas de los evaluadores";
+
         return view('home.cursos_evaluaciones_publicas',
         compact(
             'curso',
@@ -178,7 +186,8 @@ class HomeController extends Controller
             'periodo_lectivo',
             'instrumento',
             'ruta_revisiones_publicas',
-            'momentos_evaluacion_collection'
+            'momentos_evaluacion_collection',
+            'informacion_pagina'
         ));
     }
 

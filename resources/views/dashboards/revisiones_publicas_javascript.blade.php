@@ -18,6 +18,10 @@
             placeholder: 'Seleccionar el momento evaluacion a consultar',
         });
 
+        $("#instrumentos").select2({
+            placeholder: 'Seleccionar un instrumento de evaluación a consultar',
+        });
+
         $("#search_users").select2({
             language: {
                 /*inputTooShort: function () {

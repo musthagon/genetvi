@@ -27,7 +27,8 @@ Main Components
 .cd-main-content {
   position: relative;
   min-height: 100vh;
-  margin-left: 20px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 .cd-main-content:after {
   content: "";
@@ -636,4 +637,7 @@ xcustom form elements
   color:#666666;fill:#666666;
   line-height:normal;
   margin-bottom: 10px;
+}
+.tabla{
+  padding: 5px;
 }
