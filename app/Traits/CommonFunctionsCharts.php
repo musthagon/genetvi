@@ -380,7 +380,7 @@ trait CommonFunctionsCharts
         
     }
 
-    public function construior_resultados_curso_respuesta_publica(
+    public function construir_resultados_curso_respuesta_publica(
         $categoria_id, 
         $curso_id, 
         Request $request, 
@@ -390,7 +390,8 @@ trait CommonFunctionsCharts
         &$evaluacion,
         &$usuario_id,
         &$periodo_lectivo,
-        &$instrumento){
+        &$instrumento,
+        &$momentos_evaluacion_collection){
         if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user)){
             return redirect()->back()->with(['message' => "Faltan campos obligatorios", 'alert-type' => 'error']);
         }
@@ -426,7 +427,8 @@ trait CommonFunctionsCharts
         Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
         
         //periodos lectivos con los cuales han evaluado este curso
-        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->id);
+        $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->getID());
+        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
     }
 
 	public function consultar_grafico_indicadores(Request $request){//Crea la data de los dashboards consultados dinamicamente fetch() JS

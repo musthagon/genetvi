@@ -14,6 +14,10 @@
             placeholder: 'Seleccionar periodo lectivo a consultar',
         });
 
+        $("#momentos_evaluacion").select2({
+            placeholder: 'Seleccionar el momento evaluacion a consultar',
+        });
+
         $("#search_users").select2({
             language: {
                 /*inputTooShort: function () {
@@ -31,6 +35,7 @@
                         curso_id: {{$curso->getID()}},
                         periodo_lectivo_id: $("#periodos_lectivos").val(),
                         instrumento_id: $("#instrumentos").val(),
+                        momento_evaluacion_id: $("#momentos_evaluacion").val(),
                         page: params.page || 1,
                     };
                 },

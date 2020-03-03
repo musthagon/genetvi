@@ -59,6 +59,7 @@ class ChartsController extends Controller
             $promedioPonderacionCurso2,
             $dashboards_subtitle);
         
+        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
         $ruta_revisiones_publicas = 'curso.visualizar_resultados_curso.respuesta_publica';
 
         return view('vendor.voyager.gestion.cursos_dashboards',
@@ -77,7 +78,8 @@ class ChartsController extends Controller
             'cantidadEvaluacionesRechazadasCursoCharts2',
             'promedioPonderacionCurso2',
             'dashboards_subtitle',
-            'ruta_revisiones_publicas'
+            'ruta_revisiones_publicas',
+            'momentos_evaluacion_collection'
         ));
 
     }
@@ -92,7 +94,7 @@ class ChartsController extends Controller
         //Tiene permitido acceder a la categoria?
         Gate::allows('checkAccess_ver',[$curso]);
 
-        $this->construior_resultados_curso_respuesta_publica(
+        $this->construir_resultados_curso_respuesta_publica(
             $categoria_id, 
             $curso_id, 
             $request,
@@ -102,7 +104,8 @@ class ChartsController extends Controller
             $evaluacion,
             $usuario_id,
             $periodo_lectivo,
-            $instrumento
+            $instrumento,
+            $momentos_evaluacion_collection
         );
 
         $usuario = $this->cvucv_get_profile( $usuario_id );
@@ -118,7 +121,8 @@ class ChartsController extends Controller
             'usuario',
             'periodo_lectivo',
             'instrumento',
-            'ruta_revisiones_publicas'
+            'ruta_revisiones_publicas',
+            'momentos_evaluacion_collection'
         ));
     }
     

@@ -321,13 +321,14 @@ trait CommonFunctionsGenetvi
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
         $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
 
-        if(!isset($request->curso_id) || !isset($request->periodo_lectivo_id)  || !isset($request->instrumento_id)){
+        if(!isset($request->curso_id) || !isset($request->periodo_lectivo_id)  || !isset($request->instrumento_id) || !isset($request->momento_evaluacion_id)){
             return [];
         }
         
-        $curso           = Curso::find($request->curso_id);
-        $periodo_lectivo = $request->periodo_lectivo_id;
-        $instrumento     = $request->instrumento_id;
+        $curso                  = Curso::find($request->curso_id);
+        $periodo_lectivo        = $request->periodo_lectivo_id;
+        $instrumento            = $request->instrumento_id;
+        $momento_evaluacion     = $request->momento_evaluacion_id;
 
         if(empty($curso)){
             return [];
@@ -344,7 +345,7 @@ trait CommonFunctionsGenetvi
         ];
         $cant_usuarios = 0;
 
-        $usuarios = Evaluacion::usuarios_evaluadores_del_curso($curso->id, $periodo_lectivo, $instrumento);
+        $usuarios = Evaluacion::usuarios_evaluadores_del_curso_en_un_momento($curso->getID(), $periodo_lectivo, $instrumento,$momento_evaluacion);
         foreach($usuarios as $usuario){
             $params['values['.$cant_usuarios.']'] = $usuario->cvucv_user_id;
             $cant_usuarios++;

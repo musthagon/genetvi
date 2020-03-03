@@ -50,5 +50,9 @@ class MomentosEvaluacion extends Model
     public function getOpciones(){
         return $this->opciones;
     }
+
+    public static function getMomentosEvaluacionDistintos(){
+
+    }
     
 }

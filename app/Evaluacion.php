@@ -103,12 +103,13 @@ class Evaluacion extends Model
                             ->where('periodo_lectivo_id', $periodo_lectivo_id)
                             ->get(['cvucv_user_id']);
     }
-    /*public static function evaluacion_de_usuario($curso_id, $periodo_lectivo_id, $instrumento_id){
+    public static function usuarios_evaluadores_del_curso_en_un_momento($curso_id, $periodo_lectivo_id, $instrumento_id,$momento_evaluacion_id){
         return Evaluacion::where('instrumento_id', $instrumento_id)
                             ->where('curso_id', $curso_id)
                             ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->where('momento_evaluacion_id', $momento_evaluacion_id)
                             ->get(['cvucv_user_id']);
-    }*/
+    }
     public static function evaluacion_de_usuario($usuario){
         return Evaluacion::where('cvucv_user_id', $usuario)->get();
     }

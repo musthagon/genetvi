@@ -114,6 +114,7 @@ class HomeController extends Controller
             $promedioPonderacionCurso2,
             $dashboards_subtitle);
         
+        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
         $ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
 
         return view('home.cursos_dashboards',
@@ -132,7 +133,8 @@ class HomeController extends Controller
             'cantidadEvaluacionesRechazadasCursoCharts2',
             'promedioPonderacionCurso2',
             'dashboards_subtitle',
-            'ruta_revisiones_publicas'
+            'ruta_revisiones_publicas',
+            'momentos_evaluacion_collection'
         ));
 
     }
@@ -148,7 +150,7 @@ class HomeController extends Controller
         //Tiene permitido acceder a la categoria?
         Gate::allows('tieneAccesoVisualizarCurso',[$curso]);
         
-        $this->construior_resultados_curso_respuesta_publica(
+        $this->construir_resultados_curso_respuesta_publica(
             $categoria_id, 
             $curso_id, 
             $request,
@@ -158,7 +160,8 @@ class HomeController extends Controller
             $evaluacion,
             $usuario_id,
             $periodo_lectivo,
-            $instrumento
+            $instrumento,
+            $momentos_evaluacion_collection
         );
 
         $usuario = $this->cvucv_get_profile( $usuario_id );
@@ -174,7 +177,8 @@ class HomeController extends Controller
             'usuario',
             'periodo_lectivo',
             'instrumento',
-            'ruta_revisiones_publicas'
+            'ruta_revisiones_publicas',
+            'momentos_evaluacion_collection'
         ));
     }
 
