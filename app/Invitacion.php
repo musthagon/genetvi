@@ -232,7 +232,10 @@ class Invitacion extends Model
         return true;
     }
 
-    public static function EstatusEvaluacionesCursos (&$estatus, &$estatus_count){
+    public static function EstatusEvaluacionesCursos (&$estatus, &$estatus_count, $nombre_categoria = null){
+
+        $estatus = [];
+
         $invitaciones = Invitacion::all();
 
         $estatusTodos = Estatus::all();
@@ -241,15 +244,30 @@ class Invitacion extends Model
                 $estatus_count[$estatusIndex] = 0;
         }
 
+        if($nombre_categoria != null){
+            $id_categoria_padre = CategoriaDeCurso::getCategoriaPorNombre($nombre_categoria);
+        }
+
         foreach($invitaciones as $indexInvitacion => $invitacion){
+
             $estatusInvitacionActual = $invitacion->estatus_invitacion->getNombre();
-            foreach($estatusTodos as $estatusIndex => $estatusActual){
-                if($estatusInvitacionActual == $estatusActual->getNombre()){
-                    $estatus[$estatusIndex] = $estatusActual->getNombre();
-                    $estatus_count[$estatusIndex]++;
-                    break;
+            
+            if($invitacion->curso != null){
+
+                if( $nombre_categoria == null || $invitacion->curso->categoria->categoria_raiz->getID() == $id_categoria_padre){
+
+                    foreach($estatusTodos as $estatusIndex => $estatusActual){
+                        if( $estatusInvitacionActual == $estatusActual->getNombre() ){
+                            $estatus[$estatusIndex] = $estatusActual->getNombre();
+                            $estatus_count[$estatusIndex]++;
+                            break;
+                        }
+                    } 
                 }
+
             }
+
+            
         }
     }
 }

@@ -305,10 +305,10 @@ class AdminController extends Controller
             $categoria->instrumentos_habilitados()->detach();
         }else{
             foreach($request->instrumentos as $instrumentoRequest){
-                if($instrumento == 'null'){
+                /*if($instrumento == 'null'){
                     $categoria->instrumentos_habilitados()->detach();
                     break;
-                }
+                }*/
                 $instrumento = Instrumento::find($instrumentoRequest);
                 if(empty($instrumento)){
                     return redirect()->back()->with(['message' => "El instrumento ya no existe, intente actualizar la página", 'alert-type' => 'error']);

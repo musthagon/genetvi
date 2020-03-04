@@ -24,14 +24,13 @@ class EstatusEvaluacionesCursosDimmer extends BaseDimmer
      */
     public function run()
     {
-        /*$count = Curso::CursosEvaluacionesActivas();
         
-        if( !auth()->user()->hasRole('admin') ){
-            $count = Curso::CursosEvaluacionesActivas($this->buscarRol($this->permissionVer));
-        }*/
+        if( auth()->user()->hasRole('admin') ){
+            Invitacion::EstatusEvaluacionesCursos($estatus, $estatus_count);
+        }else{
+            Invitacion::EstatusEvaluacionesCursos($estatus, $estatus_count, $this->buscarRol($this->permissionVer));
+        }
 
-
-        Invitacion::EstatusEvaluacionesCursos($estatus, $estatus_count);
         $string = 'Estatus de Evaluaciones';
         $string2 = '';
         foreach($estatus as $estatusIndex => $estatusActual){
