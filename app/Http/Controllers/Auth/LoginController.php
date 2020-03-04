@@ -91,7 +91,7 @@ class LoginController extends Controller
         if (isset($response['error'])){
             return back()->withErrors([$this->username() => $response['error']]);
         }elseif (!isset($response['token'])){
-            return back()->withErrors([$this->username() => 'Error inesperado. (cod=001) ']);
+            return back()->withErrors([$this->username() => 'Error inesperado. (cod=001). Porfavor, reportelo al administrador']);
         }
 
         if ($this->attemptLogin($request)) {
@@ -105,9 +105,8 @@ class LoginController extends Controller
         $obj_user = User::where($this->username(),$request->{($this->username())})->first();
 
         if($obj_user != null){
-            //MOVER AL MODELOO
-            $obj_user->password = bcrypt($request->password);
-            $obj_user->save();
+
+            $obj_user->updatePassword($request->password);
 
             if ($this->attemptLogin($request)) {
                 return $this->sendLoginResponse($request);
@@ -117,8 +116,31 @@ class LoginController extends Controller
         //2. O si no, Lo registramos...
         $new_profile = $this->cvucv_get_profile($request->cvucv_username,'username');
         
-        if (empty($new_profile)){
-            return back()->withErrors([$this->username() => 'Error inesperado. (cod=002) ']);
+        if (!isset($new_profile) || empty($new_profile)){
+            return back()->withErrors([$this->username() => 'Error inesperado. (cod=002). Porfavor, reportelo al administrador']);
+        }
+
+        if(!isset($new_profile['username']) || 
+        !isset($new_profile['id']) ||
+        !isset($new_profile['lastname']) ||
+        !isset($new_profile['firstname']) ||
+        !isset($new_profile['suspended']) ||
+        !isset($new_profile['email']) ||
+        !isset($new_profile['firstname']) ||
+        !isset($new_profile['profileimageurl']) ||
+        !isset($new_profile['customfields']) ||
+        !isset($new_profile['customfields'][1]) ||
+        !isset($new_profile['customfields'][1]['value']) ||
+        !isset($new_profile['customfields'][1]['name'])){
+            return back()->withErrors([$this->username() => 'Error, faltan campos de configuración en su perfil del Campus Virtual']);
+        }
+
+        if($new_profile['customfields'][1]['name'] != $this->nombre_campo_rol_en_cvucv){
+            return back()->withErrors([$this->username() => 'Error inesperado. (cod=003). Porfavor, reportelo al administrador']);
+        }
+
+        if(!$this->puedeAccederConSuRol($new_profile['customfields'][1]['value'])){
+            return back()->withErrors([$this->username() => 'Error, acceso no autorizado']);
         }
 
         $params = [
@@ -207,7 +229,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        //
+        //Sincronizamos sus cursos con el Campus
         $this->sync_user_courses();
     }
 
@@ -265,6 +287,11 @@ class LoginController extends Controller
         return Auth::guard();
     }
 
-
+    public function puedeAccederConSuRol($rol){
+        foreach($this->roles_que_pueden_accerder as $rolActual){
+            if($rolActual == $rol){ return true; }
+        }
+        return false;
+    }
     
 }

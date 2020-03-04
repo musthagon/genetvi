@@ -18,6 +18,9 @@ trait CommonFunctionsGenetvi
     private $CVUCV_ADMIN_TOKEN = '';
     private $CVUCV_ADMIN_TOKEN2 = '';
 
+    protected $nombre_campo_rol_en_cvucv = "Cargo o Rol dentro de la Universidad *";
+    protected $roles_que_pueden_accerder = array("Profesor UCV", "Administrativo UCV", "Profesor externo ");
+
     public  
         $permissionVer         = "ver_",
         $list_dependencias  = array(

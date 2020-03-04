@@ -100,6 +100,13 @@ class User extends Authenticatable
         
     }
 
+    public function updatePassword($new){
+        if(isset($new)){
+            $this->password = Hash::make($new);
+            $this->save();
+        }
+    }
+
     public function updateData($request){
         //dd($request);
         $c = 0;
