@@ -17,6 +17,28 @@ trait CommonFunctionsGenetvi
     private $CVUCV_GET_WEBSERVICE_ENDPOINT = '';
     private $CVUCV_ADMIN_TOKEN = '';
     private $CVUCV_ADMIN_TOKEN2 = '';
+
+    public  
+        $permissionVer         = "ver_",
+        $list_dependencias  = array(
+                "facultad_de_arquitectura_y_urbanismo"          => "Facultad de Arquitectura y Urbanismo",
+                "facultad_de_agronomia"                         => "Facultad de Agronomía",
+                "facultad_de_ciencias"                          => "Facultad de Ciencias",
+                "facultad_de_ciencias_juridicas_y_politicas"    => "Facultad de Ciencias Jurídicas y Políticas",
+                "facultad_de_ciencias_economicas_y_sociales"    => "Facultad de Ciencias Económicas y Sociales",
+                "facultad_de_farmacia"                          => "Facultad de Farmacia",
+                "facultad_de_humanidades_y_educacion"           => "Facultad de Humanidades y Educación",
+                "facultad_de_ingenieria"                        => "Facultad de Ingeniería",
+                "facultad_de_medicina"                          => "Facultad de Medicina",
+                "facultad_de_odontologia"                       => "Facultad de Odontología",
+                "facultad_de_ciencias_veterinarias"             => "Facultad de Ciencias Veterinarias",
+                "rectorado"                                     => "Rectorado",
+                "vicerrectorado_academico"                      => "Vicerrectorado Académico",
+                "vicerrectorado_administrativo"                 => "Vicerrectorado Administrativo",
+                "secretaria"                                    => "Secretaría",
+                "fundaciones_asociaciones"                      => "Fundaciones - Asociaciones",
+                "otras_dependencias"                            => "Otras Dependencias",
+            );
     /**
      * CURL generíco usando GuzzleHTTP
      *
@@ -458,5 +480,19 @@ trait CommonFunctionsGenetvi
         }
 
         return $cursos_cvucv;
+    }
+
+    /**
+     * Determine if the widget should be displayed.
+     *
+     * @return bool
+     */
+    public function buscarRol($permission){
+        foreach($this->list_dependencias as $name=>$display_name){
+            if( auth()->user()->hasPermission($permission.$name) ){
+                return $display_name;
+            }
+        }
+        return null;
     }
 }

@@ -256,9 +256,11 @@
                                                 @endif
                                             @endforeach
                                             
-                                            <a href="instrumentos/{{$data->id}}/constructor" title="Constructor" class="btn btn-sm btn-success pull-right" style="margin-right: 5px;">
-                                                <i class="voyager-list"></i> Constructor
-                                            </a>
+                                            @if( auth()->user()->hasRole('admin') )
+                                                <a href="instrumentos/{{$data->id}}/constructor" title="Constructor" class="btn btn-sm btn-success pull-right" style="margin-right: 5px;">
+                                                    <i class="voyager-list"></i> Constructor
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

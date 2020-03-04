@@ -4,11 +4,13 @@ namespace App\Widgets;
 
 use Illuminate\Support\Str;
 use TCG\Voyager\Facades\Voyager;
+use App\Traits\CommonFunctionsGenetvi; 
 
 use App\Invitacion;
 
 class EstatusEvaluacionesCursosDimmer extends BaseDimmer
 {
+    use CommonFunctionsGenetvi;
     /**
      * The configuration array.
      *
@@ -22,6 +24,13 @@ class EstatusEvaluacionesCursosDimmer extends BaseDimmer
      */
     public function run()
     {
+        /*$count = Curso::CursosEvaluacionesActivas();
+        
+        if( !auth()->user()->hasRole('admin') ){
+            $count = Curso::CursosEvaluacionesActivas($this->buscarRol($this->permissionVer));
+        }*/
+
+
         Invitacion::EstatusEvaluacionesCursos($estatus, $estatus_count);
         $string = 'Estatus de Evaluaciones';
         $string2 = '';
@@ -48,6 +57,11 @@ class EstatusEvaluacionesCursosDimmer extends BaseDimmer
      */
     public function shouldBeDisplayed()
     {
-        return auth()->user()->hasRole('admin');
+
+        if(auth()->user()->hasRole('admin') || $this->buscarRol($this->permissionVer) != null){
+            return true;
+        }
+        
+        return false;
     }
 }

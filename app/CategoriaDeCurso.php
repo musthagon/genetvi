@@ -72,4 +72,20 @@ class CategoriaDeCurso extends Model
         return $this->cvucv_name;
     }
 
+    public function getID(){
+        return $this->id;
+    }
+
+    public static function getCategoriaPorNombre($nombre){
+        if($nombre == null){return null;}
+
+        $categoria = CategoriaDeCurso::where('cvucv_name',$nombre)->first();
+
+        if(!empty($categoria)){
+            return $categoria->getID();
+        }
+
+        return null;
+    }
+
 }
