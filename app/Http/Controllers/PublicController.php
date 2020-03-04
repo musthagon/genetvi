@@ -80,7 +80,7 @@ class PublicController extends Controller
 
         //Actualizamos el estatus de la invitacion
         
-        if( (!$preview && $invitacion->invitacion_aceptada() && $instrumento->getPuedeRechazar()) || ($preview && $preview2) ){
+        if( (!$preview && $invitacion->invitacion_aceptada() && $instrumento->getPuedeRechazar()) || ($preview && $preview2) || (!$preview && $invitacion->invitacion_aceptada() && !$instrumento->getPuedeRechazar())){
             $edit = true;
         }else{
             $invitacion->actualizar_estatus_leida();
@@ -164,6 +164,8 @@ class PublicController extends Controller
             if($request->aceptar == "on"){
                 $acepto = true;
             }
+        }elseif(!$instrumento->getPuedeRechazar()){
+            $acepto = true;
         }
 
         if($preview){
