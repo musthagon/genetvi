@@ -231,4 +231,25 @@ class Invitacion extends Model
         }
         return true;
     }
+
+    public static function EstatusEvaluacionesCursos (&$estatus, &$estatus_count){
+        $invitaciones = Invitacion::all();
+
+        $estatusTodos = Estatus::all();
+
+        foreach($estatusTodos as $estatusIndex => $estatusActual){
+                $estatus_count[$estatusIndex] = 0;
+        }
+
+        foreach($invitaciones as $indexInvitacion => $invitacion){
+            $estatusInvitacionActual = $invitacion->estatus_invitacion->getNombre();
+            foreach($estatusTodos as $estatusIndex => $estatusActual){
+                if($estatusInvitacionActual == $estatusActual->getNombre()){
+                    $estatus[$estatusIndex] = $estatusActual->getNombre();
+                    $estatus_count[$estatusIndex]++;
+                    break;
+                }
+            }
+        }
+    }
 }

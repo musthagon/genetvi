@@ -3,13 +3,15 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+//use Illuminate\Foundation\Auth\User as Authenticatable;
+use TCG\Voyager\Models\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use TCG\Voyager\Traits\VoyagerUser;
 
-class User extends \TCG\Voyager\Models\User
+class User extends Authenticatable
 {
     use Notifiable;
-
+    use VoyagerUser;
     /**
      * The attributes that are mass assignable.
      *

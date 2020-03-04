@@ -150,7 +150,9 @@ return [
         ],
 
         'widgets' => [
-
+            'App\\Widgets\\UserDimmer',
+            'App\\Widgets\\EvaluacionesCursosActivasDimmer',
+            'App\\Widgets\\EstatusEvaluacionesCursosDimmer',
         ],
 
     ],

@@ -157,6 +157,8 @@ class Curso extends Model
         
     }
 
-
+    public static function CursosEvaluacionesActivas(){
+        return Curso::where('evaluacion_activa','1')->count();
+    }
 
 }
