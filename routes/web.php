@@ -41,6 +41,9 @@ Route::get('/mis_cursos/sincronizar', 'HomeController@sincronizar_mis_cursos')->
 //Cursos dashboards
 Route::get('/mis_cursos/visualizar_{id}', 'HomeController@visualizar_resultados_curso')->name('curso');
 Route::get('/mis_cursos/{categoria_id}/curso_{curso_id}/respuesta', 'HomeController@visualizar_resultados_curso_respuesta_publica')->name('mis_cursos.visualizar_resultados_curso.respuesta_publica');
+
+//Get users ajax
+Route::get('campus_users_by_ids', 'HomeController@campus_users_by_ids')->name('campus_users_by_ids');
 /*
 |--------------------------------------------------------------------------
 | Voyager Routes
@@ -88,6 +91,5 @@ Route::group(['prefix' => 'admin'], function () {
 
     //Get users ajax
     Route::get('campus_users', 'AdminController@campus_users')->name('campus_users');
-    Route::get('campus_users_by_ids', 'AdminController@campus_users_by_ids')->name('campus_users_by_ids');
  });
 
