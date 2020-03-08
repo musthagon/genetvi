@@ -118,3 +118,26 @@ body.login .login-button{
 .modal-close:hover {
     /*opacity: 0.1;*/
 }
+h1{
+    font-size: 16px;
+}
+.logos-icon{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.logos-icon img{
+    width: auto; height: 60px;
+    margin: 0 10px 0px 0;
+}
+
+.subcontent .section-title{
+    color:#000080;font-family:arial, helvetica, sans-serif;
+}
+
+.subcontent .section-text{
+    margin-left:30px;text-align:left;margin-bottom: 3px;
+}
+.subcontent .section-text > span{
+    color:#000000;font-family:arial, helvetica, sans-serif;
+}

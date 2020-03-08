@@ -1,3 +1,7 @@
+@php
+    $normal_user = isset($normal_user) ? true : false;
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ config('app.locale') }}" dir="{{ __('voyager::generic.is_rtl') == 'true' ? 'rtl' : 'ltr' }}">
 <head>
@@ -6,7 +10,7 @@
     <meta name="robots" content="none" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta name="description" content="admin login">
-    <title>Admin - {{ Voyager::setting("admin.title") }}</title>
+    <title>{{ Voyager::setting("admin.title") }}</title>
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
     <!-- Favicon -->
 
@@ -16,8 +20,8 @@
     <link rel="stylesheet" href="{{asset('css/voyager/login_style.css')}}">
 
     <style>
-        body {
-            background-image:url('{{asset("img/ucv-mural1.jpg")}}');
+        body {            
+            background-image:url('{{asset("img/24_VICTOR_VASARELY_HOMMAGE_A_MALEVITCH_HOMENAJE_A_MALEVITCH_1954_F_JUAN_PEREZ_HERNANDEZ.png")}}');
             background-color: {{ Voyager::setting("admin.bg_color", "#FFFFFF" ) }};
         }
         body.login .login-sidebar {
@@ -38,6 +42,18 @@
         .remember-me-text{
             padding:0 5px;
         }
+        #right-image{
+            background: #689df6; 
+            background-size:cover; 
+            background-image: url('{{asset('img/ucv-mural1.jpg')}}'); 
+            background-position: center center;
+            position:absolute; 
+            top:0; 
+            left:0; 
+            width:100%; 
+            height:300px;
+        }
+        
     </style>
     
     <link href="{{asset('css/fonts.googleapis.com_OpenSans300,400,700.css')}}" rel="stylesheet">
@@ -65,28 +81,35 @@
         <div class="col-xs-12 col-sm-5 col-md-4 login-sidebar">
             <div class="login-body">
 
-                <div class="side-body padding-top">
-                    <div style="background: #689df6; background-size:cover; background-image: url('{{asset('img/ucv-mural1.jpg')}}'); background-position: center center;position:absolute; top:0; left:0; width:100%; height:300px;"></div>
+                <div class="side-body padding-top login-container">
+                    <div id="right-image"></div>
                     <div style="height:160px; display:block; width:100%"></div>
                     <div style="position:relative; z-index:9; text-align:center; margin-top: -48px;">
                         <img src="{{asset('img/LogoGENETVI.png')}}" class="avatar" style="border-radius:50%; width:200px; height:200px;" alt="GENETVI">
-                        <div class="text-muted">Aplicación Web para la Gestión de la Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la UCV</div>
+                        <h1 class="text-muted">Aplicación Web para la Gestión de la Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la UCV</h1>
+                        <div class="text-muted">
+                        Esta aplicación busca estimular el mejoramiento continuo del modelo educativo a distancia así como orientar la toma de decisiones para la planificación, valoración y reflexión permanente de todos los procesos que involucran al Campus Virtual UCV, en la búsqueda de garantizar la eficacia y la excelencia para toda la comunidad universitaria.
+                        </div>
                         <p></p>
                     </div>
                 </div>
-
-
 
                 <div class="login-container">
 
                     <p class="login_title">Acceder</p>
 
-                    <form action="{{ route('login') }}" method="POST">
+                    <form action="{{ $normal_user == true ? route('login') : route('voyager.login') }}" method="POST">
+                        
                         {{ csrf_field() }}
+
                         <div class="form-group form-group-default" id="emailGroup">
-                            <label>Nombre de usuario</label>
+                            <label>@if($normal_user == true) Nombre de usuario @else Correo Electrónico @endif</label>
                             <div class="controls">
-                                <input type="text" name="cvucv_username" id="email" value="{{ old('email') }}" placeholder="Nombre de usuario" class="form-control" required>
+                            @if($normal_user == true) 
+                                <input type="text" name="cvucv_username" id="email" value="{{ old('cvucv_username') }}" placeholder="Nombre de usuario" class="form-control" required>
+                            @else  
+                                <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="Correo Electrónico" class="form-control" required>
+                            @endif
                             </div>
                         </div>
 
@@ -146,6 +169,62 @@
                     @endif
 
                 </div> <!-- .login-container -->
+
+                <div class="login-container">
+                    <div class="text-muted">Gracias a: </div>
+                    
+                    <div class="logos-icon">
+                        <a href="http://www.ucv.ve" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoUCV.png')}}" alt="Logo Icon"></a>
+                        <a href="http://www.ucv.ve/docencia/sistema-de-educacion-a-distancia/seducv.html" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoSEDUCV.png')}}" alt="Logo Icon"></a>
+                        <a href="http://www.ciens.ucv.ve/" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoFacultadDeCienciasUCV.png')}}" alt="Logo Icon"></a>
+                        <a href="http://www.ciens.ucv.ve/ciens/computacion/" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoEscuelaDeComputacionUCV.png')}}" alt="Logo Icon"></a>
+                    </div>
+
+                    <a class="instrucciones pull-right" href="#creditos">
+                        <span class="voyager-question"></span>
+                        Créditos de la Aplicación
+                        
+                    </a>
+                    <div id="creditos" class="modal-window">
+                        <a href="#" title="Close" class="modal-close">  <span class="voyager-x"></span></a>
+                        <div class="modal-body">
+                            <a href="#" title="Close" class="modal-close2">  <span class="voyager-x"></span>Cerrar</a>
+                            <h1>Créditos de la Aplicación</h1>
+                            <span class="tooltiptext">
+                                <div class="subcontent">
+                                    Esta obra es hecha para el Sistema de Educación a Distancia de la UCV - SEDUCV. 
+                                </div>
+                                <div class="subcontent">
+                                
+                                    <pre><span class="section-title"><strong>Estudios Teóricos</strong></span></pre>
+                                    <p class="section-text">
+                                        <span>• Modelo de Evaluación Integral para un Sistema de Educación Universitaria a Distancia de Dra. Yosly Hernández Bieliukas</span>
+                                    </p>
+                                    <p class="section-text">
+                                        <span>• Aplicación Web para la Gestión de la Evaluación Integral de los Entornos Virtuales de Aprendizaje del Campus Virtual de la Universidad Central de Venezuela (GENETVI).</span>
+                                    </p>
+
+                                    <pre><span class="section-title"><strong>Colaboradores</strong></span></pre>
+                                    <p class="section-text">
+                                        <span>• <a href="https://github.com/musthagon" target="_blank">Miguel Magdalena</a></span>
+                                    </p>
+
+                                    <pre><span class="section-title"><strong>Licencia</strong></span></pre>
+                                    <p class="section-text">
+                                        <span>• Este obra está bajo una licencia <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank">GNU General Public License</a></span> 
+                                    </p>
+                                    <p class="section-text">
+                                        <span>• Versión Actual: 1.0v. Disponible en <a href="https://github.com/musthagon/genetvi" target="_blank">Github</a></span>
+                                    </p>
+
+                                </div>
+                            </span>
+                        </div>
+                        
+                    </div>                                
+
+
+                </div>
 
             </div>
         </div> <!-- .login-sidebar -->

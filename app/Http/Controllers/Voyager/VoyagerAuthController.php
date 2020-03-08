@@ -11,9 +11,9 @@ class VoyagerAuthController extends BaseVoyagerAuthController
     public function login()
     {
         if ($this->guard()->user()) {
-            return redirect()->route('voyager.dashboard');
+            return redirect()->route('home');
         }
-        return Voyager::view('voyager::login');
+        return view('auth.login');
     }
 
     public function postLogin(Request $request)

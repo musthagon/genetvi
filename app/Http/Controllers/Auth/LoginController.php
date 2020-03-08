@@ -51,9 +51,13 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
-        return view('auth.login');
+        if ($this->guard()->user()) {
+            return redirect()->route('home');
+        }
+        $normal_user = true;
+        return view('auth.login',compact('normal_user'));
     }
 
     /**
