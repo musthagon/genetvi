@@ -392,7 +392,7 @@ trait CommonFunctionsCharts
         &$periodo_lectivo,
         &$instrumento,
         &$momentos_evaluacion_collection){
-        if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user)){
+        if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user) || !isset($request->momento_evaluacion) ){
             return redirect()->back()->with(['message' => "Faltan campos obligatorios", 'alert-type' => 'error']);
         }
 
@@ -403,6 +403,7 @@ trait CommonFunctionsCharts
         $periodo_lectivo_id = $request->periodo_lectivo;
         $instrumento_id     = $request->instrumento;
         $usuario_id         = $request->user;
+        $momento_evaluacion_id = $request->momento_evaluacion;
 
         $periodo_lectivo = PeriodoLectivo::find($periodo_lectivo_id);
         $instrumento = Instrumento::find($instrumento_id);
@@ -419,7 +420,7 @@ trait CommonFunctionsCharts
             return redirect()->back()->with(['message' => "Las respuestas de este instrumento son anónimas", 'alert-type' => 'error']);
         }
 
-        $evaluacion = Evaluacion::buscar_evaluacion($curso->id, $periodo_lectivo_id, $instrumento_id, $usuario_id);
+        $evaluacion = Evaluacion::buscar_evaluacion($curso->getID(), $periodo_lectivo_id, $instrumento_id, $usuario_id,$momento_evaluacion_id);
         if(empty($evaluacion)){
             return redirect()->back()->with(['message' => "Error, este usuario no ha evaluado este curso", 'alert-type' => 'error']);
         }

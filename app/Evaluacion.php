@@ -117,12 +117,22 @@ class Evaluacion extends Model
     public static function evaluacion_de_usuario($usuario){
         return Evaluacion::where('cvucv_user_id', $usuario)->get();
     }
-    public static function buscar_evaluacion($curso_id, $periodo_lectivo_id, $instrumento_id, $usuario_id){
-        return Evaluacion::where('instrumento_id', $instrumento_id)
-                            ->where('curso_id', $curso_id)
+    public static function buscar_evaluacion($curso_id, $periodo_lectivo_id, $instrumento_id, $usuario_id,$momento_evaluacion_id = null){
+        if($momento_evaluacion_id == null){
+            return Evaluacion::where('instrumento_id', $instrumento_id)
                             ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->where('curso_id', $curso_id) 
                             ->where('cvucv_user_id', $usuario_id)
-                            ->first();
+                            ->first(); 
+        }else{
+            return Evaluacion::where('instrumento_id', $instrumento_id)
+                            ->where('momento_evaluacion_id', $momento_evaluacion_id)
+                            ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                            ->where('curso_id', $curso_id)
+                            ->where('cvucv_user_id', $usuario_id)
+                            ->first(); 
+        }
+        
     }
     public static function buscar_evaluacion_token($anonimo,$token, $percentil_eva, $instrumento_id, $curso_id, $periodo_lectivo_id, $momento_evaluacion_id, $cvucv_user_id, $usuario_id){
         return Evaluacion::where('respuestas', $token)
