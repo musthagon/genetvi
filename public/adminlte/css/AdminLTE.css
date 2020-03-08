@@ -88,7 +88,7 @@ body {
 }
 .content-wrapper {
   min-height: calc(100vh - 101px);
-  background-color: #ecf0f5;
+  background-color: #f9f9f9;
   z-index: 800;
 }
 @media (max-width: 767px) {
