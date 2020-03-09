@@ -42,13 +42,12 @@ class HomeController extends Controller
         
         $user                = Auth::user();
         $user_id             = $user->getCVUCV_USER_ID();
-        $cursosDocente       = CursoParticipante::cursosDocente($user_id );
         $evaluacionesPendientes = Invitacion::invitaciones_pendientes_de_un_usuario($user_id);
 
-        $informacion_pagina['titulo']       = "Principal";
-        $informacion_pagina['descripcion']  = "Aquí se muestra un resumen de las acciones que puedes hacer en la aplicación";
+        $informacion_pagina['titulo']       = "Bienvenido al Sistema";
+        $informacion_pagina['descripcion']  = "El propósito de la aplicación es la gestión de la evaluación de los entornos virtuales de aprendizaje del CV-UCV";
 
-        return view('home.principal', compact('cursosDocente','evaluacionesPendientes','informacion_pagina'));
+        return view('home.principal', compact('evaluacionesPendientes','informacion_pagina'));
     }
 
     public function cursos(){   

@@ -234,12 +234,17 @@
 
     var password = document.querySelector('[name="password"]');
     btn.addEventListener('click', function(ev){
+        if(btn.querySelector('.signingin').className == 'signingin' || btn.querySelector('.signin').className == 'signin hidden'){
+            ev.preventDefault();
+        }
         if (form.checkValidity()) {
             btn.querySelector('.signingin').className = 'signingin';
             btn.querySelector('.signin').className = 'signin hidden';
         } else {
             ev.preventDefault();
         }
+
+        
     });
     email.focus();
     document.getElementById('emailGroup').classList.add("focused");

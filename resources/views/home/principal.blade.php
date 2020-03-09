@@ -35,22 +35,6 @@
       
 
       <div class="row">
-          @if( isset($cursosDocente) && !$cursosDocente->isEmpty())
-            <div class="col-lg-6 col-xs-6">
-              <!-- small box -->
-              <div class="small-box bg-aqua">
-                <div class="inner">
-                  <h3>{{count($cursosDocente)}}</h3>
-
-                  <p>Mis cursos</p>
-                </div>
-                <div class="icon">
-                  <i class="ion ion-hammer"></i>
-                </div>
-                <a href="{{ route('mis_cursos') }}" class="small-box-footer">Más información <i class="fa fa-arrow-circle-right"></i></a>
-              </div>
-            </div>
-          @endif
           @if( isset($evaluacionesPendientes) && !$evaluacionesPendientes->isEmpty() )
             <div class="col-lg-6 col-xs-6">
               <!-- small box -->

@@ -47,6 +47,12 @@ trait CommonFunctionsGenetvi
      *
      */
     public function send_curl($request_type, $endpoint, $params){
+        if(empty($endpoint)){
+            $error_message = "Error, variables de entorno sin definir. Por favor, comuníqueselo al administrador de la plataforma";
+            $response = array($this->connection_error => $error_message);
+            return $response;
+        }
+
         try {
             $client   = new \GuzzleHttp\Client();
 
@@ -59,7 +65,6 @@ trait CommonFunctionsGenetvi
                 $response = json_decode($response->getBody(), true);
 
             }else{
-
                 throw new \Exception('Failed');
 
             }
@@ -94,7 +99,7 @@ trait CommonFunctionsGenetvi
     public function cvucv_autenticacion(Request $request){
         $endpoint = env("CVUCV_GET_USER_TOKEN", $this->CVUCV_GET_USER_TOKEN);
         $service  = env("CVUCV_GET_USER_TOKEN_SERVICE", $this->CVUCV_GET_USER_TOKEN_SERVICE);
-
+        
         $params = [
             'service'  => $service,
             'username' => $request->cvucv_username,

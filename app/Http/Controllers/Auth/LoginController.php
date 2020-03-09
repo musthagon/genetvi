@@ -79,9 +79,9 @@ class LoginController extends Controller
 
             return $this->sendLockoutResponse($request);
         }
-
+        
         $response = $this->cvucv_autenticacion($request);
-
+        
         if($this->hasError($response)){
             return back()->withErrors([$this->username() => $response[$this->getErrorStatus()]]);
         }
