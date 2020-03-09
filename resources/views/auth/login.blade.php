@@ -88,7 +88,7 @@
                         <img src="{{asset('img/LogoGENETVI.png')}}" class="avatar" style="border-radius:50%; width:200px; height:200px;" alt="GENETVI">
                         <h1 class="text-muted">Aplicación Web para la Gestión de la Evaluación de Entornos Virtuales de Aprendizaje del Campus Virtual de la UCV</h1>
                         <div class="text-muted">
-                        Esta aplicación busca estimular el mejoramiento continuo del modelo educativo a distancia así como orientar la toma de decisiones para la planificación, valoración y reflexión permanente de todos los procesos que involucran al Campus Virtual UCV, en la búsqueda de garantizar la eficacia y la excelencia para toda la comunidad universitaria.
+                        ¡Bienvenid@! Esta Aplicación Web es de uso exclusivo de Profesores, Coordinadores de EaD y la Gerencia del SEDUCV, para la gestión de la evaluación de los entornos virtuales de aprendizaje del Campus Virtual de la Universidad Central de Venezuela.
                         </div>
                         <p></p>
                     </div>
@@ -192,21 +192,13 @@
                             <h1>Créditos de la Aplicación</h1>
                             <span class="tooltiptext">
                                 <div class="subcontent">
-                                    Esta obra es hecha para el Sistema de Educación a Distancia de la UCV - SEDUCV. 
+                                    Esta Aplicación Web es de uso exclusivo de Profesores, Coordinadores de EaD y la Gerencia del SEDUCV
                                 </div>
                                 <div class="subcontent">
                                 
-                                    <pre><span class="section-title"><strong>Estudios Teóricos</strong></span></pre>
+                                    <pre><span class="section-title"><strong>Créditos</strong></span></pre>
                                     <p class="section-text">
-                                        <span>• Modelo de Evaluación Integral para un Sistema de Educación Universitaria a Distancia de Dra. Yosly Hernández Bieliukas</span>
-                                    </p>
-                                    <p class="section-text">
-                                        <span>• Aplicación Web para la Gestión de la Evaluación Integral de los Entornos Virtuales de Aprendizaje del Campus Virtual de la Universidad Central de Venezuela (GENETVI).</span>
-                                    </p>
-
-                                    <pre><span class="section-title"><strong>Colaboradores</strong></span></pre>
-                                    <p class="section-text">
-                                        <span>• <a href="https://github.com/musthagon" target="_blank">Miguel Magdalena</a></span>
+                                        <span>Esta Aplicación Web para la gestión de la evaluación de los entornos virtuales de aprendizaje del Campus Virtual de la UCV fue desarrollada por Miguel Magdalena como Trabajo Especial de Grado para optar al título de Licenciado en Computación de la Universidad Central de Venezuela, bajo la tutoría de la Profa. Yosly Hernández Bieliukas.</span>
                                     </p>
 
                                     <pre><span class="section-title"><strong>Licencia</strong></span></pre>
