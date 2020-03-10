@@ -18,60 +18,62 @@
         <div class="row">
             <div class="col-md-12">
                 
-                <div class="panel panel-bordered">
+                @php $countInstrumentosManuales = count($instrumentos_manuales) @endphp 
+                @if( $countInstrumentosManuales >= 1)
+                    <div class="panel panel-bordered">
 
-                    <form role="form"
-                        class="form-edit-add"
-                        action="{{ route('curso_invitar_evaluacion_curso', ['id' => $curso->id]) }}"
-                        method="POST">
+                        <form role="form"
+                            class="form-edit-add"
+                            action="{{ route('curso_invitar_evaluacion_curso', ['id' => $curso->id]) }}"
+                            method="POST">
 
-                        <!-- CSRF TOKEN -->
-                        {{ csrf_field() }}
-                    
-                        <div class="panel-body">
-  
-                            <div class="page-title-content">
-                                <h1 class="page-title page-title-custom">
-                                    <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->getNombre()}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->getNombre()}}</div>
-                                </h1>
+                            <!-- CSRF TOKEN -->
+                            {{ csrf_field() }}
+                        
+                            <div class="panel-body">
+    
+                                <div class="page-title-content">
+                                    <h1 class="page-title page-title-custom">
+                                        <i class="icon voyager-settings"></i> Invitar usuarios a evaluar el {{$curso->getNombre()}}. <div>Periodo Lectivo: {{$periodo_lectivo_actual->getNombre()}}</div>
+                                    </h1>
+
+                                </div>
+
+                                <div class="form-group col-md-6 ">
+                                    <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
+                                    <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-6 ">
+                                    <label class="control-label" for="name">Momento de evaluación a invitar</label>
+                                    <select id="momento_evaluacion" class="form-control select2" name="momentos_evaluacion[]" multiple required>
+                                        @foreach($momentos_evaluacion as $momento)
+                                        <option value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group @if($countInstrumentosManuales == 1) hidden @endif  col-md-12 ">
+                                    <label class="control-label" for="name">Instrumentos a invitar</label>
+                                    <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
+                                        @foreach($instrumentos_manuales as $instrumento)
+                                            <?php $selected = ''; ?>
+                                            <option value="{{$instrumento->getID()}}" {!! $selected !!}>{{$instrumento->getNombre()}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
                             </div>
 
-                            <div class="form-group col-md-6 ">
-                                <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
-                                <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
-                                </select>
+                            <div class="panel-footer">
+                                <button type="submit" class="btn btn-primary save">Enviar invitación para evaluar</button>
                             </div>
 
-                            <div class="form-group col-md-6 ">
-                                <label class="control-label" for="name">Momento de evaluación a invitar</label>
-                                <select id="momento_evaluacion" class="form-control select2" name="momentos_evaluacion[]" multiple required>
-                                    @foreach($momentos_evaluacion as $momento)
-                                    <option value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        </form>
 
-                            @php $countInstrumentosManuales = count($instrumentos_manuales) @endphp 
-                            <div class="form-group @if($countInstrumentosManuales == 1) hidden @endif  col-md-12 ">
-                                <label class="control-label" for="name">Instrumentos a invitar</label>
-                                <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
-                                    @foreach($instrumentos_manuales as $instrumento)
-                                        <?php $selected = ''; ?>
-                                        <option value="{{$instrumento->getID()}}" {!! $selected !!}>{{$instrumento->getNombre()}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                        </div>
-
-                        <div class="panel-footer">
-                            <button type="submit" class="btn btn-primary save">Enviar invitación para evaluar</button>
-                        </div>
-
-                    </form>
-
-                </div>
+                    </div>
+                @endif
                 
                 @if(!empty($invitaciones_curso))
                     <div class="panel panel-bordered">
