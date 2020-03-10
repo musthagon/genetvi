@@ -47,6 +47,11 @@ class AdminController extends Controller
         $wstoken  = env("CVUCV_ADMIN_TOKEN");
         $user = Auth::user();
 
+        $informacion_pagina['descripcion']  = "En esta sección se puede navegar entre las categorías y cursos de la Facultad/Dependencia";
+        $informacion_pagina['categorias']   = "Categorías";
+        $informacion_pagina['cursos']       = "Cursos";
+
+
         if($id == 0){
             //Consultamos la api
             $categorias_padre = $this->cvucv_get_courses_categories('parent',0);
@@ -72,6 +77,8 @@ class AdminController extends Controller
                 $categorias = collect($categorias);
             }
 
+            $informacion_pagina['categorias']   = "Facultades/Dependencias";
+
         }else{
             //Tienen acceso?
             $categoria = CategoriaDeCurso::where('id', $id)->first();
@@ -85,6 +92,9 @@ class AdminController extends Controller
                 if (!empty($categoriaSuperPadre) && !Gate::allows('checkCategoryPermissionSisgeva', [$this->permissionVerCategoria,$categoriaSuperPadre->getCVUCV_NAME()]  )) {    
                     return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
                 }
+
+                $informacion_pagina['categorias']   = $categoria->getNombre();
+
             }
 
             $categorias = collect();
@@ -101,8 +111,9 @@ class AdminController extends Controller
             }
             
             $cursos = Curso::where('cvucv_category_id', $id)->get();
+
             if(!$cursos->isEmpty()){
-                return view('vendor.voyager.gestion.index',compact('categorias','cursos','wstoken'));
+                return view('vendor.voyager.gestion.index',compact('categorias','cursos','wstoken','informacion_pagina'));
             }else{
                 if($categorias->isEmpty()){
                     return redirect()->back()->with(['message' => "Categoría sin datos, intente sincronizarla", 'alert-type' => 'error']);
@@ -110,7 +121,7 @@ class AdminController extends Controller
             }
         }
 
-        return view('vendor.voyager.gestion.index',compact('categorias','wstoken'));
+        return view('vendor.voyager.gestion.index',compact('categorias','wstoken','informacion_pagina'));
     }
     public function gestion_cursos($id){
         $wstoken  = env("CVUCV_ADMIN_TOKEN");

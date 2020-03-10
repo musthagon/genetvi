@@ -37,14 +37,14 @@
 
                             </div>
 
-                            <div class="form-group col-md-12 ">
+                            <div class="form-group col-md-6 ">
                                 <label class="control-label" for="name">Buscar usuario por nombre y/o apellido</label>
                                 <select id="search_users" class="js-data-example-ajax form-control select2" name="users[]" multiple required>
                                 </select>
                             </div>
 
                             <div class="form-group col-md-6 ">
-                                <label class="control-label" for="name">Momento de evalución a invitar</label>
+                                <label class="control-label" for="name">Momento de evaluación a invitar</label>
                                 <select id="momento_evaluacion" class="form-control select2" name="momentos_evaluacion[]" multiple required>
                                     @foreach($momentos_evaluacion as $momento)
                                     <option value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>
@@ -52,14 +52,17 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-6 ">
+                            @php $countInstrumentosManuales = count($instrumentos_manuales) @endphp 
+                            <div class="form-group @if($countInstrumentosManuales == 1) hidden @endif  col-md-12 ">
                                 <label class="control-label" for="name">Instrumentos a invitar</label>
                                 <select id="instrumentos" class="form-control select2" name="instrumentos_manuales[]" multiple required>
                                     @foreach($instrumentos_manuales as $instrumento)
-                                    <option value="{{$instrumento->getID()}}">{{$instrumento->getNombre()}}</option>
+                                        <?php $selected = ''; ?>
+                                        <option value="{{$instrumento->getID()}}" {!! $selected !!}>{{$instrumento->getNombre()}}</option>
                                     @endforeach
                                 </select>
                             </div>
+
                         </div>
 
                         <div class="panel-footer">
@@ -356,6 +359,8 @@
             function formatRepoSelection (repo) {
                 return repo.fullname || repo.text;
             }
+
+            $('#instrumentos option:eq(0)').prop('selected',true);
             
             $("#instrumentos").select2({
                 placeholder: "Seleccione entre los instrumentos disponibles para invitación manual",
