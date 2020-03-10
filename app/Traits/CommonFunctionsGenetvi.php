@@ -21,9 +21,9 @@ trait CommonFunctionsGenetvi
     protected $nombre_campo_rol_en_cvucv = "Cargo o Rol dentro de la Universidad *";
     protected $roles_que_pueden_accerder = array("Profesor UCV", "Administrativo UCV", "Profesor externo ");
 
-    public  
-        $permissionVer         = "ver_",
-        $list_dependencias  = array(
+    public $permissionVer         = "ver_";
+    public $permissionHabilitarEvaluacion         = "habilitar_evaluacion_";
+    public $list_dependencias  = array(
                 "facultad_de_arquitectura_y_urbanismo"          => "Facultad de Arquitectura y Urbanismo",
                 "facultad_de_agronomia"                         => "Facultad de Agronomía",
                 "facultad_de_ciencias"                          => "Facultad de Ciencias",
@@ -502,5 +502,16 @@ trait CommonFunctionsGenetvi
             }
         }
         return null;
+    }
+    public function buscarRoles($permission){
+        $list = [];
+        $i=0;
+        foreach($this->list_dependencias as $name=>$display_name){
+            if( auth()->user()->hasPermission($permission.$name) ){
+                $list[$i] = $display_name;
+                $i++;
+            }
+        }
+        return $list;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Voyager;
 
+use App\CategoriaDeCurso;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,10 +16,12 @@ use App\PeriodoLectivoMomentoEvaluacion;
 use App\MomentoEvaluacion;
 use App\MomentosEvaluacion;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\CommonFunctionsGenetvi; 
+use App\Instrumento;
 
 class PeriodoLectivoController extends VoyagerBaseController
 {
-
+    use CommonFunctionsGenetvi;
 
     //***************************************
     //                ______
@@ -73,18 +76,31 @@ class PeriodoLectivoController extends VoyagerBaseController
             $view = "voyager::$slug.edit-add";
         }
 
+        $periodo_lectivo = $dataTypeContent;
+
+        $categoria = $periodo_lectivo->CategoriaDeCurso;
 
         //Agregamos las categorias al instrumento
         $momentosAsociados = $dataTypeContent->momentos_evaluacion;
 
+        //Buscamos los momentos para mostrarlos en el listado
         $momentos = MomentosEvaluacion::all();
+
+        //Buscamos las Categorias de Cursos sobre las cuales puede crear periodos lectivos
+        $categoriasDeCurso = CategoriaDeCurso::CategoriaPorNombre($this->buscarRoles($this->permissionHabilitarEvaluacion));
+
+        //Instrumentos
+        $instrumentos       = Instrumento::all();
 
         return Voyager::view($view, compact(
             'dataType', 
             'dataTypeContent', 
             'isModelTranslatable', 
             'momentos',
-            'momentosAsociados'));
+            'momentosAsociados',
+            'categoriasDeCurso',
+            'instrumentos',
+            'categoria'));
     }
 
     // POST BR(E)AD
@@ -242,6 +258,32 @@ class PeriodoLectivoController extends VoyagerBaseController
         }
         
 
+        $categoria = CategoriaDeCurso::find($request->categoriaDeCurso);
+        
+        if(empty($categoria)){
+            return redirect()->back()->with(['message' => "La facultad/dependencia no existe. Intente, sincronizarla o comuníquese con el administrador de la plataforma", 'alert-type' => 'error']);
+        }
+        if($categoria->cvucv_category_parent_id != 0){
+            return redirect()->back()->with(['message' => "Error, la facultad/dependencia no corresponde a una categoría principal. Por favor, comuníqueselo con el administrador de la plataforma", 'alert-type' => 'error']);
+        }
+        
+        //Colocar en CRON KERNEL *********************
+        $categoria->setPeriodoLectivo($id);
+        
+        if (!isset($request->instrumentos)){
+            $categoria->instrumentos_habilitados()->detach();
+        }else{
+            foreach($request->instrumentos as $instrumentoRequest){
+                $instrumento = Instrumento::find($instrumentoRequest);
+                if(empty($instrumento)){
+                    return redirect()->back()->with(['message' => "El instrumento ya no existe, intente actualizar la página", 'alert-type' => 'error']);
+                }
+                $categoria->instrumentos_habilitados()->attach($instrumento);
+            }
+        }
+
+        $periodo_lectivo->setCategoriaDeCurso($categoria->getID());
+
         $this->insertUpdateData($request, $slug, $dataType->editRows, $data);
         
         event(new BreadDataUpdated($dataType, $data));
@@ -299,11 +341,15 @@ class PeriodoLectivoController extends VoyagerBaseController
         //Agregamos las categorias al instrumento
         $momentos = MomentosEvaluacion::all();
 
+        //Buscamos las Categorias de Cursos sobre las cuales puede crear periodos lectivos
+        $categoriasDeCurso = CategoriaDeCurso::CategoriaPorNombre($this->buscarRoles($this->permissionHabilitarEvaluacion));
+
         return Voyager::view($view, compact(
             'dataType', 
             'dataTypeContent', 
             'isModelTranslatable',
-            'momentos'));
+            'momentos',
+            'categoriasDeCurso'));
     }
 
     /**

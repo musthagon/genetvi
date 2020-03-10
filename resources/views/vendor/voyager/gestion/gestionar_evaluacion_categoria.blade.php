@@ -113,7 +113,7 @@
                         $(this).val('null').select2();
                     }
                 }
-})
+            });
         });
     </script>
 @stop

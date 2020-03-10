@@ -88,6 +88,26 @@
                                 $dataTypeRows = $dataType->{($edit ? 'editRows' : 'addRows' )};
                             @endphp
 
+                            <!-- Categorias de Cursos -->
+                            @php $countCategorias = count($categoriasDeCurso) @endphp 
+                            @if($countCategorias == 1 && isset($categoriasDeCurso[0]))
+                                <legend class="text-center" style="background-color: #f0f0f0;padding: 5px;">Periodo Lectivo para {{$categoriasDeCurso[0]->getNombre()}}</legend>
+                            @endif
+                            <div class="form-group @if($countCategorias == 1) hidden @endif col-md-12 ">
+                                <label class="control-label" for="name">Facultades o Dependencias a las cuales les va asociar este periodo lectivo</label>
+                                <select id="categoriasDeCurso" class="form-control select2" name="categoriaDeCurso" required>
+                                    @foreach($categoriasDeCurso as $index=>$categoriaDeCurso)
+                                        <?php $selected = ''; ?>
+                                        @if($edit && isset($categoria))
+                                            @if($categoria->getID() == $categoriaDeCurso->getID()))
+                                                <?php $selected = 'selected="selected"'; ?>
+                                            @endif
+                                        @endif
+                                        <option value="{{$categoriaDeCurso->getID()}}" {!! $selected !!}>{{$categoriaDeCurso->getNombre()}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             @foreach($dataTypeRows as $row)
                                 <!-- GET THE DISPLAY OPTIONS -->
                                 @php
@@ -158,7 +178,36 @@
                                         </tr>                                      
                                     </table>  
                                 </div>   
-                            </div>  
+                            </div>
+                            
+                            
+                            <div class="form-group  col-md-12 ">
+                                <label class="control-label" for="name">Instrumentos a habilitar</label>
+                                <select id="instrumentos" class="form-control select2" name="instrumentos[]" multiple required>
+                                    <?php $selected = ''; ?>
+                                    @if($edit && isset($categoria) && $categoria->instrumentos_habilitados->isEmpty())
+                                        <?php $selected = 'selected="selected"'; ?>
+                                    @endif
+
+                                    <option value="null" {!! $selected !!}>Ninguno</option>
+                                    @foreach($instrumentos as $instrumento)
+                                        <?php $selected = 'selected="selected"'; ?>
+
+                                        @if($edit && isset($categoria))
+                                            @foreach ($categoria->instrumentos_habilitados as $instrumento_almacenado)
+                                                @if($instrumento_almacenado->getID() == $instrumento->getID()))
+                                                    <?php $selected = 'selected="selected"'; ?>
+                                                @else
+                                                    <?php $selected = ''; ?>
+                                                @endif
+                                            @endforeach
+                                        @endif
+
+                                        <option value="{{$instrumento->getID()}}" {!! $selected !!}>{{$instrumento->getNombre()}}</option>
+                                        
+                                    @endforeach
+                                </select>
+                            </div>
 
                         </div><!-- panel-body -->
 
@@ -367,7 +416,9 @@
 
                 //Validamos que no hay filas repetidas
                 validarCategorias();
+ 
             });  
+            
             //Remover categorias al click
             $(document).on('click', '.btn_remove', function(){  
 
@@ -428,6 +479,24 @@
             });
             
             $('.toggleswitch').bootstrapToggle();
+
+            $("#categoriasDeCurso").select2({
+                placeholder: 'Seleccione la Facultad o Dependencia para asociar este periodo lectivo',
+            });
+
+            $("#instrumentos").select2({
+                placeholder: "Seleccione los instrumentos a habilitar para esta Categoría / Dependencia",
+            });
+
+            $("#instrumentos").on('change', function(){
+                var selected = $(this).val();
+
+                if(selected != null){
+                    if(selected.indexOf('null')>=0){
+                        $(this).val('null').select2();
+                    }
+                }
+            });
 
             //Init datepicker for date fields if data-datepicker attribute defined
             //or if browser does not handle date inputs

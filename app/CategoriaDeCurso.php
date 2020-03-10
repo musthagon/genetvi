@@ -68,6 +68,9 @@ class CategoriaDeCurso extends Model
         $this->save();
     }
 
+    public function getNombre(){
+        return $this->cvucv_name;
+    }
     public function getCVUCV_NAME(){
         return $this->cvucv_name;
     }
@@ -86,6 +89,24 @@ class CategoriaDeCurso extends Model
         }
 
         return null;
+    }
+
+    public static function CategoriaPorNombre($nombres = []){
+        if($nombres == []){
+            return [];
+        }
+        $list = [];
+        $i=0;
+        foreach($nombres as $index => $nombre){
+            if($nombre){
+                if(!empty($categoria = CategoriaDeCurso::where('cvucv_name',$nombre)->first()) ){
+                    $list[$i] = $categoria;
+                    $i++;
+                }
+            }
+        }
+        return $list;
+
     }
 
 }

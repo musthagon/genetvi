@@ -36,8 +36,21 @@ class PeriodoLectivo extends Model
         return $this->momento_evaluacion_activo_id;
     }
 
+    public function getCategoriaDeCurso(){
+        return $this->categoria_curso_id;
+    }
+
+    public function setCategoriaDeCurso($id){
+        $this->categoria_curso_id = $id;
+        $this->save();
+    }
+
     public function categorias(){
         return $this->hasMany('App\CategoriaDeCurso','periodo_lectivo_id','id');
+    }
+
+    public function CategoriaDeCurso(){
+        return $this->belongsTo('App\CategoriaDeCurso','categoria_curso_id','id');
     }
 
     public function momento_evaluacion_actual(){
