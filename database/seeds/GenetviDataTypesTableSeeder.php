@@ -259,12 +259,14 @@ class GenetviDataTypesTableSeeder extends Seeder
         $this->filldataRow($dataRow,'date','Fecha Fin del Período Lectivo',1,1,1,1,1,1,["display"=>["width"=>"6"],"validation"=>["rule"=>"required"],"description"=>"Fechas de duración del período lectivo. La fecha de fin debe ser mayor a la fecha de inicio"],6);
         $dataRow = $this->dataRow($dataType, 'opciones');
         $this->filldataRow($dataRow,'code_editor','Opciones',0,0,0,0,0,0,'{}',7);
-        $dataRow = $this->dataRow($dataType, 'momento_evaluacion_activo_id');
-        $this->filldataRow($dataRow,'text','Momento Evaluación Activo Id',0,1,1,0,0,0,'{}',8);
+        $dataRow = $this->dataRow($dataType, 'periodos-lectivos_belongsto_momento_evaluacion_relationship');
+        $this->filldataRow($dataRow,'relationship','Momento Evaluación Activo',0,1,1,0,0,0,["model"=>"App\\MomentosEvaluacion","table"=>"momentos_evaluacion","type"=>"belongsTo","column"=>"momento_evaluacion_activo_id","key"=>"id","label"=>"nombre","pivot_table"=>"momentos_evaluacion","pivot"=>"0","taggable"=>"0"],8);
+        $dataRow = $this->dataRow($dataType, 'periodos-lectivos_belongsto_categoriadecurso_relationship');
+        $this->filldataRow($dataRow,'relationship','Facultad/Dependencia',0,1,1,0,0,0,["model"=>"App\\CategoriaDeCurso","table"=>"categorias_cursos","type"=>"belongsTo","column"=>"categoria_curso_id","key"=>"id","label"=>"cvucv_name","pivot_table"=>"categorias_cursos","pivot"=>"0","taggable"=>"0"],9);        
         $dataRow = $this->dataRow($dataType, 'created_at');
-        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',9);
+        $this->filldataRow($dataRow,'timestamp','Created At',0,0,0,0,0,0,'{}',10);
         $dataRow = $this->dataRow($dataType, 'updated_at');
-        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',10);
+        $this->filldataRow($dataRow,'timestamp','Updated At',0,0,0,0,0,0,'{}',11);
 
         $dataType = $this->dataType('slug', 'rol-en-cursos');
         $this->filldataType($dataType,'cursos_participantes_roles','Rol en Cursos','Roles en Cursos','','App\\CursoParticipanteRol','',1,'');

@@ -191,14 +191,12 @@
 
                                     <option value="null" {!! $selected !!}>Ninguno</option>
                                     @foreach($instrumentos as $instrumento)
-                                        <?php $selected = 'selected="selected"'; ?>
+                                        <?php $selected = ''; ?>
 
                                         @if($edit && isset($categoria))
                                             @foreach ($categoria->instrumentos_habilitados as $instrumento_almacenado)
                                                 @if($instrumento_almacenado->getID() == $instrumento->getID()))
                                                     <?php $selected = 'selected="selected"'; ?>
-                                                @else
-                                                    <?php $selected = ''; ?>
                                                 @endif
                                             @endforeach
                                         @endif
@@ -292,7 +290,7 @@
 
                 var index = 1;
 
-                @foreach($momentosAsociados as $momentoAsociado)
+                @foreach($momentosAsociados as $momentoIndex => $momentoAsociado)
 
                     index++;
 
@@ -307,7 +305,7 @@
                     element +=      '</td>';
 
                     element +=      '<td>';
-                    element +=      '<div class="input-group date"> ';
+                    element +=      '<div class="input-group date" id="div_fecha_inicio'+index+'"> ';
                     element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
                     element +=      '       placeholder="Fecha de inicio" ';
                     element +=      '       value="{{ date("m-d-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_inicio()) ) }}"> ';
@@ -318,7 +316,7 @@
                     element +=      '</td>';
 
                     element +=      '<td>';
-                    element +=      '<div class="input-group date"> ';
+                    element +=      '<div class="input-group date" id="div_fecha_fin'+index+'"> ';
                     element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
                     element +=      '       placeholder="Fecha de fin" ';
                     element +=      '       value="{{ date("m-d-Y H:i:s",strtotime( $momentoAsociado->pivot->get_fecha_fin()) ) }}"> ';
@@ -352,73 +350,93 @@
             @endif
         }
 
+        function agregarMomentoEvaluacion(){  
+            index++;
+            var element = '';
+            element += '<tr id="row'+index+'">';
+            element +=      '<td class="form-group">';
+            element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="momento_evaluacion[0][]">';
+            @foreach($momentos as $momento)
+                element +=              '<option target="'+index+'" class="opcion_indicador " value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>';
+            @endforeach
+            element +=          '</select>';
+            element +=      '</td>';
+
+            element +=      '<td>';
+            element +=      '<div class="input-group date" id="div_fecha_inicio'+index+'"> ';
+            element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
+            element +=      '       placeholder="Fecha de inicio" >';
+            element +=      '   <span class="input-group-addon"> ';
+            element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
+            element +=      '    </span> ';
+            element +=      '</div> ';
+            element +=      '</td>';
+
+            element +=      '<td>';
+            element +=      '<div class="input-group date" id="div_fecha_fin'+index+'"> ';
+            element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
+            element +=      '       placeholder="Fecha de fin" >';
+            element +=      '   <span class="input-group-addon"> ';
+            element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
+            element +=      '    </span> ';
+            element +=      '</div> ';
+            element +=      '</td>';
+
+            element +=      '<td>';
+            element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" placeholder="Opciones de Configuración"/>';
+            element +=      '</td>';
+            element +=      '<td>';
+            element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
+            element +=      '</td>';
+            element += '</tr>';
+
+            //Agregamos en la penultima fila
+            $('#dynamic_field tr:last').before(element);
+
+            //Instanciamos select
+            $('#select'+index).select2();
+
+            //Instanciamos el data picker
+            $picker = $('.date');
+            $picker.datetimepicker({
+                format: 'MM/DD/YYYY, h:mm a',
+                locale: 'es'
+            });
+
+            $picker.datetimepicker().on('dp.show', function() {
+                $(this).closest('.table-responsive').removeClass('table-responsive').addClass('temp');
+                }).on('dp.hide', function() {
+                    $(this).closest('.temp').addClass('table-responsive').removeClass('temp')
+            });
+
+            //Validamos que no hay filas repetidas
+            validarCategorias();
+
+        }
+                
         $('document').ready(function () {
-            index = actualizarMomentosAsociadas();
-            //Agregar categorias al click
-            $('#add').click(function(){  
-                index++;
-                var element = '';
-                element += '<tr id="row'+index+'">';
-                element +=      '<td class="form-group">';
-                element +=          '<select id="select'+index+'" class="form-control select2 select2_categorias" name="momento_evaluacion[0][]">';
-                @foreach($momentos as $momento)
-                    element +=              '<option target="'+index+'" class="opcion_indicador " value="{{$momento->getId()}}">{{$momento->getNombre()}}</option>';
-                @endforeach
-                element +=          '</select>';
-                element +=      '</td>';
-
-                element +=      '<td>';
-                element +=      '<div class="input-group date" id="div_fecha_inicio'+index+'"> ';
-                element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[1][]" id="fecha_inicio'+index+'" ';
-                element +=      '       placeholder="Fecha de inicio" >';
-                element +=      '   <span class="input-group-addon"> ';
-                element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
-                element +=      '    </span> ';
-                element +=      '</div> ';
-                element +=      '</td>';
-
-                element +=      '<td>';
-                element +=      '<div class="input-group date" id="div_fecha_fin'+index+'"> ';
-                element +=      '   <input type="text" class="form-control name_list" name="momento_evaluacion[2][]" id="fecha_fin'+index+'" ';
-                element +=      '       placeholder="Fecha de fin" >';
-                element +=      '   <span class="input-group-addon"> ';
-                element +=      '       <span class="glyphicon glyphicon-calendar"></span> ';
-                element +=      '    </span> ';
-                element +=      '</div> ';
-                element +=      '</td>';
-
-                element +=      '<td>';
-                element +=          '<input id="code'+index+'" class="form-control name_list" type="text" name="momento_evaluacion[3][]" placeholder="Opciones de Configuración"/>';
-                element +=      '</td>';
-                element +=      '<td>';
-                element +=          '<button type="button" name="remove" target="'+index+'" id="btn_remove'+index+'" class="btn btn-danger btn_remove"><i class="voyager-trash"></i>Eliminar</button>';
-                element +=      '</td>';
-                element += '</tr>';
-
-                //Agregamos en la penultima fila
-                $('#dynamic_field tr:last').before(element);
-
-                //Instanciamos select
-                $('#select'+index).select2();
-
-                //Instanciamos el data picker
-                let $picker = $('.date');
-                $picker.datetimepicker({
-                    format: 'MM/DD/YYYY, h:mm a',
-                    locale: 'es'
-                });
-
-                $picker.datetimepicker().on('dp.show', function() {
-                    $(this).closest('.table-responsive').removeClass('table-responsive').addClass('temp');
-                    }).on('dp.hide', function() {
-                        $(this).closest('.temp').addClass('table-responsive').removeClass('temp')
-                });
-
-                //Validamos que no hay filas repetidas
-                validarCategorias();
- 
-            });  
             
+            index = actualizarMomentosAsociadas();
+            
+            //Agregar categorias al click
+            $('#add').click( function(){
+                agregarMomentoEvaluacion();
+            } );
+            
+            //Instanciamos el data picker
+            $picker = $('.date');
+            $picker.datetimepicker({
+                format: 'MM/DD/YYYY, h:mm a',
+                locale: 'es'
+            });
+
+            $picker.datetimepicker().on('dp.show', function() {
+                $(this).closest('.table-responsive').removeClass('table-responsive').addClass('temp');
+                }).on('dp.hide', function() {
+                    $(this).closest('.temp').addClass('table-responsive').removeClass('temp')
+            });
+            
+
             //Remover categorias al click
             $(document).on('click', '.btn_remove', function(){  
 
@@ -496,22 +514,6 @@
                         $(this).val('null').select2();
                     }
                 }
-            });
-
-            //Init datepicker for date fields if data-datepicker attribute defined
-            //or if browser does not handle date inputs
-            //$('.date').datetimepicker();
-
-            let $picker = $('.date');
-            $picker.datetimepicker({
-                format: 'MM/DD/YYYY, h:mm a',
-                locale: 'es'
-            });
-
-            $picker.datetimepicker().on('dp.show', function() {
-                $(this).closest('.table-responsive').removeClass('table-responsive').addClass('temp');
-                }).on('dp.hide', function() {
-                    $(this).closest('.temp').addClass('table-responsive').removeClass('temp')
             });
 
 

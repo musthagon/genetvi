@@ -66,9 +66,6 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('gestion/{id}', 'AdminController@gestion')->name('gestion.evaluaciones2');
     Route::get('gestion/{id}/sincronizar', 'AdminController@gestion_sincronizar')->name('gestion.sincronizar');
     Route::get('gestion/{id}/sincronizar_categorias', 'AdminController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
-    Route::get('gestion/{id}/gestionar_evaluacion', 'AdminController@gestionar_evaluacion_categoria')->name('gestion.evaluacion_categoria');
-    Route::post('gestion/{id}/gestionar_evaluacion/store', 'AdminController@gestionar_evaluacion_categoria_store')->name('gestion.evaluacion_categoria_store');
-    Route::put('gestion/{id}/gestionar_evaluacion/edit', 'AdminController@gestionar_evaluacion_categoria_edit')->name('gestion.evaluacion_categoria_edit');
 
     //Cursos charts, dashboards, estadísticas
     Route::get('gestion/{categoria_id}/curso_{curso_id}/', 'ChartsController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');

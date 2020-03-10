@@ -43,7 +43,7 @@ class Kernel extends ConsoleKernel
             
             $momento_evaluacion1 = $periodo->getMomento_evaluacion_activo_id();
             $momento_evaluacion2 = $periodo->actualizarMomentoEvaluacion();
-            //if($periodo->cambioMomentoEvaluacion($momento_evaluacion1, $momento_evaluacion2)){
+            if($periodo->cambioMomentoEvaluacion($momento_evaluacion1, $momento_evaluacion2)){
              //   echo "Periodo: ".$periodo->id." invitacion masiva ";
                 //Deshabilitamos el momento evaluacion anterior
                 //Realizamos las invitaciones al proximo periodo
@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
 
                 $periodo->invitacionMasivaAutomatica();
                 
-            //}
+            }
         }
 
     }

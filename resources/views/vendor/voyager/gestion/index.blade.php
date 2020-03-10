@@ -155,12 +155,6 @@
                                                         </a>
                                                         @endif  
 
-                                                        @if (Gate::allows('checkCategoryPermissionSisgeva', ['habilitar_evaluacion_',$categoria->cvucv_name]  ))
-                                                        <a href="{{ route('gestion.evaluacion_categoria', ['id' => $categoria->id]) }}" title="Evaluación" class="btn btn-sm btn-warning" style="margin-right: 5px;">
-                                                            <i class="voyager-edit"></i> Evaluación
-                                                        </a>
-                                                        @endif 
-
                                                     @endif
                                                 @else
                                                     @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))

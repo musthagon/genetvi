@@ -92,6 +92,9 @@ class Instrumento extends Model
         return false;
     }
 
+    public function getHabilitado(){
+        return $this->habilitar;
+    }
     public function getNombre(){
         return $this->nombre;
     }
@@ -121,4 +124,17 @@ class Instrumento extends Model
         return $this->invitacion_automatica;
     }
 
+    public static function instrumentosDisponibles(){
+        $disponibles = [];
+
+        $instrumentos = Instrumento::all();
+
+        foreach($instrumentos as $instrumento){
+            if($instrumento->esValido() && $instrumento->getHabilitado()){
+                $disponibles[] = $instrumento;
+            }
+        }
+
+        return $disponibles;
+    }
 }

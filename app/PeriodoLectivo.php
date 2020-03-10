@@ -154,4 +154,18 @@ class PeriodoLectivo extends Model
             }
         }
     }
+
+    public static function getPeriodosLectivosDisponibles($periodos_lectivos, $categoriasDeCurso){
+        $periodos_disponibles = [];
+
+        foreach($periodos_lectivos as $periodoActual){
+            foreach($categoriasDeCurso as $categoria){
+                if($periodoActual->getCategoriaDeCurso() == $categoria->getID() ){
+                    $periodos_disponibles[] = $periodoActual;
+                }
+            }
+        }
+        
+        return $periodos_disponibles;
+    }
 }
