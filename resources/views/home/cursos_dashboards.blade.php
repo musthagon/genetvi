@@ -8,11 +8,6 @@
 @stop
 
 @section('content')
-    <div class="container-fluid">
-        
-        @include('dashboards.revisiones_publicas')
-    
-    </div>
 
     @include('dashboards.general_main_content')
 

@@ -113,9 +113,9 @@ class HomeController extends Controller
             $promedioPonderacionCurso2,
             $dashboards_subtitle);
         
-        $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
+        //$momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
 
-        $ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
+        //$ruta_revisiones_publicas = 'mis_cursos.visualizar_resultados_curso.respuesta_publica';
 
         $informacion_pagina['titulo']       = "Estadísticas del Curso ".$curso->getNombre();
         $informacion_pagina['descripcion']  = "Aquí se muestran algunas estadísticas referente a la evaluación de este curso";
@@ -136,8 +136,6 @@ class HomeController extends Controller
             'cantidadEvaluacionesRechazadasCursoCharts2',
             'promedioPonderacionCurso2',
             'dashboards_subtitle',
-            'ruta_revisiones_publicas',
-            'momentos_evaluacion_collection',
             'informacion_pagina'
         ));
 
