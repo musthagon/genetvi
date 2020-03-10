@@ -182,6 +182,7 @@
                             
                             
                             <div class="form-group  col-md-12 ">
+                                <legend class="text-center" style="background-color: #f0f0f0;padding: 5px;">Instrumentos a Habilitar para este Periodo Léctivo</legend>
                                 <label class="control-label" for="name">Instrumentos a habilitar</label>
                                 <select id="instrumentos" class="form-control select2" name="instrumentos[]" multiple required>
                                     <?php $selected = ''; ?>

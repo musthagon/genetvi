@@ -82,10 +82,11 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('gestion/curso/{id}/finalizar_evaluacion/', 'AdminController@cerrar_evaluacion_curso')->name('curso_cerrar_evaluacion_curso');
     Route::get('gestion/{categoria_id}/curso_{curso_id}/estatus_evaluacion/', 'AdminController@estatus_evaluacion_curso')->name('curso_estatus_evaluacion_curso');
     Route::post('gestion/curso/{id}/estatus_evaluacion/invitar_evaluacion', 'AdminController@invitar_evaluacion_curso')->name('curso_invitar_evaluacion_curso');
-
     Route::get('gestion/curso/{id}/enviar_recordatorio/{invitacion}', 'AdminController@enviar_recordatorio')->name('curso_enviar_recordatorio');
     Route::get('gestion/curso/{id}/revocar_invitacion/{invitacion}', 'AdminController@revocar_invitacion')->name('curso_revocar_invitacion');
 
+    Route::get('periodos-lectivos/evaluacion/habilitar/', 'Voyager\PeriodoLectivoController@habilitar_periodo_lectivo')->name('habilitar_periodo_lectivo');
+    Route::get('periodos-lectivos/evaluacion/deshabilitar/', 'Voyager\PeriodoLectivoController@deshabilitar_periodo_lectivo')->name('deshabilitar_periodo_lectivo');
     //Get users ajax
     Route::get('campus_users', 'AdminController@campus_users')->name('campus_users');
  });

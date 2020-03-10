@@ -161,7 +161,7 @@ class PeriodoLectivoController extends VoyagerBaseController
             $categoriasDeCurso = CategoriaDeCurso::CategoriaPorNombre($this->buscarRoles($this->permissionHabilitarEvaluacion));
             $dataTypeContent = PeriodoLectivo::getPeriodosLectivosDisponibles($dataTypeContent,$categoriasDeCurso);
         }
-        
+
         return Voyager::view($view, compact(
             'actions',
             'dataType',
@@ -426,7 +426,9 @@ class PeriodoLectivoController extends VoyagerBaseController
             
             //Colocar en CRON KERNEL *********************
             //Activamos el periodo lectivo
-            $categoria->setPeriodoLectivo($id);
+            if($categoria->getPeriodoLectivo() == null){
+                $categoria->setPeriodoLectivo($id);
+            }
             
             $categoria->instrumentos_habilitados()->detach();
             if (isset($request->instrumentos)){
@@ -681,7 +683,11 @@ class PeriodoLectivoController extends VoyagerBaseController
             
             //Colocar en CRON KERNEL *********************
             //Activamos el periodo lectivo
-            $categoria->setPeriodoLectivo($periodo_lectivo->getID());
+            if($categoria->getPeriodoLectivo() == null){
+                $categoria->setPeriodoLectivo($periodo_lectivo->getID());
+            }
+            
+
             $categoria->instrumentos_habilitados()->detach();
             if (isset($request->instrumentos)){
                 foreach($request->instrumentos as $instrumentoRequest){
@@ -711,5 +717,80 @@ class PeriodoLectivoController extends VoyagerBaseController
             ]);
     }
 
+    /**
+     * Habilitar periodo lectivo
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return boolean
+     */
+    public function habilitar_periodo_lectivo(Request $request){
+        $categoria = CategoriaDeCurso::find($request->categoria_id);
 
+        if(empty($categoria)){
+            return redirect()->back()->with(['message' => "La facultad/dependencia no existe. Intente, sincronizarla o comuníquese con el administrador de la plataforma", 'alert-type' => 'error']);
+        }
+
+        if($categoria->cvucv_category_parent_id != 0){
+            return redirect()->back()->with(['message' => "Error, la facultad/dependencia no corresponde a una categoría principal. Por favor, comuníqueselo con el administrador de la plataforma", 'alert-type' => 'error']);
+        }
+
+        $categoriasDisponibles = $this->buscarRoles($this->permissionHabilitarEvaluacion);
+        $tieneAcceso = false;
+        foreach($categoriasDisponibles as $categoriaDisponible){
+            if( $categoriaDisponible == $categoria->getNombre() ){
+                $tieneAcceso = true;
+                break;
+            }
+        }
+        
+        if(!$tieneAcceso){
+            return redirect()->back()->with(['message' => "Error, no puede realizar esta acción", 'alert-type' => 'error']);
+        }
+
+        $periodo_lectivo = PeriodoLectivo::find($request->periodo_lectivo_id);
+
+        if(empty($periodo_lectivo)){
+            return redirect()->back()->with(['message' => "Error, el periodo léctivo no existe", 'alert-type' => 'error']);
+        }
+
+        $categoria->setPeriodoLectivo($periodo_lectivo->getID());
+
+        return redirect()->back()->with(['message' => "Periodo lectivo activado", 'alert-type' => 'success']);
+    }
+
+    public function deshabilitar_periodo_lectivo(Request $request){
+        $categoria = CategoriaDeCurso::find($request->categoria_id);
+        
+        if(empty($categoria)){
+            return redirect()->back()->with(['message' => "La facultad/dependencia no existe. Intente, sincronizarla o comuníquese con el administrador de la plataforma", 'alert-type' => 'error']);
+        }
+        
+        if($categoria->cvucv_category_parent_id != 0){
+            return redirect()->back()->with(['message' => "Error, la facultad/dependencia no corresponde a una categoría principal. Por favor, comuníqueselo con el administrador de la plataforma", 'alert-type' => 'error']);
+        }
+
+        $categoriasDisponibles = $this->buscarRoles($this->permissionHabilitarEvaluacion);
+        $tieneAcceso = false;
+        foreach($categoriasDisponibles as $categoriaDisponible){
+            if( $categoriaDisponible == $categoria->getNombre() ){
+                $tieneAcceso = true;
+                break;
+            }
+        }
+        
+        if(!$tieneAcceso){
+            return redirect()->back()->with(['message' => "Error, no puede realizar esta acción", 'alert-type' => 'error']);
+        }
+
+        $periodo_lectivo = PeriodoLectivo::find($request->periodo_lectivo_id);
+
+        if(empty($periodo_lectivo)){
+            return redirect()->back()->with(['message' => "Error, el periodo léctivo no existe", 'alert-type' => 'error']);
+        }
+
+        $categoria->setPeriodoLectivo(null);
+
+        return redirect()->back()->with(['message' => "Periodo lectivo deshabilitado", 'alert-type' => 'success']);
+    }   
 }
