@@ -81,7 +81,7 @@
 
                             <div class="page-title-content">
                                 <h1 class="page-title page-title-custom">
-                                    <i class="icon voyager-settings"></i>Evaluadores invitados al curso {{$curso->cvucv_fullname}}.
+                                    <i class="icon voyager-settings"></i>Evaluadores del curso {{$curso->cvucv_fullname}}.
                                 </h1>
                             </div>
                         
