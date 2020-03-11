@@ -29,13 +29,12 @@
 
                     <div id="collapse-card-1" class="collapse show" aria-labelledby="card-1" data-parent="#accordion">
                     <div class="card-body">
-                        Los coordinadores tienen acceso a este panel administrativo con el objetivo de hacer seguimiento el proceso de evaluación de los EVA de cada una de sus dependencias, siguiendo los siguientes pasos:
+                        Los Coordinadores EaD de la UCV pueden acceder al panel administrativo con el objetivo de hacer seguimiento al proceso de evaluación de los EVA de cada una de sus facultades o dependencias, siguiendo los siguientes pasos:
                         <ol>
-                            <li>Verificar que se configuró el periodo lectivo de su dependencia. En la sección de <a href="{{route('voyager.periodos-lectivos.index')}}" target="_blank">/Evaluación/Periodos Lectivos</a></li>
-                            <li>Sincronizar las categorias y cursos que se van a evaluar. En la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CVUCV</a> </li>
-                            <li>Configurar el periodo lectivo y los instrumentos de evaluación a usar. En la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CVUCV</a></li>
-                            <li>Por último, iniciar la evaluación de los cursos. En la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CVUCV dentro de las categorías específicas que se desean evaluar</a></li>
-                        </ol>
+                            <li>Configurar el periodo lectivo de su facultad o dependencia. En la sección de <a href="{{route('voyager.periodos-lectivos.index')}}" target="_blank">/Evaluación/Periodos Lectivos</a></li>
+                            <li>Sincronizar las categorías y/o cursos que se van a evaluar en el periodo lectivo previamente seleccionado. Navegando por cada una de las categorías dentro de su facultad o dependencia en la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CV-UCV</a> </li>
+                            <li>Por último, buscar los respectivos cursos a evaluar y activar la función “ iniciar la evaluación”. Navegando por cada una de las categorías dentro de su facultad o dependencia en la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CV-UCV</a></li>
+                        </ol>       
                     </div>
                     </div>
                 </div>
@@ -43,12 +42,12 @@
                 <div class="card">
                     <div class="card-header" id="card-2">
                     <h5 class="mb-0">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse-card-2" aria-expanded="false" aria-controls="collapse-card-2">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-card-2" aria-expanded="true" aria-controls="collapse-card-2">
                         Cualquier duda adicional
                         </button>
                     </h5>
                     </div>
-                    <div id="collapse-card-2" class="collapse" aria-labelledby="card-2" data-parent="#accordion">
+                    <div id="collapse-card-2" class="collapse show" aria-labelledby="card-2" data-parent="#accordion">
                     <div class="card-body">
                         Contáctar a la Gerencia del SEDUCV, correo electrónico: seducv@gmail.com Teléfonos: 0212-605-45-86
                     </div>

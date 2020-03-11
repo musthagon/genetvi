@@ -178,7 +178,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <a href="{{ route('home') }}"><span class="logo-lg"><b><img src="/img/LogoGENETVI_HORIZONTAL2_200px_50px.png" ></b></span></a>
     </div>
     <!-- Default to the left -->
-    <strong><a target="_blank" href="https://campusvirtual.ucv.ve/moodle/mod/page/view.php?id=13">SEDUCV</a> 2019.</strong>
+    <strong>Gerencia del SEDUCV, correo electrónico: seducv@gmail.com Teléfonos: 0212-605-45-86 <a target="_blank" href="https://campusvirtual.ucv.ve/moodle/mod/page/view.php?id=13">SEDUCV</a> 2020.</strong>
 
     <a rel="license" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html"></a><br />Este obra está bajo una licencia <a rel="license" target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a>.
     

@@ -47,7 +47,9 @@ class HomeController extends Controller
         $informacion_pagina['titulo']       = "Bienvenido al Sistema";
         $informacion_pagina['descripcion']  = "El propósito de la aplicación es la gestión de la evaluación de los entornos virtuales de aprendizaje del CV-UCV";
 
-        return view('home.principal', compact('evaluacionesPendientes','informacion_pagina'));
+        $esCoordinador = $this->buscarRol($this->permissionVer) ;
+
+        return view('home.principal', compact('evaluacionesPendientes','informacion_pagina','esCoordinador'));
     }
 
     public function cursos(){   

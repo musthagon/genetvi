@@ -99,7 +99,31 @@
         <!-- /.tab-content -->
       </div>
 
+      @if($esCoordinador != null)
+      <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+          <li class="pull-left header">
+            <p class="fa fa-th"></p>Instrucciones para Coordinadores EaD
+          </li>
+          <li class="active">
+            <a href="#c_tab_1_1" data-toggle="tab" aria-expanded="true">Bienvenido a GENETVI</a>
+          </li>             
+        </ul>
+        <div class="tab-content">
+        <div class="tab-pane active" id="c_tab_1_1">
+          Los Coordinadores EaD de la UCV pueden acceder al panel administrativo con el objetivo de hacer seguimiento al proceso de evaluación de los EVA de cada una de sus facultades o dependencias, siguiendo los siguientes pasos:
+          <ol>
+              <li>Configurar el periodo lectivo de su facultad o dependencia. En la sección de <a href="{{route('voyager.periodos-lectivos.index')}}" target="_blank">/Evaluación/Periodos Lectivos</a></li>
+              <li>Sincronizar las categorías y/o cursos que se van a evaluar en el periodo lectivo previamente seleccionado. Navegando por cada una de las categorías dentro de su facultad o dependencia en la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CV-UCV</a> </li>
+              <li>Por último, buscar los respectivos cursos a evaluar y activar la función “ iniciar la evaluación”. Navegando por cada una de las categorías dentro de su facultad o dependencia en la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CV-UCV</a></li>
+          </ol>       
+        </div>
+        <!-- /.tab-pane -->
 
+        </div>
+        <!-- /.tab-content -->
+      </div>
+      @endif
 
   </section>
 @stop

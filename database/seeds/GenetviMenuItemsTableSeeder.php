@@ -41,7 +41,7 @@ class GenetviMenuItemsTableSeeder extends Seeder
         $EvaluacionItem = $this->fillItem($menu->id, 'Evaluación', '', '', '_self','voyager-calendar', '#0080ff', null, 7);
             $this->fillItem($menu->id, 'Periodos Lectivos','','voyager.periodos-lectivos.index', '_self','', '#000000', $EvaluacionItem, 1);
             $this->fillItem($menu->id, 'Momentos para las Evaluaciones','','voyager.momentos-evaluacion.index', '_self','', '#000000', $EvaluacionItem, 2);
-        $this->fillItem($menu->id, 'Cursos del CVUCV',  '', 'gestion.evaluaciones', '_self','voyager-hammer', '#ffff00', null, 8);  
+        $this->fillItem($menu->id, 'Cursos del CV-UCV',  '', 'gestion.evaluaciones', '_self','voyager-hammer', '#ffff00', null, 8);  
 
         //Menu Usuario
         $user_menu = Menu::firstOrCreate([
