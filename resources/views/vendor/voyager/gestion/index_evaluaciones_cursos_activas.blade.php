@@ -19,8 +19,6 @@
             <p style="border-radius:4px; padding:20px; background:#fff; margin:0; color:#999; text-align:center;">
                 <code>Información sobre los Cursos del CV-UCV</code> 
                 <ul>
-                    <li>Puedes ver los <a href="{{ route('gestion.evaluaciones_cursos_activas') }}">cursos en evaluación</a>. O navegar por cada una de las categorías en esta página</li>
-                    <li>¿Qué es sincronizar? Es solicitar la información de cursos y categorías al CV-UCV para mostrarlos en esta página. Si estas buscando un curso/categoría y no aparece aquí, entonces debes sincronizar.</li>
                     <li>¿Qué es "Habilitar Evaluación"? Es permitir la evaluación de ese curso para el periodo lectivo previamente seleccionado. Entonces se enviaran automáticamente  invitaciones a evaluar a los participantes determinados de ese curso. Y podrás asignar evaluadores manualmente si hay instrumentos que lo permitan.</li>
                     <li>¿Qué es "Cerrar Evaluación"? Es no permitir que se realicen más evaluaciones para el periodo lectivo seleccionado y si aún había evaluadores sin evaluar, ya no podrán hacerlo.</li>
                     <li>¿Qué es "Ver Estatus de Evaluación"? Es ver en detalle el estatus de cada uno de los evaluadores (si han leído la evaluación, si la completaron, si la aceptaron o rechazaron,…) También, en este panel podrás invitar a evaluadores de forma manual.</li>
@@ -32,27 +30,28 @@
         <div class="row">
             <div class="col-md-12">
 
-                @if(isset($cursos))
+                @if(isset($cursos_por_categoria) && !empty($cursos_por_categoria))
                     <div class="panel panel-bordered">
                         <div class="panel-body">
 
                             <div class="page-title-content">
                                 <h1 class="page-title page-title-custom">
-                                    <i class="icon voyager-settings"></i> Cursos de {{$informacion_pagina['categorias']}}
+                                    <i class="icon voyager-settings"></i> Cursos Activos
                                 </h1>
                             </div>
-                            @if(!$cursos->isEmpty())
-                                <div class="table-responsive">
-                                    <table id="dataTable" class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Nombre</th>
-                                                <th>Descripción</th>
-                                                <th class="actions text-right">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
+
+                            <div class="table-responsive">
+                                <table id="dataTable" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th class="actions text-right">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($cursos_por_categoria as $cursos)
                                             @foreach($cursos as $curso)
                                             <tr>
                                                 <td>{{$curso->id}}</td>
@@ -93,106 +92,21 @@
                                                 </td>
                                             </tr>
                                             @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @else
-                                <div class="alerts">
-                                    <div class="alert alert-info">
-                                        <strong>No hay cursos disponibles</strong>
-                                    </div>   
-                                </div>
-                            @endif
-                                            
-
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                                                                    
                         </div>
                     </div>
-                @endif   
+                @else
+                    <div class="alerts">
+                        <div class="alert alert-info">
+                            <strong>No hay cursos disponibles</strong>
+                        </div>   
+                    </div>
+                @endif 
                 
-                @if(isset($categorias) && !$categorias->isEmpty())
-                    <div class="panel panel-bordered">
-                        <div class="panel-body">
-
-                                <div class="page-title-content">
-                                    <h1 class="page-title page-title-custom">
-                                        <i class="icon voyager-settings"></i> {{$informacion_pagina['categorias']}}
-                                    </h1>
-                                </div>
-                            
-                                <div class="table-responsive">
-                                    <table id="dataTable2" class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Nombre</th>
-                                                <th>Descripción</th>
-                                                <th class="actions text-right">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($categorias as $categoria)
-                                                <tr>
-                                                    <td>{{$categoria->id}}</td>
-                                                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank"> {{$categoria->cvucv_name}} </a></td>
-                                                    @php
-                                                        $text = $categoria->cvucv_description;
-                                                        preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $match);
-                                                        $links = $match[0];
-                                                        if(!empty($links)){
-                                                            foreach($links as $link){
-                                                                if(strpos($link, env('CVUCV_GET_WEBSERVICE_ENDPOINT2', setting('site.CVUCV_GET_WEBSERVICE_ENDPOINT2')) ) !== false){
-                                                                    $text = str_replace($link, $link."?token=".$wstoken, $text);
-                                                                }
-                                                            }
-                                                        }
-                                                        
-                                                    @endphp
-                                                    
-                                                    <td class="course_summary">{!!$text!!}</td>
-
-                                                    
-                                                    <td class="no-sort no-click" id="bread-actions">
-                                                        
-                                                        @if($categoria->cvucv_coursecount<=0) 
-                                                            @if($categoria->cvucv_category_parent_id>0) 
-                                                                @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))
-                                                                <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
-                                                                    <i class="voyager-list"></i> Sincronizar 
-                                                                </a>
-                                                                @endif 
-                                                            @else
-
-                                                                @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->cvucv_name]  ))
-                                                                <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id, 'categoria_raiz' => true]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
-                                                                    <i class="voyager-list"></i> Sincronizar 
-                                                                </a>
-                                                                @endif  
-
-                                                            @endif
-                                                        @else
-                                                            @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))
-                                                            <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id, 'sync_courses' => true]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
-                                                                <i class="voyager-list"></i> Sincronizar ({{$categoria->cvucv_coursecount}} cursos)
-                                                            </a>
-                                                            @endif
-                                                        @endif
-                                                        
-                                                        <a href="{{ route('gestion.evaluaciones2', ['id' => $categoria->id]) }}" title="Ver" class="btn btn-sm btn-primary" style="margin-right: 5px;">
-                                                            <i class="voyager-eye"></i> Ver
-                                                        </a>
-
-
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            
-                        </div>
-                    </div>
-                @endif
-
             </div>
         </div>
     </div>

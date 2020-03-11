@@ -130,6 +130,38 @@ class AdminController extends Controller
 
         return view('vendor.voyager.gestion.index_courses',compact('cursos','wstoken'));
     }
+    public function gestion_evaluaciones_cursos_activas(){ 
+        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $user = Auth::user();
+
+        $informacion_pagina['descripcion']  = "En esta sección se puede navegar entre las categorías y cursos de la Facultad/Dependencia";
+        $informacion_pagina['categorias']   = "Evaluaciones Activas";
+        $informacion_pagina['cursos']       = "Cursos";
+
+        //Tienen acceso?
+        $categoriasDisponibles = $this->buscarRoles($this->permissionHabilitarEvaluacion);
+        $tieneAcceso = false;
+        $cursos_por_categoria = [];
+        foreach($categoriasDisponibles as $categoriaDisponible){
+
+            $tieneAcceso = true;
+            $cursos_activos_categoria = Curso::CursosEvaluacionesActivas($categoriaDisponible);
+            if(!empty($cursos_activos_categoria)){
+                $cursos_por_categoria[] = $cursos_activos_categoria;
+            }
+            
+        }
+        
+        if(!$tieneAcceso){
+            return redirect()->back()->with(['message' => "Error, no puede realizar esta acción", 'alert-type' => 'error']);
+        }
+        
+        if(empty($cursos_por_categoria)){
+            return redirect()->back()->with(['message' => "No hay cursos en evaluación", 'alert-type' => 'error']);
+        }
+
+        return view('vendor.voyager.gestion.index_evaluaciones_cursos_activas',compact('cursos_por_categoria','wstoken','informacion_pagina'));
+    }
     public function gestion_sincronizar($id, Request $request){
         //Tienen acceso?
         $categoria = CategoriaDeCurso::where('id', $id)->first();

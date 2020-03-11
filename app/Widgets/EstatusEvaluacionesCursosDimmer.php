@@ -42,8 +42,8 @@ class EstatusEvaluacionesCursosDimmer extends BaseDimmer
             'title'  => "{$string}",
             'text'   => "{$string2}Estado de Todas las Evaluaciones hasta el momento",
             'button' => [
-                'text' => __('Ver listado de cursos'),
-                'link' => route('gestion.evaluaciones'),
+                'text' => __('Ver listado de cursos en evaluación'),
+                'link' => route('gestion.evaluaciones_cursos_activas'),
             ],
             'image' => asset('img/widgets/cursos2.png'),
         ]));

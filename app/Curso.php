@@ -157,7 +157,7 @@ class Curso extends Model
         
     }
 
-    public static function CursosEvaluacionesActivas($nombre = null){
+    public static function CantidadCursosEvaluacionesActivas($nombre = null){
         if($nombre == null){
             return Curso::where('evaluacion_activa','1')
             ->count();
@@ -173,6 +173,24 @@ class Curso extends Model
         }
 
         return $count;
+    }
+
+    public static function CursosEvaluacionesActivas($nombre = null){
+        if($nombre == null){
+            return Curso::where('evaluacion_activa','1')
+            ->get();
+        }
+
+        $cursos = Curso::where('evaluacion_activa','1')->get();
+        $id_categoria_padre = CategoriaDeCurso::getCategoriaPorNombre($nombre);
+        $cursos_evaluaciones_activas = [];
+        foreach($cursos as $curso){
+            if($curso->categoria->categoria_raiz->getID() == $id_categoria_padre){
+                $cursos_evaluaciones_activas[] = $curso;
+            }
+        }
+
+        return $cursos_evaluaciones_activas;
     }
 
 }

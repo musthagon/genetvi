@@ -67,6 +67,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('gestion/{id}/sincronizar', 'AdminController@gestion_sincronizar')->name('gestion.sincronizar');
     Route::get('gestion/{id}/sincronizar_categorias', 'AdminController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
 
+    //Evaluaciones de Cursos activas
+    Route::get('evaluaciones_cursos_activas', 'AdminController@gestion_evaluaciones_cursos_activas')->name('gestion.evaluaciones_cursos_activas');
+
     //Cursos charts, dashboards, estadísticas
     Route::get('gestion/{categoria_id}/curso_{curso_id}/', 'ChartsController@visualizar_resultados_curso')->name('curso.visualizar_resultados_curso');
     Route::get('gestion/{categoria_id}/curso_{curso_id}/respuesta', 'ChartsController@visualizar_resultados_curso_respuesta_publica')->name('curso.visualizar_resultados_curso.respuesta_publica');

@@ -42,6 +42,17 @@
 @section('content')
     <div class="page-content browse container-fluid">
         @include('voyager::alerts')
+
+        <div class="analytics-container">
+            <p style="border-radius:4px; padding:20px; background:#fff; margin:0; color:#999; text-align:center;">
+                <code>Información sobre los periodos lectivos</code> 
+                <ul>
+                    <li>Cuando tengan varios periodos lectivos, deben habilitar el que van a usar para el momento actual</li>
+                    <li>Al habilitar un periodo lectivo con instrumentos de evaluación automáticos, y cuando la fecha actual se acerque a la de un momento de evaluación configurado, entonces se enviaran los enlaces de invitaciones a evaluar a los evaluadores seleccionados para cada curso de forma automática </li>
+                </ul>
+            </p>
+        </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-bordered">

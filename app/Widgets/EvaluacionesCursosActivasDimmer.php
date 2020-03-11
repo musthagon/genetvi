@@ -25,10 +25,11 @@ class EvaluacionesCursosActivasDimmer extends BaseDimmer
      */
     public function run()
     {
-        $count = Curso::CursosEvaluacionesActivas();
         
         if( !auth()->user()->hasRole('admin') ){
-            $count = Curso::CursosEvaluacionesActivas($this->buscarRol($this->permissionVer));
+            $count = Curso::CantidadCursosEvaluacionesActivas($this->buscarRol($this->permissionVer));
+        }else{
+            $count = Curso::CantidadCursosEvaluacionesActivas();
         }
 
         $string = 'Cursos en Proceso de Evaluación';
@@ -38,8 +39,8 @@ class EvaluacionesCursosActivasDimmer extends BaseDimmer
             'title'  => "{$count} {$string}",
             'text'   => 'Total de cursos en evaluación',
             'button' => [
-                'text' => __('Ver listado de cursos'),
-                'link' => route('gestion.evaluaciones'),
+                'text' => __('Ver listado de cursos en evaluación'),
+                'link' => route('gestion.evaluaciones_cursos_activas'),
             ],
             'image' => asset('img/widgets/cursos.png'),
         ]));
