@@ -67,7 +67,7 @@
             <div class="clearfix">
                 <div class="col-sm-12 col-md-10 col-md-offset-2">
                     <div class="logo-title-container">
-                        <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{asset('img/LogoGENETVI_rombo.png')}}" alt="Logo Icon">
+                        <img class="img-responsive pull-left logo hidden-xs" src="{{asset('img/LogoGENETVI_rombo.png')}}" alt="Logo Icon">
 
                         <div class="copy animated fadeIn">
                             <h1>{{ Voyager::setting('admin.title', 'Voyager') }}</h1>
@@ -174,10 +174,18 @@
                     <div class="text-muted">Gracias a: </div>
                     
                     <div class="logos-icon">
-                        <a href="http://www.ucv.ve" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoUCV.png')}}" alt="Logo Icon"></a>
-                        <a href="http://www.ucv.ve/docencia/sistema-de-educacion-a-distancia/seducv.html" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoSEDUCV.png')}}" alt="Logo Icon"></a>
-                        <a href="http://www.ciens.ucv.ve/" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoFacultadDeCienciasUCV.png')}}" alt="Logo Icon"></a>
-                        <a href="http://www.ciens.ucv.ve/ciens/computacion/" target="_blank"><img class="flip animated fadeIn" src="{{asset('img/LogoEscuelaDeComputacionUCV.png')}}" alt="Logo Icon"></a>
+                        <a href="http://www.ucv.ve" target="_blank">
+                            <img class="" src="{{asset('img/LogoUCV.png')}}" alt="Logo Icon">
+                        </a>
+                        <a href="http://www.ucv.ve/docencia/sistema-de-educacion-a-distancia/seducv.html" target="_blank">
+                            <img class="" src="{{asset('img/LogoSEDUCV.png')}}" alt="Logo Icon">
+                        </a>
+                        <a href="http://www.ciens.ucv.ve/" target="_blank">
+                            <img class="" src="{{asset('img/LogoFacultadDeCienciasUCV.png')}}" alt="Logo Icon">
+                        </a>
+                        <a href="http://www.ciens.ucv.ve/ciens/computacion/" target="_blank">
+                            <img class="" src="{{asset('img/LogoEscuelaDeComputacionUCV.png')}}" alt="Logo Icon">
+                        </a>
                     </div>
 
                     <a class="instrucciones pull-right" href="#creditos">
