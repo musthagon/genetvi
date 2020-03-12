@@ -116,7 +116,13 @@
               <li>Configurar el periodo lectivo de su facultad o dependencia. En la sección de <a href="{{route('voyager.periodos-lectivos.index')}}" target="_blank">/Evaluación/Periodos Lectivos</a></li>
               <li>Sincronizar las categorías y/o cursos que se van a evaluar en el periodo lectivo previamente seleccionado. Navegando por cada una de las categorías dentro de su facultad o dependencia en la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CV-UCV</a> </li>
               <li>Por último, buscar los respectivos cursos a evaluar y activar la función “ iniciar la evaluación”. Navegando por cada una de las categorías dentro de su facultad o dependencia en la sección de <a href="{{route('gestion.evaluaciones')}}" target="_blank">Cursos del CV-UCV</a></li>
-          </ol>       
+          </ol>  
+
+          <p>Video Explicativo del Proceso de Evaluación:</p>
+          <div class="video">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Z5Y0ZDthbBQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+     
         </div>
         <!-- /.tab-pane -->
 
