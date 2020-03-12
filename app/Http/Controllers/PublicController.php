@@ -172,7 +172,7 @@ class PublicController extends Controller
             unset($request);
 
             if($instrumento->getPuedeRechazar() && !$acepto){
-                return $this->message("Hasta la próxima!", "warning");
+                return $this->message("¡Hasta la próxima!", "Muchas gracias");
             }else{            
                 return redirect()->route('evaluacion_link', ['token' => $token,'preview' => true, 'preview2' => true]);
             }
@@ -252,7 +252,7 @@ class PublicController extends Controller
         unset($request);
 
         if($instrumento->getPuedeRechazar() && !$acepto){
-            return $this->message("Hasta la próxima!", "warning");
+            return $this->message("¡Hasta la próxima!", "Muchas gracias");
         }else{            
             return redirect()->route('evaluacion_link', ['token' => $token]);
         }
@@ -324,7 +324,7 @@ class PublicController extends Controller
         if($preview){
             unset($request);
 
-            return $this->message("Evaluacion al curso Nombre del Curso realizada satisfactoriamente", "success");
+            return $this->message("Evaluacion al curso Nombre del Curso realizada satisfactoriamente", "Su evaluación se ha realizado con éxito");
         }
         
         $categoria_raiz             = $curso->categoria->categoria_raiz;
@@ -405,7 +405,7 @@ class PublicController extends Controller
         
         unset($request);
 
-        return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "success");
+        return $this->message("Evaluacion al curso ".$curso->cvucv_fullname." realizada satisfactoriamente", "Su evaluación se ha realizado con éxito");
 
     }
     public function message($message, $alert_type){

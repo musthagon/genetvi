@@ -203,7 +203,16 @@
                   }
               });
 
-              $('a[href$="#finish"]').text("Enviar");
+              @if(!$edit && !empty($CategoriasPerfilInstrumento))
+
+                $('a[href$="#finish"]').text("Siguiente");
+
+              @else
+
+                $('a[href$="#finish"]').text("Enviar");
+
+              @endif
+
           @endif
 
           $('.select2').select2({

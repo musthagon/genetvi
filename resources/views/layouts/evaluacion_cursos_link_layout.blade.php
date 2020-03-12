@@ -48,7 +48,9 @@
 
             <div class="center" >
 
-              @if($alert_type=="success")
+              @if($alert_type=="Su evaluación se ha realizado con éxito")
+                <i class="fa fa-check message_font message_icon1"></i>
+              @elseif($alert_type=="Muchas gracias")
                 <i class="fa fa-check message_font message_icon1"></i>
               @else
                 <i class="fa fa-close message_font message_icon2"></i>
