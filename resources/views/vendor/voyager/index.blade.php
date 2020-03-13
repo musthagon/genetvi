@@ -50,7 +50,7 @@
                     </div>
                     <div id="collapse-card-2" class="collapse show" aria-labelledby="card-2" data-parent="#accordion">
                     <div class="card-body">
-                        Contáctar a la Gerencia del SEDUCV, correo electrónico: seducv@gmail.com Teléfonos: 0212-605-45-86
+                        Contactar a la Gerencia del SEDUCV, correo electrónico: seducv@gmail.com Teléfonos: 0212-605-45-86
                     </div>
                     </div>
                 </div>
