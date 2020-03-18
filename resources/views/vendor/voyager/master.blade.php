@@ -27,10 +27,7 @@
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
 
     @yield('css')
-    @if(config('voyager.multilingual.rtl'))
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.css">
-        <link rel="stylesheet" href="{{ voyager_asset('css/rtl.css') }}">
-    @endif
+
 
     <!-- Few Dynamic Styles -->
     <style type="text/css">
@@ -54,8 +51,13 @@
     @endif
 
     <!-- CUSTOM GENETVI CSS -->
-    <link rel="stylesheet" type="text/css" href="/css/voyager/styles.css">
-
+    
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/voyager/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/jbility.css') }}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{asset('adminlte/bower_components/font-awesome/css/font-awesome.min.css')}}">
+    
     @yield('head')
 </head>
 
@@ -119,12 +121,16 @@ if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(ap
         </div>
     </div>
 </div>
+
 @include('voyager::partials.app-footer')
+
+@include('accessibility.partials.jBility')
 
 <!-- Javascript Libs -->
 
-
 <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
+
+<script type="text/javascript" src="{{ asset('js/jbility.js') }}"></script>
 
 <script>
     @if(Session::has('alerts'))
@@ -149,6 +155,7 @@ if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(ap
 @include('voyager::media.manager')
 @yield('javascript')
 @stack('javascript')
+
 @if(!empty(config('voyager.additional_js')))<!-- Additional Javascript -->
     @foreach(config('voyager.additional_js') as $js)<script type="text/javascript" src="{{ asset($js) }}"></script>@endforeach
 @endif

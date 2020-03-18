@@ -42,9 +42,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Select2 -->
   <link rel="stylesheet" href="{{asset('adminlte/bower_components/select2/dist/css/select2.min.css')}}">
 
-  <link rel='stylesheet' href='/css/foundation.min.css'>
+  <link rel="stylesheet" href="{{ asset('css/foundation.min.css') }}">
 
-  
+  <link rel="stylesheet" href="{{ asset('css/jbility.css') }}">
+
   @yield('css')
 
   <link rel="stylesheet" href="{{asset('css/general.css')}}">
@@ -184,6 +185,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     
   </footer>
 
+  @include('accessibility.partials.jBility')
+
 </div>
 <!-- ./wrapper -->
 
@@ -252,6 +255,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       searchPseudoElements: true
    }
 </script>
+
+<script type="text/javascript" src="{{ asset('js/jbility.js') }}"></script>
+
 <script src="{{asset('js/general.js')}}"></script>
 
 @yield('javascript')
