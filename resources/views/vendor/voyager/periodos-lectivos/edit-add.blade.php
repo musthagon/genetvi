@@ -107,6 +107,8 @@
                                     @endforeach
                                 </select>
                             </div>
+                            
+                            @php $slideCount = 0; @endphp
 
                             @foreach($dataTypeRows as $row)
                                 <!-- GET THE DISPLAY OPTIONS -->
@@ -131,10 +133,23 @@
                                     @else
                                         {!! app('voyager')->formField($row, $dataType, $dataTypeContent) !!}
                                     @endif
-
+                                    
                                     @foreach (app('voyager')->afterFormFields($row, $dataType, $dataTypeContent) as $after)
-                                        {!! $after->handle($row, $dataType, $dataTypeContent) !!}
+
+                                        @if(isset($row->details->description))
+                                            <span class="initialism slide1_open glyphicon glyphicon-question-sign"></span>
+
+                                            @php $slideCount++; @endphp
+
+                                            @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => $row->display_name, 'slideNext' => 'slide'.($slideCount+1),
+                                            'slideContent' => $row->details->description])
+ 
+                                        @else
+                                            {!! $after->handle($row, $dataType, $dataTypeContent) !!}
+                                        @endif
+
                                     @endforeach
+
                                     @if ($errors->has($row->field))
                                         @foreach ($errors->get($row->field) as $error)
                                             <span class="help-block">{{ $error }}</span>
@@ -151,11 +166,13 @@
                                             <th><label class="control-label" for="name">Nombre</label></th> 
                                             <th>
                                                 <label class="control-label" for="name">Fecha de Inicio</label>
-                                                <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" data-html="true" title="" data-original-title="La fecha de inicio del momento de evaluación debe estar dentro del rango del período lectivo, y debe ser menor a la fecha de fin. Y si agrega otro momento de evaluación, las fechas deben ser posteriores a el anterior momento"></span>
+                                                @php $slideCount2 = $slideCount + 1; @endphp
+                                                <span class="initialism slide{{$slideCount2}}_open glyphicon glyphicon-question-sign"></span>
+                                                @php $slideCount2++; @endphp
                                             </th>
                                             <th>
                                                 <label class="control-label" for="name">Fecha de Fin</label>
-                                                <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" data-html="true" title="" data-original-title="La fecha de fin del momento de evaluación debe estar dentro del rango del período lectivo, y debe ser mayor a la fecha de inicio. Y si agrega otro momento de evaluación, las fechas deben ser posteriores a el anterior momento"></span>
+                                                <span class="initialism slide{{$slideCount2}}_open glyphicon glyphicon-question-sign"></span>
                                             </th>
                                             <th><label class="control-label" for="name">Opciones</label></th>
                                             <th></th>
@@ -254,6 +271,24 @@
         </div>
     </div>
     <!-- End Delete File Modal -->
+    @php $slideCount++; @endphp
+                                    
+    @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => 'Fecha de Inicio del Momento de Evaluación', 'slideNext' => 'slide'.($slideCount+1),
+    'slideContent' => '
+        <div>
+            <p>La fecha de inicio del momento de evaluación debe estar dentro del rango del período lectivo, y debe ser menor a la fecha de fin. Y si agrega otro momento de evaluación, las fechas deben ser posteriores a el anterior momento</p>
+        </div>
+    '])
+    
+    @php $slideCount++; @endphp
+
+    @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => 'Fecha de Fin del Momento de Evaluación', 'slideNext' => 'slide'.($slideCount+1),
+    'slideContent' => '
+        <div>
+            <p>La fecha de fin del momento de evaluación debe estar dentro del rango del período lectivo, y debe ser mayor a la fecha de inicio. Y si agrega otro momento de evaluación, las fechas deben ser posteriores a el anterior momento</p>
+        </div>
+    '])
+
 @stop
 
 @section('javascript')
@@ -598,5 +633,18 @@
             $('#confirm_delete_modal').modal('show');
           };
         }
+    </script>
+
+    <script type="text/javascript" src="{{ asset('js/jquery.popupoverlay.js') }}"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('.slide-jquery-pop-up-overlay').popup({
+                vertical: 'top',
+                outline: true,
+                focusdelay: 400,
+                closebutton: true
+            });
+        });
     </script>
 @stop

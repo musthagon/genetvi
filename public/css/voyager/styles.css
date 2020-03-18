@@ -8,3 +8,16 @@
     font-family: Open Sans,sans-serif;
     text-transform: initial; 
 }
+.glyphicon-question-sign{
+    cursor: pointer;
+}
+.well .popup_close {
+    position: absolute;
+    top: 0;
+    right: 0px;
+    border-radius: 2px;
+    background: none;
+    border: 0;
+    font-size: 25px;
+    padding: 0 10px;
+}
