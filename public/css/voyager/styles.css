@@ -21,3 +21,13 @@
     font-size: 25px;
     padding: 0 10px;
 }
+/*Eliminando fondos linear para plugin de accesibilidad contraste*/
+.voyager .side-menu.sidebar-inverse{
+    background: #353d47;
+}
+.panel-footer {
+    background: #fdfdfd;
+}
+.pagination>li>a, .pagination>li>span{
+    background-color: inherit;
+}
