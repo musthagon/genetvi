@@ -135,4 +135,17 @@
             $('.toggleswitch').bootstrapToggle();
         });
     </script>
+
+    <script type="text/javascript" src="{{ asset('js/jquery.popupoverlay.js') }}"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('.slide-jquery-pop-up-overlay').popup({
+                vertical: 'top',
+                outline: true,
+                focusdelay: 400,
+                closebutton: true
+            });
+        });
+    </script>
 @stop

@@ -53,6 +53,7 @@
                             <!-- Adding / Editing -->
                             @php
                                 $dataTypeRows = $dataType->{($edit ? 'editRows' : 'addRows' )};
+                                $slideCount = 0;
                             @endphp
 
                             @foreach($dataTypeRows as $row)
@@ -72,10 +73,19 @@
                                     <label class="control-label" for="name">{{ $row->getTranslatedAttribute('display_name') }}</label>
 
                                     @if($row->getTranslatedAttribute('display_name') == "Opciones")
-                                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" data-html="true" title="" data-original-title='
-                                            Para indicadores select dropdown y select multiple el formato es el siguiente: {"opciones" : ["Opcion1", "Opcion2", "Opcion3"], "predeterminado" : "0" } y se puede agregar la opción "medible" : true/false en caso que no se requiere que el indicador afecta la evalucación
-                                        '
-                                        ></span>
+                                        
+                                        <span class="initialism slide1_open glyphicon glyphicon-question-sign"></span>
+
+                                        @php $slideCount++; @endphp
+
+                                        @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => $row->display_name, 'slideNext' => 'slide'.($slideCount+1),
+                                        'slideContent' => '
+                                            <div>Para indicadores select dropdown y select multiple el formato es el siguiente: <br>
+                                                <pre class="prettyprint prettyprinted"><code>{"opciones" : ["Opcion1", "Opcion2", "Opcion3"], "predeterminado" : "0" }</code></pre>
+                                                Y se puede agregar la opción en caso que no se requiere que el indicador afecta la evalucación:<br>
+                                                <pre class="prettyprint prettyprinted"><code>{"opciones" : ["Opcion1", "Opcion2", "Opcion3"], "predeterminado" : "0", "medible" : true/false }</code></pre>
+                                            </div>
+                                        '])
                                     @endif
 
                                     @include('voyager::multilingual.input-hidden-bread-edit-add')
@@ -88,7 +98,19 @@
                                     @endif
 
                                     @foreach (app('voyager')->afterFormFields($row, $dataType, $dataTypeContent) as $after)
-                                        {!! $after->handle($row, $dataType, $dataTypeContent) !!}
+                                        
+                                        @if(isset($row->details->description))
+                                            <span class="initialism slide1_open glyphicon glyphicon-question-sign"></span>
+
+                                            @php $slideCount++; @endphp
+
+                                            @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => $row->display_name, 'slideNext' => 'slide'.($slideCount+1),
+                                            'slideContent' => $row->details->description])
+ 
+                                        @else
+                                            {!! $after->handle($row, $dataType, $dataTypeContent) !!}
+                                        @endif
+
                                     @endforeach
                                     @if ($errors->has($row->field))
                                         @foreach ($errors->get($row->field) as $error)
@@ -242,6 +264,19 @@
                 });
             }
 
+        });
+    </script>
+
+    <script type="text/javascript" src="{{ asset('js/jquery.popupoverlay.js') }}"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('.slide-jquery-pop-up-overlay').popup({
+                vertical: 'top',
+                outline: true,
+                focusdelay: 400,
+                closebutton: true
+            });
         });
     </script>
 @stop

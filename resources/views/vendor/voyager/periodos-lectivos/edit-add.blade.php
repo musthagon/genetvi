@@ -89,7 +89,7 @@
                             @endphp
 
                             <!-- Categorias de Cursos -->
-                            @php $countCategorias = count($categoriasDeCurso) @endphp 
+                            @php $countCategorias = count($categoriasDeCurso); @endphp 
                             @if($countCategorias == 1 && isset($categoriasDeCurso[0]))
                                 <legend class="text-center" style="background-color: #f0f0f0;padding: 5px;">Periodo Lectivo para {{$categoriasDeCurso[0]->getNombre()}}</legend>
                             @endif
@@ -272,7 +272,7 @@
     </div>
     <!-- End Delete File Modal -->
     @php $slideCount++; @endphp
-                                    
+
     @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => 'Fecha de Inicio del Momento de Evaluación', 'slideNext' => 'slide'.($slideCount+1),
     'slideContent' => '
         <div>

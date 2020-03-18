@@ -82,6 +82,7 @@
                             <!-- Adding / Editing -->
                             @php
                                 $dataTypeRows = $dataType->{($edit ? 'editRows' : 'addRows' )};
+                                $slideCount = 0;
                             @endphp
 
                             @foreach($dataTypeRows as $row)
@@ -109,7 +110,19 @@
                                     @endif
 
                                     @foreach (app('voyager')->afterFormFields($row, $dataType, $dataTypeContent) as $after)
-                                        {!! $after->handle($row, $dataType, $dataTypeContent) !!}
+                                        
+                                        @if(isset($row->details->description))
+                                            <span class="initialism slide1_open glyphicon glyphicon-question-sign"></span>
+
+                                            @php $slideCount++; @endphp
+
+                                            @include('vendor.voyager.partials.jquery-popub-overlay', ['slideID' => 'slide'.$slideCount, 'slideTitle' => $row->display_name, 'slideNext' => 'slide'.($slideCount+1),
+                                            'slideContent' => $row->details->description])
+ 
+                                        @else
+                                            {!! $after->handle($row, $dataType, $dataTypeContent) !!}
+                                        @endif
+
                                     @endforeach
                                     @if ($errors->has($row->field))
                                         @foreach ($errors->get($row->field) as $error)
@@ -508,5 +521,18 @@
             $('#confirm_delete_modal').modal('show');
           };
         }
+    </script>
+
+    <script type="text/javascript" src="{{ asset('js/jquery.popupoverlay.js') }}"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('.slide-jquery-pop-up-overlay').popup({
+                vertical: 'top',
+                outline: true,
+                focusdelay: 400,
+                closebutton: true
+            });
+        });
     </script>
 @stop
