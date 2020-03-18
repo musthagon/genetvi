@@ -173,7 +173,8 @@
                                                                 'curso_id' => $curso->id,
                                                                 'periodo_lectivo' => $invitacion->periodo_lectivo_id,
                                                                 'instrumento' => $invitacion->instrumento_id,
-                                                                'user' => $invitacion->cvucv_user_id]) }}" 
+                                                                'user' => $invitacion->cvucv_user_id,
+                                                                'momento_evaluacion' => $invitacion->momento_evaluacion->getID()]) }}" 
                                                                 title="Reenviar invitación" class="btn btn-sm btn-warning" style="margin-right: 5px;">
                                                             <i class="voyager-eye"></i> Ver evaluación
                                                         </a>

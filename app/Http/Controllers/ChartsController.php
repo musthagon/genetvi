@@ -84,7 +84,6 @@ class ChartsController extends Controller
 
     }
     public function visualizar_resultados_curso_respuesta_publica($categoria_id, $curso_id, Request $request){
-        
         $curso = Curso::find($curso_id);
         
         if(empty($curso)){
@@ -93,8 +92,8 @@ class ChartsController extends Controller
 
         //Tiene permitido acceder a la categoria?
         Gate::allows('checkAccess_ver',[$curso]);
-
-        $this->construir_resultados_curso_respuesta_publica(
+        
+        $status = $this->construir_resultados_curso_respuesta_publica(
             $categoria_id, 
             $curso_id, 
             $request,
@@ -107,6 +106,10 @@ class ChartsController extends Controller
             $instrumento,
             $momentos_evaluacion_collection
         );
+        
+        if($status['status'] == "error"){
+            return redirect()->back()->with(['message' => $status['message'], 'alert-type' => $status['alert-type']]);
+        }
 
         $usuario = $this->cvucv_get_profile( $usuario_id );
 

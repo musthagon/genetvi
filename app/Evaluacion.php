@@ -71,6 +71,10 @@ class Evaluacion extends Model
         return $this->belongsTo('App\User','usuario_id','id');
     }
 
+    public function momento_evaluacion()    {
+        return $this->belongsTo('App\MomentosEvaluacion','momento_evaluacion_id','id');
+    }
+
     public function respuestas_evaluacion(){
         return $this->hasMany('App\Respuesta','evaluacion_id','id');
     }

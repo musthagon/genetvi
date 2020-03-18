@@ -392,37 +392,38 @@ trait CommonFunctionsCharts
         &$periodo_lectivo,
         &$instrumento,
         &$momentos_evaluacion_collection){
-        if(!isset($request->periodo_lectivo) || !isset($request->instrumento)  || !isset($request->user) || !isset($request->momento_evaluacion) ){
-            return redirect()->back()->with(['message' => "Faltan campos obligatorios", 'alert-type' => 'error']);
-        }
-
-        if(!$curso->es_categoria_del_curso($categoria_id)){
-            return redirect()->back()->with(['message' => "La dependencia del curso es incorrecta", 'alert-type' => 'error']);
-        }
 
         $periodo_lectivo_id = $request->periodo_lectivo;
         $instrumento_id     = $request->instrumento;
         $usuario_id         = $request->user;
         $momento_evaluacion_id = $request->momento_evaluacion;
-
+        if(!isset($periodo_lectivo_id) || !isset($instrumento_id)  || !isset($usuario_id) || !isset($momento_evaluacion_id) ){
+            return ['status'=> 'error', 'message' => "Faltan campos obligatorios", 'alert-type' => 'error'];
+        }
+        
+        if(!$curso->es_categoria_del_curso($categoria_id)){
+            return ['status'=> 'error', 'message' => "La dependencia del curso es incorrecta", 'alert-type' => 'error'];
+        }
+        
+        
         $periodo_lectivo = PeriodoLectivo::find($periodo_lectivo_id);
         $instrumento = Instrumento::find($instrumento_id);
 
         if(empty($periodo_lectivo)){
-            return redirect()->back()->with(['message' => "El periodo lectivo no existe", 'alert-type' => 'error']);
+            return ['status'=> 'error', 'message' => "El periodo lectivo no existe", 'alert-type' => 'error'];
         }
 
         if(empty($instrumento)){
-            return redirect()->back()->with(['message' => "El instrumento no existe", 'alert-type' => 'error']);
+            return ['status'=> 'error', 'message' => "El instrumento no existe", 'alert-type' => 'error'];
         }
 
         if($instrumento->getAnonimo()){
-            return redirect()->back()->with(['message' => "Las respuestas de este instrumento son anónimas", 'alert-type' => 'error']);
+            return ['status'=> 'error', 'message' => "Las respuestas de este instrumento son anónimas", 'alert-type' => 'error'];
         }
 
         $evaluacion = Evaluacion::buscar_evaluacion($curso->getID(), $periodo_lectivo_id, $instrumento_id, $usuario_id,$momento_evaluacion_id);
         if(empty($evaluacion)){
-            return redirect()->back()->with(['message' => "Error, este usuario no ha evaluado este curso", 'alert-type' => 'error']);
+            return ['status'=> 'error', 'message' => "Error, este usuario no ha evaluado este curso", 'alert-type' => 'error'];
         }
         //instrumentos con los cuales han evaluado este curso2
         Evaluacion::instrumentos_de_evaluacion_del_curso($curso->id, $instrumentos_collection2, $nombreInstrumentos2, 1);
@@ -430,6 +431,8 @@ trait CommonFunctionsCharts
         //periodos lectivos con los cuales han evaluado este curso
         $periodos_collection        = Evaluacion::periodos_lectivos_de_evaluacion_del_curso($curso->getID());
         $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
+
+        return ['status'=> 'success', 'message' => "Petición completada", 'alert-type' => 'success'];
     }
 
 	public function consultar_grafico_indicadores(Request $request){//Crea la data de los dashboards consultados dinamicamente fetch() JS

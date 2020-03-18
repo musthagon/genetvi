@@ -239,7 +239,7 @@ trait CommonFunctionsGenetvi
     {
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
         $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
-
+        
         $params = [
             'wsfunction'            => 'core_user_get_users_by_field',
             'wstoken'               => $wstoken,
@@ -253,6 +253,7 @@ trait CommonFunctionsGenetvi
         if($this->hasError($response)){
             return [];
         }
+        
         return $response[0];
     }
 

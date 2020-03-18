@@ -11,7 +11,7 @@
                             <h1 class="page-title page-title-custom">
                                 <i class="icon voyager-settings"></i><i class="icon fa fa-commenting-o" aria-hidden="true"></i> <div>Evaluación de @if(isset($usuario['fullname'])){{ $usuario['fullname']}}@endif</div>
                                 <div>
-                                    Periodo Lectivo: {{$periodo_lectivo->getNombre()}}, Instrumento: {{$instrumento->getNombre()}}
+                                    Periodo Lectivo: {{$periodo_lectivo->getNombre()}}, Momento de Evaluación: {{$evaluacion->momento_evaluacion->getNombre()}}, Instrumento: {{$instrumento->getNombre()}}
                                 </div>
                                 <div>
                                     Valoración: {{$evaluacion->get_percentil_eva()}}% / 100%
