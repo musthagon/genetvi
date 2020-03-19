@@ -129,7 +129,7 @@ if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(ap
 <!-- Javascript Libs -->
 
 <!-- Sustituyendo voyager_asset('js/app.js') -->
-<script type="text/javascript" src="{{ asset('js/voyager/voyager-assets.js') }}"></script>
+<script type="text/javascript" src="{{ voyager_asset('js/app.js')  }}"></script>
 
 <!-- Adicionales -->
 <script type="text/javascript" src="{{ asset('js/jbility.js') }}"></script>
