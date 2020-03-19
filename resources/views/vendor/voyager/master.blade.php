@@ -128,9 +128,12 @@ if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(ap
 
 <!-- Javascript Libs -->
 
-<script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
+<!-- Sustituyendo voyager_asset('js/app.js') -->
+<script type="text/javascript" src="{{ asset('js/voyager/voyager-assets.js') }}"></script>
 
+<!-- Adicionales -->
 <script type="text/javascript" src="{{ asset('js/jbility.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/voyager/general-panel-administrativo.js') }}"></script>
 
 <script>
     @if(Session::has('alerts'))
