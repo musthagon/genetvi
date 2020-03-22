@@ -213,13 +213,6 @@ class Invitacion extends Model
         return $new;
     }
 
-    public static function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico
-        $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
-        <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
-
-        return $message;
-    }
-
     public static function confirmarMensaje($response){
 
         if(isset($response[0]['msgid'])){
@@ -269,5 +262,12 @@ class Invitacion extends Model
 
             
         }
+    }
+
+    public static function messageTemplate($user_profile, $curso, $token){//Mensaje de invitación enviado por el Campus/Correo electronico
+        $message = "<div> Estimado ".$user_profile['fullname'].", este es un mensaje de prueba de la aplicación GENETVI, ya que te encuentras matriculado en el curso". $curso->cvucv_fullname."</div>
+        <div> <a href=".route('evaluacion_link', ['token' => $token])."> Enlace para evaluar curso ".$curso->cvucv_fullname." </a> </div>";
+
+        return $message;
     }
 }

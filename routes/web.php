@@ -23,6 +23,10 @@ Route::post('/evaluar_curso/id/{token}/procesar1/{invitacion}/{preview}', 'Publi
 Route::put('/evaluar_curso/id/{token}/procesar2/{invitacion}/{preview}', 'PublicController@evaluacion_procesar2')->name('evaluacion_link_procesar2');
 Route::post('/evaluar_curso/id/{token}/procesar2/{invitacion}/{preview}', 'PublicController@evaluacion_procesar2')->name('evaluacion_link_procesar2');
 
+//Mail Test
+Route::get('/mail/id/{token}', 'MailController@index')->name('evaluacion_link_message');
+Route::get('/mail/1', 'MailController@index')->name('evaluacion_link_message');
+
 /*
 |--------------------------------------------------------------------------
 | Rutas para usuarios autenticados

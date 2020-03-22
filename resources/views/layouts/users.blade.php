@@ -61,9 +61,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Logo -->
     <a href="{{ route('home') }}" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b><img src="/img/LogoGENETVI_rombo.png" ></b></span>
+      <span class="logo-mini"><b><img src="{{asset('img/LogoGENETVI_rombo.png')}}" ></b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b><img src="/img/LogoGENETVI_HORIZONTAL_200px_50px.png" ></b></span>
+      <span class="logo-lg"><b><img src="{{asset('img/LogoGENETVI_HORIZONTAL_200px_50px.png')}}" ></b></span>
     </a>
 
     <!-- Header Navbar -->
