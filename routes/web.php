@@ -70,6 +70,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('gestion/{id}', 'AdminController@gestion')->name('gestion.evaluaciones2');
     Route::get('gestion/{id}/sincronizar', 'AdminController@gestion_sincronizar')->name('gestion.sincronizar');
     Route::get('gestion/{id}/sincronizar_categorias', 'AdminController@gestion_sincronizar_categorias')->name('gestion.sincronizar_categorias');
+    Route::get('gestion/{id}/generar_permisos', 'AdminController@gestion_generar_permisos')->name('gestion.generar_permisos');
 
     //Evaluaciones de Cursos activas
     Route::get('evaluaciones_cursos_activas', 'AdminController@gestion_evaluaciones_cursos_activas')->name('gestion.evaluaciones_cursos_activas');

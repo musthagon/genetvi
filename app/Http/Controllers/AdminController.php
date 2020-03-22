@@ -278,6 +278,26 @@ class AdminController extends Controller
         return $this->gestion_sincronizar_categorias($id,$request);
     }
 
+    public function gestion_generar_permisos($id, Request $request){
+
+        $categoria = CategoriaDeCurso::where('id', $id)->first();
+        
+        if(empty($categoria) ){
+            return redirect()->back()->with(['message' => "La categoría no existe, intente sincronizarla primero", 'alert-type' => 'error']);
+        }
+
+        if($categoria->cvucv_category_parent_id == 0){
+            $categoriaSuperPadre = $categoria;
+        }else{
+            $categoriaSuperPadre = CategoriaDeCurso::where('id', $categoria->cvucv_category_super_parent_id)->first();
+        }
+        
+        if(!auth()->user()->hasRole('admin') || !filter_var(setting('admin.creacion_de_roles_para_categorias', false), FILTER_VALIDATE_BOOLEAN)){
+            return redirect('/admin')->with(['message' => "Error, acceso no autorizado", 'alert-type' => 'error']);
+        }        
+        
+       dd($categoria);
+    }
     /*
     * Para gestionar la evaluacion
     *

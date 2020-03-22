@@ -152,8 +152,15 @@
 
                                                     
                                                     <td class="no-sort no-click" id="bread-actions">
-                                                        
-                                                        @if($categoria->cvucv_coursecount<=0) 
+
+                                                        @if (auth()->user()->hasRole('admin') && filter_var(setting('admin.creacion_de_roles_para_categorias', false), FILTER_VALIDATE_BOOLEAN))
+                                                            <a href="{{ route('gestion.generar_permisos', ['id' => $categoria->getID()]) }}" title="Generar Permisos" class="btn btn-sm btn-warning" style="margin-right: 5px;">
+                                                                <i class="voyager-people"></i> Generar Permisos 
+                                                            </a>
+                                                        @endif   
+
+                                                        @if($categoria->cvucv_coursecount<=0)
+
                                                             @if($categoria->cvucv_category_parent_id>0) 
                                                                 @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))
                                                                 <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
