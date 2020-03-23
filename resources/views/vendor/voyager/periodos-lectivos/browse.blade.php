@@ -43,7 +43,7 @@
     <div class="page-content browse container-fluid">
         @include('voyager::alerts')
 
-        <div class="analytics-container">
+        <div class="analytics-container alert alert-info">
             <p style="border-radius:4px; padding:20px; background:#fff; margin:0; color:#999; text-align:center;">
                 <code>Información sobre los periodos lectivos</code> 
                 <ul>

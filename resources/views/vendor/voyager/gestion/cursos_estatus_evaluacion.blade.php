@@ -77,6 +77,7 @@
                 
                 @if(!empty($invitaciones_curso))
                     <div class="panel panel-bordered">
+                        
                         <div class="panel-body">
 
                             <div class="page-title-content">
@@ -85,6 +86,22 @@
                                 </h1>
                             </div>
                         
+                            <div class="analytics-container alert alert-info">
+                                <p style="border-radius:4px; padding:20px; background:#fff; margin:0; color:#999; text-align:center;">
+                                    <code>Para monitorear a los evaluadores de este curso, existen 8 estatus sobre la evaluación:</code> 
+                                    <ol>
+                                        <li>“Creada”: Se refiere a que se creó la invitación a evaluar, pero aún no se ha enviado al evaluador. Haciendo clic en “Reenviar invitación a evaluar” se realizará esa acción y la persona podrá hacer la evaluación. (Cuando aparece este estatus es que se están haciendo pruebas de funcionalidad sobre GENETVI).</li>
+                                        <li>“Enviada”: Se creó correctamente la evaluación y se envió al evaluador.</li>
+                                        <li>“Recordatorio enviado”: Se envió un recordatorio al evaluador.</li>
+                                        <li>“Leída”: El evaluador recibió correctamente el enlace para realizar la evaluación y lo abrió, pero no ha terminado de hacer la evaluación.</li>
+                                        <li>“Aceptada”: Cuando el evaluador completó los datos del perfil y acepto realizar la evaluación del curso.</li>
+                                        <li>“Rechazada”: El evaluador decidió no realizar la evaluación.</li>
+                                        <li>“Revocada”: Se eliminó la invitación y este evaluador no podrá realizar la evaluación.</li>
+                                        <li>“Completada”: El evaluador terminó de realizar la evaluación. </li>
+                                    </ol>
+                                </p>
+                            </div>
+
                             <div class="table-responsive">
                                 <table id="dataTable" class="table table-hover">
                                     <thead>
