@@ -14,6 +14,8 @@ use App\Invitacion;
 use App\TipoInvitacion;
 use App\MomentosEvaluacion;
 use App\Charts\indicadoresChart;
+use App\Mail\InvitacionEvaluarMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Yajra\Datatables\Datatables;
@@ -418,12 +420,20 @@ class AdminController extends Controller
         }
 
         //Enviamos la invitacion
-        $message =  Invitacion::messageTemplate($invitacionAnterior->user_profile(), $curso, $invitacionAnterior->token);
+        $user_profile = $invitacionAnterior->user_profile();
+
+        //return (new InvitacionEvaluarMail($invitacionAnterior, $user_profile, true))->render();
+        $message = (new InvitacionEvaluarMail($invitacionAnterior, $user_profile, true))->render();
+        //dd($message);
+        //$message =  Invitacion::messageTemplate($user_profile, $curso, $invitacionAnterior->token);
+        
         $response = $this->cvucv_send_instant_message($invitacionAnterior->cvucv_user_id, $message, 1);
 
         if(!Invitacion::confirmarMensaje($response)){
             return redirect()->back()->with(['message' => "Error para enviar recordatorio", 'alert-type' => 'error']);
         }
+
+        Mail::to($user_profile['email'])->send(new InvitacionEvaluarMail($invitacionAnterior, $user_profile));
 
         //Actualizamos
         $invitacionAnterior->actualizar_estatus_recordatorio_enviado();

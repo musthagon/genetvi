@@ -20,7 +20,8 @@ class MailController extends Controller
         
         $evaluationLink    = $request->link;
 
-        return view('mails.enlace_evaluacion', compact('evaluationLink'));
+        //return view('mails.enlace_evaluacion', compact('evaluationLink'));
+        return view('mails.enlace_evaluacionShort', compact('evaluationLink'));
     }
 
 }

@@ -1,4 +1,11 @@
-<div bgcolor="#f9f9f9" width="100%">
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <title>Evaluación del Curso @php if(isset($nombre_curso)){ echo($nombre_curso); } else { echo("Nombre del Curso"); } @endphp</title>
+</head>
+<body bgcolor="#f9f9f9" width="100%">
     <div style="line-height:40px;font-size:40px">&nbsp;</div>
 
     <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#21446f">
@@ -20,7 +27,7 @@
                                             </tr>
                                             <tr>
                                               <td width="100%" style="font-family:arial,helvetica,sans-serif;font-size:37px;line-height:44px;padding-top:0px;padding-bottom:40px;padding-left:0px;padding-right:0px;text-align:center;color:#f9f9f9" colspan="3">
-                                                <strong>NOMBRE DEL CURSO</strong>
+                                                <strong> @php if(isset($nombre_curso)){ echo($nombre_curso); } else { echo("Nombre del Curso"); } @endphp </strong>
                                               </td>
                                             </tr>
                                             <tr>
@@ -53,7 +60,7 @@
                                   <p style="text-align: justify;">
                                     <span style="color:#666666;">
                                       <span style="font-size:16px;">
-                                        <span style="font-family:arial,helvetica,sans-serif;"><strong>Hola, NOMBRE APELLIDO</strong>
+                                        <span style="font-family:arial,helvetica,sans-serif;"><strong>Hola, @php if(isset($nombre_usuario)){ echo($nombre_usuario); } else { echo("Nombre Apellido"); }  @endphp</strong>
                                         </span>
                                       </span>
                                     </span>
@@ -70,7 +77,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td bgcolor="#21446f" align="center" width="100%" height="50" style="font-family:arial,helvetica,sans-serif;font-size:16px;color:#f9f9f9;line-height:22px;text-decoration:none;border-radius:4px;background-color:#21446f">
-                                                      <a href="" style="font-family:arial,helvetica,sans-serif;font-size:16px;color:#f9f9f9;line-height:22px;text-decoration:none;border-radius:4px;background-color:#22a7f0;border-top:18px solid #22a7f0;border-bottom:18px solid #22a7f0;border-right:18px solid #21446f;border-left:18px solid #21446f;display:block;font-weight:bold" target="_blank">
+                                                      <a href="@php if(isset($token_invitacion)){ echo(route('evaluacion_link', ['token' => $token_invitacion])); } @endphp" style="font-family:arial,helvetica,sans-serif;font-size:16px;color:#f9f9f9;line-height:22px;text-decoration:none;border-radius:4px;background-color:#22a7f0;border-top:18px solid #22a7f0;border-bottom:18px solid #22a7f0;border-right:18px solid #21446f;border-left:18px solid #21446f;display:block;font-weight:bold" target="_blank">
                                                         Evaluar el Curso
                                                       </a>
                                                     </td>
@@ -115,7 +122,7 @@
                                           </h2>
                                         </div>
                                         <p style="Margin-top:16px;Margin-bottom:20px">
-                                          La evaluación de los cursos es un mecanismo necesario que orientará la toma de decisiones para el mejoramiento continuo y fomentará la calidad requerida que debe haber todos los procesos de enseñanza y aprendizaje. Al abrir el enlace se desplegará el instrumento de evaluación “Nombre del Instrumento”, con un conjunto de ítems a completar, lo cual no te llevará más de diez (10) minutos.
+                                          La evaluación de los cursos es un mecanismo necesario que orientará la toma de decisiones para el mejoramiento continuo y fomentará la calidad requerida que debe haber todos los procesos de enseñanza y aprendizaje. Al abrir el enlace se desplegará el instrumento de evaluación “ @php if(isset($nombre_instrumento)){ echo($nombre_instrumento); } else { echo("Nombre del Instrumento"); } @endphp ”, con un conjunto de ítems a completar, lo cual no te llevará más de diez (10) minutos.
                                         </p>
                                       </div>
                                     </div>
@@ -343,7 +350,7 @@
                                             <tr>
                                                 <td style="padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;width:100%;text-align:left">
                                                     <p style="Margin-top:10px;Margin-bottom:0px;font-family:arial,helvetica,sans-serif;font-size:14px;color:#f9f9f9;text-align:center;line-height:14px">
-                                                        Enviado desde el Campus Virtual UCV
+                                                        Enviado con la autorización del SEDUCV - desde seducv@gmail.com
                                                     </p>
                                                 </td>
                                             </tr>
@@ -371,7 +378,7 @@
                                             <tr>
                                                 <td>
                                                     <p style="Margin-top:10px;Margin-bottom:0px;font-family:arial,helvetica,sans-serif;font-size:11px;color:#f9f9f9;text-align:center;line-height:14px">
-                                                        Recibes este correo porque estas matriculado en el curso NOMBRE DEL CURSO,
+                                                        Recibes este correo porque estas matriculado en el curso @php if(isset($nombre_curso)){ echo($nombre_curso); } else { echo("Nombre del Curso"); } @endphp,
                                                         <br> puedes dejar de recibir nuestros correos <a href="#" style="color:#f7f7f7" target="_blank">aquí</a>
                                                     </p>
                                                 </td>
@@ -405,4 +412,4 @@
         </tbody>
     </table>
 
-</div>
+</body>
