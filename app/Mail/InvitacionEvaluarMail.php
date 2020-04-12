@@ -37,7 +37,7 @@ class InvitacionEvaluarMail extends Mailable
     public function build()
     {
         $tipoTemplate = $this->shortTemplate ? 'Short' : '';
-        return $this->from('seducv@gmail.com')
+        return $this->from('noreply-seducv@ucv.ve')
                     ->subject($this->user_profile['fullname'].', has sido Invitado a Evaluar el Curso '.$this->invitacion->curso->getNombre())
                     ->view('mails.enlace_evaluacion'.$tipoTemplate)
                     ->with([
