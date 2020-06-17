@@ -235,8 +235,8 @@ trait CommonFunctionsGenetvi
      * Perfil de usuario en el Campus
      *
      */
-    public function cvucv_get_profile($cvucv_user_id, $field ='id')
-    {
+    public function cvucv_get_profile_OLD($cvucv_user_id, $field ='id')
+    {//ERROR
         $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
         $wstoken  = env("CVUCV_ADMIN_TOKEN", $this->CVUCV_ADMIN_TOKEN);
         
@@ -250,11 +250,34 @@ trait CommonFunctionsGenetvi
 
         $response = $this->send_curl('GET', $endpoint, $params);
 
-        if($this->hasError($response)){
+        //return dd($response);
+
+        if($this->hasError($response) || isset($response['errorcode'])){
             return [];
         }
         
         return $response[0];
+    }
+    public function cvucv_get_profile($cvucv_user_id, $field ='id')
+    {
+        $endpoint = env("CVUCV_GET_WEBSERVICE_ENDPOINT", $this->CVUCV_GET_WEBSERVICE_ENDPOINT);
+        $wstoken  = env("CVUCV_ADMIN_TOKEN2", $this->CVUCV_ADMIN_TOKEN);
+        
+        $params = [
+            'wsfunction'            => 'core_user_get_users',
+            'wstoken'               => $wstoken,
+            'moodlewsrestformat'    => 'json',
+            'criteria[0][key]'      => $field,
+            'criteria[0][value]'    => $cvucv_user_id,
+        ];
+
+        $response = $this->send_curl('GET', $endpoint, $params);
+
+        if($this->hasError($response) || isset($response['errorcode']) || !isset($response['users']) || !isset($response['users'][0])){
+            return [];
+        }
+
+        return $response['users'][0];
     }
 
     /**
