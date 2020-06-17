@@ -381,7 +381,7 @@ class AdminController extends Controller
         foreach($invitaciones_curso as $invitacion_index => $invitacion){
             $revisores[$invitacion_index] = $invitacion->user_profile();
         }
-
+        
         //Instrumentos de matriculacion manuak
         $categoria_raiz             = $curso->categoria->categoria_raiz;
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
