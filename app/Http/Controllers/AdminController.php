@@ -122,7 +122,7 @@ class AdminController extends Controller
                 }
             }
         }
-
+        
         return view('vendor.voyager.gestion.index',compact('categorias','wstoken','informacion_pagina'));
     }
     public function gestion_cursos($id){

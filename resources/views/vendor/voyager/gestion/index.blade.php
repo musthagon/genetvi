@@ -133,7 +133,7 @@
                                             @foreach($categorias as $categoria)
                                                 <tr>
                                                     <td>{{$categoria->id}}</td>
-                                                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank"> {{$categoria->cvucv_name}} </a></td>
+                                                    <td><a href="{{env('CVUCV_GET_SITE_URL',setting('site.CVUCV_GET_SITE_URL')).'/moodle/course/index.php?categoryid='.$categoria->id}}" target="_blank">@php if(isset($categoria->cvucv_name) ) {echo($categoria->cvucv_name);} @endphp </a></td>
                                                     @php
                                                         $text = $categoria->cvucv_description;
                                                         preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $text, $match);
@@ -162,25 +162,35 @@
                                                         @if($categoria->cvucv_coursecount<=0)
 
                                                             @if($categoria->cvucv_category_parent_id>0) 
+                                                                @if ( isset($categoria->categoria_raiz) )
                                                                 @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))
                                                                 <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
                                                                     <i class="voyager-list"></i> Sincronizar 
                                                                 </a>
                                                                 @endif 
+                                                                @endif
                                                             @else
-
                                                                 @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->cvucv_name]  ))
                                                                 <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id, 'categoria_raiz' => true]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
                                                                     <i class="voyager-list"></i> Sincronizar 
                                                                 </a>
                                                                 @endif  
-
                                                             @endif
                                                         @else
-                                                            @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))
-                                                            <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id, 'sync_courses' => true]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
-                                                                <i class="voyager-list"></i> Sincronizar ({{$categoria->cvucv_coursecount}} cursos)
-                                                            </a>
+                                                            @if($categoria->cvucv_category_parent_id>0) 
+                                                                @if ( isset($categoria->categoria_raiz) )
+                                                                @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->categoria_raiz->cvucv_name]  ))
+                                                                <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id, 'sync_courses' => true]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                                    <i class="voyager-list"></i> Sincronizar ({{$categoria->cvucv_coursecount}} cursos)
+                                                                </a>
+                                                                @endif
+                                                                @endif
+                                                            @else
+                                                                @if (Gate::allows('checkCategoryPermissionSisgeva', ['sincronizar_',$categoria->cvucv_name] ))
+                                                                <a href="{{ route('gestion.sincronizar', ['id' => $categoria->id, 'sync_courses' => true]) }}" title="Sincronizar" class="btn btn-sm btn-success" style="margin-right: 5px;">
+                                                                    <i class="voyager-list"></i> Sincronizar ({{$categoria->cvucv_coursecount}} cursos)
+                                                                </a>
+                                                                @endif
                                                             @endif
                                                         @endif
                                                         
