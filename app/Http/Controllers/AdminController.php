@@ -27,9 +27,20 @@ class AdminController extends Controller
 {
     use CommonFunctionsGenetvi;
     
+	private $CVUCV_GET_SITE_URL = '';
+	private $CVUCV_GET_USER_TOKEN = '';
+	private $CVUCV_GET_WEBSERVICE_ENDPOINT = '';
+	private $CVUCV_GET_WEBSERVICE_ENDPOINT1 = '';
+	private $CVUCV_GET_WEBSERVICE_ENDPOINT2 = '';
+	private $CVUCV_GET_USER_TOKEN_SERVICE = '';
+	private $CVUCV_GET_USER_TOKEN_SERVICE2 = '';
+	private $CVUCV_ADMIN_TOKEN = '';
+	private $CVUCV_ADMIN_TOKEN2 = '';
+	
     protected $permissionHabilitarEvaluacionCategoria   = "habilitar_evaluacion_";
     protected $permissionVerCategoria                   = "ver_";
     protected $permissionSincronizarCategoria           = "sincronizar_";
+	
     /**
      * Create a new controller instance.
      *
@@ -46,7 +57,7 @@ class AdminController extends Controller
      * 
      */
     public function gestion($id = 0){ 
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN",$this->CVUCV_ADMIN_TOKEN);
         $user = Auth::user();
 
         $informacion_pagina['descripcion']  = "En esta sección se puede navegar entre las categorías y cursos de la Facultad/Dependencia";
@@ -126,14 +137,14 @@ class AdminController extends Controller
         return view('vendor.voyager.gestion.index',compact('categorias','wstoken','informacion_pagina'));
     }
     public function gestion_cursos($id){
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN",$this->CVUCV_ADMIN_TOKEN);
 
         $cursos = Curso::where('cvucv_category_id', $id)->get();
 
         return view('vendor.voyager.gestion.index_courses',compact('cursos','wstoken'));
     }
     public function gestion_evaluaciones_cursos_activas(){ 
-        $wstoken  = env("CVUCV_ADMIN_TOKEN");
+        $wstoken  = env("CVUCV_ADMIN_TOKEN",$this->CVUCV_ADMIN_TOKEN);
         $user = Auth::user();
 
         $informacion_pagina['descripcion']  = "En esta sección se puede navegar entre las categorías y cursos de la Facultad/Dependencia";
@@ -211,7 +222,7 @@ class AdminController extends Controller
                 $nueva_categoria->cvucv_path                 = $categoria['path'];
                 $nueva_categoria->cvucv_depth                = $categoria['depth'];
                 $nueva_categoria->cvucv_visible              = $categoria['visible'];
-                $nueva_categoria->cvucv_link                 = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/moodle/course/index.php?categoryid=".$categoria['id'];
+                $nueva_categoria->cvucv_link                 = env("CVUCV_GET_SITE_URL", $this->CVUCV_GET_SITE_URL)."/moodle/course/index.php?categoryid=".$categoria['id'];
 
                 $nueva_categoria->save();
 
@@ -243,7 +254,7 @@ class AdminController extends Controller
                 $curso->cvucv_displayname   = $data['displayname'];
                 $curso->cvucv_summary       = $data['summary'];
                 $curso->cvucv_visible       = $data['visible'];
-                $curso->cvucv_link          = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/course/view.php?id=".$data['id'];
+                $curso->cvucv_link          = env("CVUCV_GET_SITE_URL", $this->CVUCV_GET_SITE_URL)."/course/view.php?id=".$data['id'];
 
                 $curso->save();
                 

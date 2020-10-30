@@ -42,7 +42,8 @@ class GenetviSettingsTableSeeder extends Seeder
             'order'        => 2,
             'group'        => 'Sitio',
         ])->save();
-        
+		
+		        
         //Admin
         $setting = $this->findSetting('admin.title');
         $setting->fill([
@@ -63,14 +64,105 @@ class GenetviSettingsTableSeeder extends Seeder
             'order'        => 2,
             'group'        => 'Admin',
         ])->save();
+		
+		$setting = $this->findSetting('admin.url');
+        $setting->fill([
+            'display_name' => __('Dirección del Campus Virtual (moodle)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 3,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.token_endpoint');
+        $setting->fill([
+            'display_name' => __('Dirección para el acceso por token (www.campusvirtual.com/login/token.php)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 4,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.webservice_endpoint');
+        $setting->fill([
+            'display_name' => __('Dirección para el acceso al servicio web (www.campusvirtual.com/webservice/rest/server.php)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 5,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.webservice_endpoint1');
+        $setting->fill([
+            'display_name' => __('Dirección para el acceso al servicio web (www.campusvirtual.com/pluginfile.php/)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 6,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.webservice_endpoint2');
+        $setting->fill([
+            'display_name' => __('Dirección para el acceso al servicio web (www.campusvirtual.com/webservice/pluginfile.php)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 7,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.token_service');
+        $setting->fill([
+            'display_name' => __('Nombre corto del servicio web (principal)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 8,
+            'group'        => 'Admin',
+        ])->save();
         
+		$setting = $this->findSetting('admin.token_service2');
+        $setting->fill([
+            'display_name' => __('Nombre corto del servicio web (secundario)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 9,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.token_access');
+        $setting->fill([
+            'display_name' => __('Código del token del servicio web (principal)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 10,
+            'group'        => 'Admin',
+        ])->save();
+		
+		$setting = $this->findSetting('admin.token_access2');
+        $setting->fill([
+            'display_name' => __('Código del token del servicio web (secundario)'),
+            'value'        => __(''),
+            'details'      => '',
+            'type'         => 'text',
+            'order'        => 11,
+            'group'        => 'Admin',
+        ])->save();
+		
+		
         $setting = $this->findSetting('admin.loader');
         $setting->fill([
             'display_name' => __('Gif de Carga del Panel Administrativo'),
             'value'        => '',
             'details'      => '',
             'type'         => 'image',
-            'order'        => 3,
+            'order'        => 12,
             'group'        => 'Admin',
         ])->save();
         
@@ -81,7 +173,7 @@ class GenetviSettingsTableSeeder extends Seeder
             'value'        => '',
             'details'      => '',
             'type'         => 'image',
-            'order'        => 4,
+            'order'        => 13,
             'group'        => 'Admin',
         ])->save();
         
@@ -91,7 +183,7 @@ class GenetviSettingsTableSeeder extends Seeder
             'value'        => '',
             'details'      => '',
             'type'         => 'image',
-            'order'        => 5,
+            'order'        => 14,
             'group'        => 'Admin',
         ])->save();
         
@@ -101,7 +193,7 @@ class GenetviSettingsTableSeeder extends Seeder
             'value'        => false,
             'details'      => $options,
             'type'         => 'select_dropdown',
-            'order'        => 6,
+            'order'        => 15,
             'group'        => 'Admin',
         ])->save();
         

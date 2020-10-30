@@ -11,12 +11,16 @@ use Illuminate\Support\Facades\Auth;
 
 trait CommonFunctionsGenetvi
 {
-    private $connection_error = 'connection_error';    
-    private $CVUCV_GET_USER_TOKEN = '';
-    private $CVUCV_GET_USER_TOKEN_SERVICE = '';
-    private $CVUCV_GET_WEBSERVICE_ENDPOINT = '';
-    private $CVUCV_ADMIN_TOKEN = '';
-    private $CVUCV_ADMIN_TOKEN2 = '';
+    private $connection_error = 'connection_error'; 	
+	private $CVUCV_GET_SITE_URL = '';
+	private $CVUCV_GET_USER_TOKEN = '';
+	private $CVUCV_GET_WEBSERVICE_ENDPOINT = '';
+	private $CVUCV_GET_WEBSERVICE_ENDPOINT1 = '';
+	private $CVUCV_GET_WEBSERVICE_ENDPOINT2 = '';
+	private $CVUCV_GET_USER_TOKEN_SERVICE = '';
+	private $CVUCV_GET_USER_TOKEN_SERVICE2 = '';
+	private $CVUCV_ADMIN_TOKEN = '';
+	private $CVUCV_ADMIN_TOKEN2 = '';
 
     protected $nombre_campo_rol_en_cvucv = "Cargo o Rol dentro de la Universidad *";
     protected $roles_que_pueden_accerder = array("Profesor UCV", "Administrativo UCV", "Profesor externo ");
@@ -479,7 +483,7 @@ trait CommonFunctionsGenetvi
                     $curso->cvucv_displayname   = $data['displayname'];
                     $curso->cvucv_summary       = $data['summary'];
                     $curso->cvucv_visible       = $data['visible'];
-                    $curso->cvucv_link          = env("CVUCV_GET_SITE_URL","https://campusvirtual.ucv.ve")."/course/view.php?id=".$data['id'];
+                    $curso->cvucv_link          = env("CVUCV_GET_SITE_URL",$this->CVUCV_GET_SITE_URL)."/course/view.php?id=".$data['id'];
                     $curso->save();
                 }
                 //2. Verificamos que este matriculado en ese curso -> Solicitamos los participantes del curso
