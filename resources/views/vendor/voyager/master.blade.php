@@ -10,24 +10,34 @@
     <link href="{{asset('pace_loader/themes/loading_bar.css')}}" rel="stylesheet" />
     <script src="{{asset('pace_loader/pace.min.js')}}"></script>
 
+    <!-- CUSTOM GENETVI CSS -->
+    
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/voyager/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/jbility.css') }}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{{asset('adminlte/bower_components/font-awesome/css/font-awesome.min.css')}}">
+
     <!-- Google Fonts -->
-    <link href="{{asset('css/fonts.googleapis.com_OpenSans300,400,700.css')}}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
 
     <!-- Favicon -->
     <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
     @if($admin_favicon == '')
-        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+        <link rel="shortcut icon" href="{{ voyager_asset('images/logo-icon.png') }}" type="image/png">
     @else
-        <link rel="shortcut icon" href="/img/LogoGENETVI_rombo.png" type="image/png">
+        <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
     @endif
-
 
 
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
 
     @yield('css')
-
+    @if(__('voyager::generic.is_rtl') == 'true')
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.css">
+        <link rel="stylesheet" href="{{ voyager_asset('css/rtl.css') }}">
+    @endif
 
     <!-- Few Dynamic Styles -->
     <style type="text/css">
@@ -50,14 +60,6 @@
         @foreach(config('voyager.additional_css') as $css)<link rel="stylesheet" type="text/css" href="{{ asset($css) }}">@endforeach
     @endif
 
-    <!-- CUSTOM GENETVI CSS -->
-    
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/voyager/styles.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/jbility.css') }}">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{asset('adminlte/bower_components/font-awesome/css/font-awesome.min.css')}}">
-    
     @yield('head')
 </head>
 
@@ -73,10 +75,10 @@
 </div>
 
 <?php
-if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(app('VoyagerAuth')->user()->avatar, 'https://')) {
-    $user_avatar = app('VoyagerAuth')->user()->avatar;
+if (\Illuminate\Support\Str::startsWith(Auth::user()->avatar, 'http://') || \Illuminate\Support\Str::startsWith(Auth::user()->avatar, 'https://')) {
+    $user_avatar = Auth::user()->avatar;
 } else {
-    $user_avatar = Voyager::image(app('VoyagerAuth')->user()->avatar);
+    $user_avatar = Voyager::image(Auth::user()->avatar);
 }
 ?>
 
@@ -121,19 +123,12 @@ if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(ap
         </div>
     </div>
 </div>
-
 @include('voyager::partials.app-footer')
-
-@include('accessibility.partials.jBility')
 
 <!-- Javascript Libs -->
 
-<!-- Sustituyendo voyager_asset('js/app.js') -->
-<script type="text/javascript" src="{{ voyager_asset('js/app.js')  }}"></script>
 
-<!-- Adicionales -->
-<script type="text/javascript" src="{{ asset('js/jbility.js') }}"></script>
-<script type="text/javascript" src="{{ asset('js/voyager/general-panel-administrativo.js') }}"></script>
+<script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
 
 <script>
     @if(Session::has('alerts'))
@@ -158,7 +153,6 @@ if (starts_with(app('VoyagerAuth')->user()->avatar, 'http://') || starts_with(ap
 @include('voyager::media.manager')
 @yield('javascript')
 @stack('javascript')
-
 @if(!empty(config('voyager.additional_js')))<!-- Additional Javascript -->
     @foreach(config('voyager.additional_js') as $js)<script type="text/javascript" src="{{ asset($js) }}"></script>@endforeach
 @endif

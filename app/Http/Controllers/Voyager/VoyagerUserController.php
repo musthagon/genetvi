@@ -24,6 +24,8 @@ use App\Traits\CommonFunctionsGenetvi;
 class VoyagerUserController extends BaseVoyagerUserController
 {
     use CommonFunctionsGenetvi;
+    
+
     //***************************************
     //               ____
     //              |  _ \
@@ -88,7 +90,7 @@ class VoyagerUserController extends BaseVoyagerUserController
             }
 
             // Use withTrashed() if model uses SoftDeletes and if toggle is selected
-            if ($model && in_array(SoftDeletes::class, class_uses($model)) && app('VoyagerAuth')->user()->can('delete', app($dataType->model_name))) {
+            if ($model && in_array(SoftDeletes::class, class_uses($model)) && Auth::user()->can('delete', app($dataType->model_name))) {
                 $usesSoftDeletes = true;
 
                 if ($request->get('showSoftDeleted')) {
@@ -175,60 +177,6 @@ class VoyagerUserController extends BaseVoyagerUserController
             'roles'
         ));
     }
-    
-     //***************************************
-    //                ______
-    //               |  ____|
-    //               | |__
-    //               |  __|
-    //               | |____
-    //               |______|
-    //
-    //  Edit an item of our Data Type BR(E)AD
-    //
-    //****************************************
-
-    // POST BR(E)AD
-    public function update(Request $request, $id)
-    {
-        $slug = $this->getSlug($request);
-
-        $dataType = Voyager::model('DataType')->where('slug', '=', $slug)->first();
-
-        // Compatibility with Model binding.
-        $id = $id instanceof \Illuminate\Database\Eloquent\Model ? $id->{$id->getKeyName()} : $id;
-
-        $model = app($dataType->model_name);
-        if ($dataType->scope && $dataType->scope != '' && method_exists($model, 'scope'.ucfirst($dataType->scope))) {
-            $model = $model->{$dataType->scope}();
-        }
-        if ($model && in_array(SoftDeletes::class, class_uses($model))) {
-            $data = $model->withTrashed()->findOrFail($id);
-        } else {
-            $data = call_user_func([$dataType->model_name, 'findOrFail'], $id);
-        }
-
-        // Check permission
-        $this->authorize('edit', $data);
-
-        // Validate fields with ajax
-        $val = $this->validateBread($request->all(), $dataType->editRows, $dataType->name, $id)->validate();
-        
-        //$this->insertUpdateData($request, $slug, $dataType->editRows, $data);
-       
-        $data = User::findOrFail($data->id);
-        $data->updateData($request);
-        
-
-        event(new BreadDataUpdated($dataType, $data));
-
-        return redirect()
-        ->route("voyager.{$dataType->slug}.index")
-        ->with([
-            'message'    => __('voyager::generic.successfully_updated')." {$dataType->getTranslatedAttribute('display_name_singular')}",
-            'alert-type' => 'success',
-        ]);
-    }
 
     //***************************************
     //
@@ -277,7 +225,6 @@ class VoyagerUserController extends BaseVoyagerUserController
     }
 
     public function agregar_usuario_cvucv(Request $request){
-        
         if(!isset($request) || !isset($request->users) || !isset($request->rol)){
             return redirect()->back()->with(['message' => "Error, debe ingresar los usuarios y el rol a asignar", 'alert-type' => 'error']);
         }
@@ -322,8 +269,6 @@ class VoyagerUserController extends BaseVoyagerUserController
         }
 
         return redirect()->back()->with(['message' => " Usuarios agregados: ".$agregados, 'alert-type' => 'success']);
-        
-        
     }
 
     public function generatePassword(){

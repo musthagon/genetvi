@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Services\Auth\JwtGuard;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Routing\Router;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Middleware\VoyagerAdminMiddleware;
+use App\Http\Controllers\ControllerCustomGates;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -28,9 +31,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //Custom Sisgeva Gates
+        //custom_genetvi_gate
         Gate::define('checkCategoryPermissionSisgeva', 'App\Http\Controllers\ControllerCustomGates@checkCategoryPermissionSisgeva');
 
-        $router->aliasMiddleware('admin.user', VoyagerAdminMiddleware::class);
     }
 }
