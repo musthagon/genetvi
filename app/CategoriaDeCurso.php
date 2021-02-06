@@ -106,7 +106,7 @@ class CategoriaDeCurso extends Model
             }
         }
         return $list;
-
     }
 
+    
 }

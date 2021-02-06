@@ -212,9 +212,9 @@ class AdminController extends Controller
 
                 $nueva_categoria->id                         = $categoria['id'];
                 $nueva_categoria->cvucv_category_parent_id   = $categoria['parent'];
-                if(isset($request->categoria_raiz)){
-                    $nueva_categoria->cvucv_category_super_parent_id   = $id;
-                }
+                //Extraemos la categoria principal del path
+                $nueva_categoria->cvucv_category_super_parent_id   = preg_split("#/#", $categoria['path'], -1)[1];
+
                 $nueva_categoria->cvucv_name                 = $categoria['name'];
                 $nueva_categoria->cvucv_description          = $categoria['description'];
                 $nueva_categoria->cvucv_coursecount          = $categoria['coursecount'];
@@ -331,6 +331,7 @@ class AdminController extends Controller
         Gate::allows('checkAccess_HabilitarEvaluacion',[$curso]);
 
         $categoria_raiz             = $curso->categoria->categoria_raiz;
+        
         $instrumentos_habilitados   = $categoria_raiz->instrumentos_habilitados;
         $periodo_lectivo            = $categoria_raiz->periodo_lectivo_actual;
 
