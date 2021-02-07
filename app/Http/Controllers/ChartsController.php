@@ -61,7 +61,7 @@ class ChartsController extends Controller
         
         $momentos_evaluacion_collection = Evaluacion::momentos_de_evaluacion_del_curso($curso->getID());
         $ruta_revisiones_publicas = 'curso.visualizar_resultados_curso.respuesta_publica';
-
+        
         return view('vendor.voyager.gestion.cursos_dashboards',
         compact(
             'curso',

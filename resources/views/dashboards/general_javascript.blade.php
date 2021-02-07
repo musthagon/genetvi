@@ -42,12 +42,16 @@
     @if(!empty($indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]) && $indicador->esMedible() && $categoriaMedible)
         {!! $indicadores_collection_charts[$periodo_index][$instrumento_index][$categoria_index][$indicador_index]->script() !!}
     @else
+
+    
         <script>
+            
+
             $(document).ready(function () {
                 var table = $('#Periodo_{{$periodo->getID()}}Instrumento_{{$instrumento->getID()}}Categoria_{{$categoria->getID()}}Indicador_{{$indicador->getID()}}').DataTable({
                         "processing": true,
                         "serverSide": true,
-                        "ajax": "{{ route('curso.consultar_tabla_indicador', ['curso_id' => $curso->getID(), 'periodo_id' => $periodo->getID(), 'instrumento_id' => $instrumento->getID(), 'categoria_id' => $categoria->getID(), 'indicador_id' => $indicador->getID()]) }}",
+                        "ajax": "{{ route('curso.consultar_tabla_indicador', ['curso_id' => $curso->getID(), 'periodo' => $periodo->getID(), 'instrumento' => $instrumento->getID(), 'categoria' => $categoria->getID(), 'indicador' => $indicador->getID()]) }}",
                         "columns": [
                             {data: 'value_string', name: 'value_string'},
                             
