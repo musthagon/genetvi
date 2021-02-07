@@ -22,6 +22,13 @@ class PeriodoLectivoMomentoEvaluacion extends Pivot
         'created_at',
         'updated_at'];
 
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = true;
+
     public static function get_fecha_inicio_field(){
         return 'fecha_inicio';
     }

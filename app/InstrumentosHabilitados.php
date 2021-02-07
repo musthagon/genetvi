@@ -10,4 +10,10 @@ class InstrumentosHabilitados extends Pivot
 
     protected $fillable = ['id','categoria_id','instrumento_id','created_at','updated_at'];
 
+     /**
+	 * Indicates if the IDs are auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = true;
 }
